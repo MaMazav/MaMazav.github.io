@@ -4,7 +4,31 @@
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
   <link rel="stylesheet" href="styles/styles.css">
  </head>
- <body><div id="content">
+ <body>
+  <a href="https://github.com/MaMazav/AsyncProxy.js">
+   <img
+    style="position: absolute; top: 0; right: 0; border: 0;"
+	src="https://camo.githubusercontent.com/52760788cde945287fbb584134c4cbc2bc36f904/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f77686974655f6666666666662e706e67"
+	alt="Fork me on GitHub"
+	data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png">
+  </a>
+  
+<div id="verticalPadding">
+
+ <nav>
+  <ul>
+   <li><a class="navlink" href="#helloworld">AsyncProxy.js Hello World!</a></li>
+   <li><a class="navlink" href="#subworkeremulation">Sub Worker Emulation for Chrome</a></li>
+   <li><a class="navlink" href="#promise">Promise</a></li>
+   <li><a class="navlink" href="#callback">Callback</a></li>
+   <li><a class="navlink" href="#termination">Terminate Worker</a></li>
+   <li><a class="navlink" href="#transferables">Transferables</a></li>
+   <li><a class="navlink" href="#buffersize">Urgent Functions</a></li>
+   <li><a class="navlink" href="#slavesidefeatures">Slave Side Features</a></li>
+  </ul>
+ </nav>
+
+ <div id="horizontalPadding"><div id="content">
   <h1>AsyncProxy Examples</h1>
 
   <div style="color: red; font-size: 24px;">PAGE IS STILL IN CONSTRUCTION</div>
@@ -167,6 +191,7 @@ proxy.helloWorld(50000);
   
   <input type="button" onclick="demoUrgentFunctions()" value="Start urgent functions demo">
   
+  <a name="slavesidefeatures"></a>
   <h3>Slave-side features</h3>
   <p>
    On all the cases mentioned above we didn't write any slave-side code. The code of the slave class (<code>Callee</code> in the demos)
@@ -178,21 +203,18 @@ proxy.helloWorld(50000);
   </p>
   
   <hr>
-  <a name="slavesidecreator"></a>
   <h4>setSlaveSideCreator</h4>
   <p>
    TBD
   </p>
   
   <hr>
-  <a name="userdata"></a>
   <h4>Sending user data from slave to master</h4>
   <p>
    TBD
   </p>
   
   <hr>
-  <a name="beforeoperationlistener"></a>
   <h4>setBeforeOperationListener</h4>
   <p>
    TBD
@@ -216,5 +238,6 @@ proxy.helloWorld(50000);
   <script src="scripts/transferablesfrompromise.js"></script>
   <script src="scripts/transferablesfromcallback.js"></script>
   <script src="scripts/urgentfunctions.js"></script>
- </div></body>
+ </div></div></div>
+ </body>
 </html>

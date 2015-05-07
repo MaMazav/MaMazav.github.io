@@ -1,12 +1,14 @@
-body {
-	background-color: green;
-	padding: 50px 15% 50px 15%;
-	color: #004400;
+nav {
+	float: left;
+	color: white;
+	padding: 10px;
+	white-space: normal;
 }
 
-#content {
-	background-color: #EEEEBB;
-	padding: 20px 5% 20px 5%;
+body {
+	background-color: green;
+	color: #004400;
+	min-width: 1400px;
 }
 
 pre {
@@ -30,4 +32,21 @@ h1 {
 
 h3, h4 {
 	font-family: cursive;
+}
+
+.navlink {
+	color: white;
+}
+
+#verticalPadding {
+	padding: 80px 0 80px 0;
+}
+
+#horizontalPadding {
+	padding: 0 20% 0 20%;
+}
+
+#content {
+	background-color: #EEEEBB;
+	padding: 20px 5% 20px 5%;
 }
