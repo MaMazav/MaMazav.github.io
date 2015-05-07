@@ -1,0 +1,33 @@
+body {
+	background-color: green;
+	padding: 50px 15% 50px 15%;
+	color: #004400;
+}
+
+#content {
+	background-color: #EEEEBB;
+	padding: 20px 5% 20px 5%;
+}
+
+pre {
+	width: 90%;
+	margin: 20px;
+	border: 1px solid black;
+}
+
+code {
+	max-height: 250px;
+}
+
+pre, code, .hljs {
+	background-color: #DDDDAA;
+}
+
+h1 {
+	color: green;
+	font-family: fantasy;
+}
+
+h3, h4 {
+	font-family: cursive;
+}

@@ -1,0 +1,220 @@
+<html>
+ <head>
+  <title>AsyncProxy Examples</title>
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+  <link rel="stylesheet" href="styles/styles.css">
+ </head>
+ <body><div id="content">
+  <h1>AsyncProxy Examples</h1>
+
+  <div style="color: red; font-size: 24px;">PAGE IS STILL IN CONSTRUCTION</div>
+
+  <p>
+   AsyncProxy is a simple helper library enables migrating a whole javascript class to a web-worker.
+   The library supports some simple use cases which will be detailed in this page.
+  </p>
+  
+  <hr>
+  <a name="helloworld"></a>
+  <h3>AsyncProxy Hello world!</h3>
+  <p>
+   The most simple use of AsyncProxy is to instantiate a class in a web worker and call its functions. You'll need only the
+   <a href="scripts/asyncproxy.js">asyncproxy.js</a> script for that.
+  </p>
+  <p>
+   The following class will be used for the demonstrations. For our first use of AsyncProxy, Look at the helloWorld() function which may take a lot of time:
+  </p>
+  <pre><code data-src="scripts/callee.js"></code></pre>
+  <p>
+   We would like to call the helloWorld() function in a web worker. We can create a proxy class that wraps Callee class
+   using the AsyncProxy library. The following code shows how it should be done:
+  </p>
+  <pre><code data-src="scripts/asyncproxyhelloworld.js"></code></pre>
+  <p>
+   Notice the call to getEntryUrl(): When using the AsyncProxy library, you cannot use relative paths to import scripts
+   (indirectly by the AsyncProxy library or directly by importScripts() function). You can use getEntryUrl() to get an
+   absolute path of the source page. A secondary benefit of using it that you get the same results in the worker and
+   the main script context (while in a simple web-worker the relative URLs are resolved from the worker script path).
+  </p>
+  <p>
+   The use of the proxy we've just created is as easy as calling a function:
+  </p>
+  <pre><code>
+var proxy = new AsyncProxyHelloWorld({ helloWorldCtorArgument: 10000 });
+proxy.helloWorld(50000);
+  </code></pre>
+  
+  <input type="button" onclick="demoHelloWorld()" value="Hello world demo!"><br><br>
+
+  <hr>
+  <a name="subworkeremulation"></a>
+  <h3>Sub-Worker emulation for Chrome</h3>
+  <p>
+   But what if the class already uses workers internally? It should be able to spawn its sub-workers although
+   not supported at Chrome.
+  <p>
+  </p>
+   Using AsyncProxy that's not a problem. The AsyncProxy library emulates sub-workers for Chrome seamlessly.
+   Notice, however, that those workers are actually spawned from the main thread context, thus a communication
+   overhead affects the UI also.
+  </p>
+  <p>
+   Particularly, the proxied class can spawn sub-workers indirectly by using AsyncProxy library by itself, as
+   in the callSubWorker() function of the Callee class above. In addition only a minimal functionality of the
+   Worker class is implemented. Extending it should be an easy task - you are encouraged to contribute!
+  </p>
+  <input type="button" onclick="demoSubWorker()" value="Start Sub worker demo">
+  
+  <hr>
+  <a name="promise"></a>
+  <h3>Promise</h3>
+  <p>
+   If your function returns a value and you would like to migrate it to a worker, it should return it asynchronously,
+   e.g. by using Promise. Given such a function, proxying it requires only adding <code>isReturnPromise</code> property
+   to the options of the function call:
+  </p>
+  <pre><code data-src="scripts/promiseproxy.js"></code></pre>
+  <input type="button" onclick="demoPromise()" value="Start Promise demo"><br><br>
+  
+  <hr>
+  <a name="callback"></a>
+  <h3>Callbacks</h3>
+  <p>
+   If you prefer using callbacks instead of Promise, you'll have to wrap the callback argument passed to the function using
+   the <code>wrapCallback</code> function:
+  </p>
+  <pre><code data-src="scripts/callbackproxy.js"></code></pre>
+  <input type="button" onclick="demoCallback()" value="Start Callback demo">
+  <p>
+   By default, the callback created by the <code>wrapCallback</code> function will be cleared right after the first use. Additional
+   calls to the callback will raise an error. If you would like to use the callback multiple times, you should indicate it when
+   wrapping the callback and clear it when not needed anymore:
+  </p>
+  <pre><code data-src="scripts/multiplecallbackproxy.js"></code></pre>
+  <input type="button" onclick="demoMultipleCallback()" value="Start multiple-time Callback demo">
+  
+  <hr>
+  <a name="termination"></a>
+  <h3>Manual termination</h3>
+  <p>
+   Releasing a class is as easy as calling to terminate() function. Notice that if you need to do some operations on the worker side
+   when terminating the class (e.g. release resources, send information to server, etc.), you should wait for these operations to finish
+   before calling to terminate(). In some use-cases Promise may be useful here.
+  </p>
+  <p>
+   Function terminate() also closes all sub-workers (including those were spawned using Chrome sub-workers emulation).
+  </p>
+  <pre><code data-src="scripts/terminate.js"></code></pre>
+  <input type="button" onclick="demoTerminate()" value="Start terminate demo">
+  
+  <h3>Performance</h3>
+  <hr>
+  <a name="transferables"></a>
+  <h4>Transferables</h4>
+  <p>
+   If you would like to avoid the overhead of copying buffers when sending to the worker, you can use transferables ("ports"). AsyncProxy
+   supports three use-cases of transferables:
+  </p>
+  <ul>
+   <li>When sending arguments to the worker</li>
+   <li>When worker returns a promise result contains transferables</li>
+   <li>When worker calls a callback with arguments contain transferables</li>
+  </ul>
+  
+  <p>
+   To send arguments with transferables, use the <code>transferables</code> property of options object:
+  </p>
+  <pre><code data-src="scripts/transferablestoworker.js"></code></pre>
+  <input type="button" onclick="demoTransferablesToWorker()" value="Start transferables demo">
+  
+  <p>
+   The other two uses requires to know the path to transferables in the returned values. For example, in promise you should use the
+   <code>pathsToTransferablesInPromiseResult</code> property of options object:
+  </p>
+  <pre><code data-src="scripts/transferablesfrompromise.js"></code></pre>
+  <input type="button" onclick="demoTransferablesFromPromise()" value="Start promise transferables demo">
+  
+  <p>
+   Similarly you should know the paths to transferables when wrapping a callback:
+  </p>
+  <pre><code data-src="scripts/transferablesfromcallback.js"></code></pre>
+  <input type="button" onclick="demoTransferablesFromCallback()" value="Start callback transferables demo">
+  
+  <a name="buffersize"></a>
+  <h4>Out of order urgent functions</h4>
+  <p>
+   Unlike simple function calls, calling to function of remote class allocated on web worker implies communication and time overhead.
+   If a lot of function calls are performed, the message queue to the worker may contain a lot of messages and a new messages will
+   take a time to arrive. If urgent messages need to wait for all the messages in queue to be sent it might degrade performance.
+  </p>
+  <p>
+   On usual state, messages are sent according to the order of the <code>callFunction</code> calls. However if you have messages which
+   are of top priority to arrive at the class, and calling them out of order will not hurt correctness, you can call them with the
+   <code>argumentsAsArray</code> set to true.
+  </p>
+  <p>
+   By default, the AsyncProxy library will not send more than 5 function calls simultaneously, and future calls will be waiting for
+   previous calls to be sent. You can change the count of simultaneous function calls by setting the <code>functionsBufferSize</code>
+   property of the options object.
+  </p>
+  
+  <pre><code data-src="scripts/urgentfunctions.js"></code></pre>
+  
+  <p>
+   The client code of the demo below is:
+  </p>
+  <pre><code data-src="scripts/demourgentfunctions.js"></code></pre>
+  
+  <input type="button" onclick="demoUrgentFunctions()" value="Start urgent functions demo">
+  
+  <h3>Slave-side features</h3>
+  <p>
+   On all the cases mentioned above we didn't write any slave-side code. The code of the slave class (<code>Callee</code> in the demos)
+   was given and we wanted only to create a proxy for it.
+  </p>
+  <p>
+   A simple solution to write a slave-side code is to simply write it within the proxied class. However, if you would like to inject a
+   slave-side code without changing the slave class implementation the features in this section allows you to do so.
+  </p>
+  
+  <hr>
+  <a name="slavesidecreator"></a>
+  <h4>setSlaveSideCreator</h4>
+  <p>
+   TBD
+  </p>
+  
+  <hr>
+  <a name="userdata"></a>
+  <h4>Sending user data from slave to master</h4>
+  <p>
+   TBD
+  </p>
+  
+  <hr>
+  <a name="beforeoperationlistener"></a>
+  <h4>setBeforeOperationListener</h4>
+  <p>
+   TBD
+  </p>
+  
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+  <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src="scripts/asyncproxy.js"></script>
+
+  <script src="scripts/javascript.js"></script>
+  <script src="scripts/demourgentfunctions.js"></script>
+  <script src="scripts/callee.js"></script>
+
+  <script src="scripts/asyncproxyhelloworld.js"></script>
+  <script src="scripts/subworkerproxy.js"></script>
+  <script src="scripts/promiseproxy.js"></script>
+  <script src="scripts/callbackproxy.js"></script>
+  <script src="scripts/multiplecallbackproxy.js"></script>
+  <script src="scripts/terminate.js"></script>
+  <script src="scripts/transferablestoworker.js"></script>
+  <script src="scripts/transferablesfrompromise.js"></script>
+  <script src="scripts/transferablesfromcallback.js"></script>
+  <script src="scripts/urgentfunctions.js"></script>
+ </div></body>
+</html>
