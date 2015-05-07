@@ -3,7 +3,7 @@
 var AsyncProxyHelloWorld = (function AsyncProxyHelloWorldClosure() {
     function AsyncProxyHelloWorld(ctorArgument) {
         var args = [ctorArgument];
-        var scriptsToImport = AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/callee.js';
+        var scriptsToImport = AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/callee.js';
         this._workerHelper = new AsyncProxy.AsyncProxyMaster([scriptsToImport], 'Callee', args);
     }
     

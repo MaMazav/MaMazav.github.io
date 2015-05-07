@@ -2,7 +2,7 @@
 
 var UrgentFunctionsProxy = (function UrgentFunctionsProxyClosure() {
     function UrgentFunctionsProxy() {
-        var scriptsToImport = [AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/callee.js'];
+        var scriptsToImport = [AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/callee.js'];
         var ctorArgs = [];
         this._workerHelper = new AsyncProxy.AsyncProxyMaster(scriptsToImport, 'Callee', ctorArgs, {
             functionsBufferSize: 3

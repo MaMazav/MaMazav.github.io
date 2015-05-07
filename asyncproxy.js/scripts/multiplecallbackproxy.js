@@ -2,7 +2,7 @@
 
 var MultipleCallbackProxy = (function MultipleCallbackProxyClosure() {
     function MultipleCallbackProxy() {
-        var scriptsToImport = [AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/callee.js'];
+        var scriptsToImport = [AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/callee.js'];
         this._workerHelper = new AsyncProxy.AsyncProxyMaster(scriptsToImport, 'Callee');
     }
     

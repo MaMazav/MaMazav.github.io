@@ -3,7 +3,7 @@
 var SubWorkerProxy = (function SubWorkerProxyClosure() {
     function SubWorkerProxy() {
         var scriptsToImport = [
-            AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/callee.js',
+            AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/callee.js',
             AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/subworkerproxy.js'];
         this._workerHelper = new AsyncProxy.AsyncProxyMaster(scriptsToImport, 'Callee');
     }
