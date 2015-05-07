@@ -4,7 +4,7 @@ var TerminateProxy = (function TerminateProxyClosure() {
     function TerminateProxy() {
         var scriptsToImport = [
             AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/callee.js',
-            AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/subworkerproxy.js'];
+            AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/subworkerproxy.js'];
         this._workerHelper = new AsyncProxy.AsyncProxyMaster(scriptsToImport, 'Callee');
     }
     
