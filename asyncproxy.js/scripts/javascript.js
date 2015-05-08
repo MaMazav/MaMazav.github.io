@@ -72,3 +72,15 @@ function demoTransferablesFromCallback() {
     
     proxy.returnArrayBufferByCallback(function() { });
 }
+
+function demoCustomCreation() {
+    var proxy = new CustomCreationProxy(5);
+    
+    proxy.someFunction(7).then(function(result) {
+        alert('Function returned ' + result);
+    });
+}
+
+function demoUserData() {
+    var proxy = new UserDataMaster();
+}

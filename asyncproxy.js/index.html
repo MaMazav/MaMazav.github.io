@@ -203,16 +203,48 @@ proxy.helloWorld(50000);
   </p>
   
   <hr>
-  <h4>setSlaveSideCreator</h4>
+  <h4>Custom creation of slave side instance</h4>
   <p>
-   TBD
+   Until now we've seen a simple way to control the instance created on the slave side. The creation was done by passing a string indicates
+   the class constructor name, and arguments array. If you would like to set the environment or execute some logic in the slave side before
+   creating the instance you cannot do that using the standard API.
   </p>
+  <p>
+   The setSlaveSideCreator allows you to do that - instead of defining a class which its instance will be created, you can provide a factory
+   function which will create your instance using any logic you would like to and actually enables to define any way you would like to
+   instantiate the class.
+  </p>
+
+  <p>
+   The slave-side script should call the setSlaveSideCreator function:
+  </p>
+  <pre><code data-src="scripts/customcreationslave.js"></code></pre>
+  
+  <p>
+   The master-side proxy definition should indicate that the above script is needed to be imported on the slave side:
+  </p>
+  <pre><code data-src="scripts/customcreationmaster.js"></code></pre>
+  
+  <input type="button" onclick="demoCustomCreation()" value="Start custom creation demo">
   
   <hr>
   <h4>Sending user data from slave to master</h4>
   <p>
-   TBD
+   The only option to send data from slave to master is by using callback arguments sent by the master or by Promises.
+   It means that the master should initiate an action to allow the slave to send data. The <code>sendUserDataToMaster</code>
+   overcomes it.
   </p>
+  <p>
+   The slave only need to send the data whenever he would like to:
+  </p>
+  <pre><code data-src="scripts/userdataslave.js"></code></pre>
+  
+  <p>
+   The master can receive the sent data by setting a handler for this:
+  </p>
+  <pre><code data-src="scripts/userdatamaster.js"></code></pre>
+  
+  <input type="button" onclick="demoUserData()" value="Start user-data demo">
   
   <hr>
   <h4>setBeforeOperationListener</h4>
@@ -238,6 +270,8 @@ proxy.helloWorld(50000);
   <script src="scripts/transferablesfrompromise.js"></script>
   <script src="scripts/transferablesfromcallback.js"></script>
   <script src="scripts/urgentfunctions.js"></script>
+  <script src="scripts/customcreationmaster.js"></script>
+  <script src="scripts/userdatamaster.js"></script>
  </div></div></div>
  </body>
 </html>
