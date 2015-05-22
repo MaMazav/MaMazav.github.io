@@ -1,14 +1,5 @@
 'use strict';
 
-hljs.initHighlightingOnLoad();
-
-$('code').each(function() {
-	var url = this.getAttribute('data-src');
-    if (url) {
-        $(this).load(url);
-    }
-});
-
 function demoHelloWorld() {
 	var proxy = new AsyncProxyHelloWorld({ helloWorldCtorArgument: 10000 });
 	proxy.helloWorld(50000);

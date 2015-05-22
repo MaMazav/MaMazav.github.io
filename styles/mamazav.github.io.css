@@ -6,8 +6,6 @@ nav {
 }
 
 body {
-	background-color: green;
-	color: #004400;
 	min-width: 1400px;
 }
 
@@ -21,21 +19,12 @@ code {
 	max-height: 250px;
 }
 
-pre, code, .hljs {
-	background-color: #DDDDAA;
-}
-
 h1 {
-	color: green;
 	font-family: fantasy;
 }
 
 h3, h4 {
 	font-family: cursive;
-}
-
-.navlink {
-	color: white;
 }
 
 #verticalPadding {
@@ -47,6 +36,5 @@ h3, h4 {
 }
 
 #content {
-	background-color: #EEEEBB;
 	padding: 20px 5% 20px 5%;
 }

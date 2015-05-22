@@ -1,0 +1,20 @@
+body {
+	background-color: green;
+	color: #004400;
+}
+
+.hljs {
+	background-color: #DDDDAA;
+}
+
+h1 {
+	color: green;
+}
+
+#content {
+	background-color: #EEEEBB;
+}
+
+.navlink {
+	color: white;
+}

@@ -1,0 +1,214 @@
+<html>
+ <head>
+  <title>ResourceScheduler Examples</title>
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+  <link rel="stylesheet" href="../styles/mamazav.github.io.css">
+  <link rel="stylesheet" href="styles/resourceschedulerpage.css">
+ </head>
+ <body>
+  <a href="https://github.com/MaMazav/ResourceScheduler.js">
+   <img
+    style="position: absolute; top: 0; right: 0; border: 0;"
+	src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67"
+	alt="Fork me on GitHub"
+	data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png">
+  </a>
+  
+<div id="verticalPadding">
+
+ <nav>
+  <ul>
+   <li><a class="navlink" href="#terminology">Terminology</a></li>
+   <li><a class="navlink" href="#createscheduler">Creating a scheduler</a></li>
+   <li><a class="navlink" href="#enqueuejob">Enqueue job to scheduler</a></li>
+   <li><a class="navlink" href="#finishjob">Finishing a job and release resource</a></li>
+   <li><a class="navlink" href="#yield">Yielding a resource</a></li>
+   <li><a class="navlink" href="#prioritizer">Implementing prioritizer for PriorityScheduler</a></li>
+   <li><a class="navlink" href="#priorityscheduleroptions">PriorityScheduler options</a></li>
+   <li><a class="navlink" href="#abort">Using prioritizer to abort waiting jobs</a></li>
+  </ul>
+ </nav>
+
+ <div id="horizontalPadding"><div id="content">
+  <h1>ResourceScheduler Examples</h1>
+
+  <div style="color: purple; font-size: 24px;">PAGE IS STILL IN CONSTRUCTION</div>
+
+  <p>
+   ResourceScheduler.js is a Javascript library for tasks scheduling. Useful for sue-cases of tasks
+   that require a lot of resource like CPU, network bandwidth, etc. The library is espacially useful
+   for tasks which can be prioritized.
+  </p>
+  
+  <hr>
+  <a name="terminology"></a>
+  <h3>Terminology</h3>
+  
+  <h4>Scheduler</h4>
+  <p>
+   TBD
+  </p>
+  
+  <h4>Resource</h4>
+  <p>
+   TBD
+  </p>
+  
+  <h4>Job</h4>
+  <p>
+   TBD
+  </p>
+  
+  <h4>Queue</h4>
+  <p>
+   TBD
+  </p>
+  
+  <h4>Priority</h4>
+  <p>
+   TBD
+  </p>
+  
+  <h4>Job Context</h4>
+  <p>
+   TBD
+  </p>
+  
+  <hr>
+  <a name="createscheduler"></a>
+  <h3>Creating a scheduler</h3>
+  
+  <p>
+   To begin the work with the ResourceScheduler.js library, include <a href="scripts/resourcescheduler.js">
+   resourcescheduler.js</a> script in your page. Then you have two types of scheduler available: LifoScheduler
+   and PriorityScheduler.
+  </p>
+  
+  <p>
+   The most simplest scheduler to use is LifoScheduler. It just schedule the most recent job in queue when it
+   has an available resource. The LifoScheduler constructor accepts two mandatory parameters:
+  </p>
+  <ul>
+   <li>
+    createResource - a non-parametric function that returns a resource. On the beginning of the execution,
+    when new jobs are to be scheduled but resources has not been allocated yet, the LifoScheduler will use this
+    function to create the resources.
+   </li>
+   <li>
+    jobsLimit - count of available resources (i.e. maximum amount of parallel jobs).
+   </li>
+  </ul>
+  <p>
+   The LifoScheduler is useful if jobs do not have special priority over each other, and you just want to limit
+   the amount of parallel jobs.
+  </p>
+  <pre><code>
+   var scheduler = new LifoScheduler(
+    function createResource() {
+	 return new DbConnection();
+	},
+	/*jobsLimit=*/4);
+  </code></pre>
+
+  <p>
+   The PriorityScheduler is a more complicated scheduler. It schedules the job accoding to some priority defined
+   by the user. Its constructor accepts three mandatory parameters:
+  </p>
+  <ul>
+   <li>
+    createResource - as in LifoScheduler.
+   </li>
+   <li>
+    jobsLimit - as in LifoScheduler.
+   </li>
+   <li>
+    prioritizer - an object contains getPriority method. We will demonstrate it in the <a href="#prioritizer">
+    prioritizer</a> section.
+   </li>
+  </ul>
+  <p>
+   In addition, a fourth optional argument can contain more options. They will be discussed in the
+   <a href="#priorityscheduleroptions">PriorityScheduler options</a> section.
+  </p>
+
+  <hr>
+  <a name="enqueuejob"></a>
+  <h3>Enqueue job to scheduler</h3>
+  <p>
+   TBD
+  </p>
+  
+  <pre><code data-src="scripts/.js"></code></pre>
+
+  <hr>
+  <a name="finishjob"></a>
+  <h3>Finishing a job and release resource</h3>
+  <p>
+   TBD
+  </p>
+  
+  <pre><code data-src="scripts/.js"></code></pre>
+  
+  <hr>
+  <a name="yield"></a>
+  <h3>Yielding a resource</h3>
+  <p>
+   TBD
+  </p>
+  
+  <pre><code data-src="scripts/.js"></code></pre>
+
+  <hr>
+  <a name="prioritizer"></a>
+  <h3>Implementing prioritizer for PriorityScheduler</h3>
+  <p>
+   TBD
+  </p>
+  
+  <pre><code data-src="scripts/.js"></code></pre>
+  
+  <hr>
+  <a name="priorityscheduleroptions"></a>
+  <h3>PriorityScheduler options</h3>
+  <p>
+   TBD
+  </p>
+  <ul>
+   <li>
+    showLog
+   </li>
+   <li>
+    schedulerName
+   </li>
+   <li>
+    numNewJobs
+   </li>
+   <li>
+    numJobsBeforeRerankOldPriorities
+   </li>
+   <li>
+    resourcesGuaranteedForHighPriority
+   </li>
+   <li>
+    highPriorityToGuaranteeResource
+   </li>
+  </ul>
+  
+  <hr>
+  <a name="abort"></a>
+  <h3>Using prioritizer to abort waiting jobs</h3>
+  <p>
+   TBD
+  </p>
+  
+  <pre><code data-src="scripts/.js"></code></pre>
+  
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+  <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src="../scripts/mamazav.github.io.js"></script>
+  
+  <script src="scripts/resourcescheduler.js"></script>
+  <script src="scripts/resourceschedulerpage.js"></script>
+ </div></div></div>
+ </body>
+</html>
