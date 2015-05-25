@@ -18,12 +18,13 @@
 
  <nav>
   <ul>
-   <li><a class="navlink" href="#terminology">Terminology</a></li>
+   <!--<li><a class="navlink" href="#terminology">Terminology</a></li>-->
    <li><a class="navlink" href="#createscheduler">Creating a scheduler</a></li>
    <li><a class="navlink" href="#enqueuejob">Enqueue job to scheduler</a></li>
    <li><a class="navlink" href="#finishjob">Finishing a job and release resource</a></li>
    <li><a class="navlink" href="#yield">Yielding a resource</a></li>
    <li><a class="navlink" href="#prioritizer">Implementing prioritizer for PriorityScheduler</a></li>
+   <li><a class="navlink" href="#priorityscheduleralg">PriorityScheduler's Scheduling algorithm</a></li>
    <li><a class="navlink" href="#priorityscheduleroptions">PriorityScheduler options</a></li>
    <li><a class="navlink" href="#abort">Using prioritizer to abort waiting jobs</a></li>
   </ul>
@@ -40,6 +41,7 @@
    for tasks which can be prioritized.
   </p>
   
+  <!--
   <hr>
   <a name="terminology"></a>
   <h3>Terminology</h3>
@@ -73,7 +75,7 @@
   <p>
    TBD
   </p>
-  
+  -->
   <hr>
   <a name="createscheduler"></a>
   <h3>Creating a scheduler</h3>
@@ -86,10 +88,11 @@
   
   <p>
    The most simplest scheduler to use is LifoScheduler. It just schedule the most recent job in queue when it
-   has an available resource. The LifoScheduler constructor accepts two mandatory parameters:
+   has an available resource. The LifoScheduler constructor accepts two mandatory arguments:
   </p>
   <ul>
    <li>
+    <a name="createresource"></a>
     createResource - a non-parametric function that returns a resource. On the beginning of the execution,
     when new jobs are to be scheduled but resources has not been allocated yet, the LifoScheduler will use this
     function to create the resources.
@@ -104,15 +107,15 @@
   </p>
   <pre><code>
    var scheduler = new LifoScheduler(
-    function createResource() {
-	 return new DbConnection();
-	},
-	/*jobsLimit=*/4);
+     function createResource() {
+       return new DbConnection();
+     },
+     /*jobsLimit=*/4);
   </code></pre>
 
   <p>
    The PriorityScheduler is a more complicated scheduler. It schedules the job accoding to some priority defined
-   by the user. Its constructor accepts three mandatory parameters:
+   by the user. Its constructor accepts three mandatory arguments:
   </p>
   <ul>
    <li>
@@ -135,62 +138,225 @@
   <a name="enqueuejob"></a>
   <h3>Enqueue job to scheduler</h3>
   <p>
-   TBD
+   After creating a scheduler, we can request the scheduler to schedule a job. Enqueueing a job is performed by
+   calling the function enqueueJob with three arguments which declare the job:
+  </p>
+  <ul>
+   <li>
+    jobFunc - a function which actually performs the job. The function should accept two arguments - a resource
+	(created by the <a href="#createresource">createResource</a> function) and the jobContext passed as the second
+	argument.
+   </li>
+   <li>
+    jobContext - an object declaring the specific job. The job context is used only by the jobFunc - the scheduler
+	doesn't care about its content. If the jobFunc has enough information information to execute the job and it doesn't
+	need the job context, this argument may be even ignored.
+   </li>
+   <li>
+    jobAbortedFunc - a function that will be called if the job has been <a href="#abort">aborted</a> before scheduling.
+	This argument is also not mandatory, if the job may not be aborted.
+   </li>
+  </ul>
+  <p>
+   The secheduler holds the jobFunc and jobContext until the jobFunc is executed. Right after executing the function, the
+   scheduler has no information about the executed job until either <a href="#finishjob">finishJob</a> or
+   <a href="#yield">yield</a> functions are called.
   </p>
   
-  <pre><code data-src="scripts/.js"></code></pre>
+  <pre><code>
+   scheduler.enqueueJob(
+     function jobFunc(dbConnection, jobContext) {
+       var result = dbConnection.executeQuery(jobContext.sql);
+       jobContext.callback(result);
+     },
+     /*jobContext=*/{
+       sql: 'Select Name from Employees where salary > 5000',
+	   table: 'Employees',
+       callback: function(employees) {
+         console.log('Got ' + employees.length + ' employees');
+       }
+   );
+  </code></pre>
 
   <hr>
   <a name="finishjob"></a>
   <h3>Finishing a job and release resource</h3>
   <p>
-   TBD
+   Once the job is done, the jobFunc is expected to return the resource back to the scheduler so the scheduler know it is
+   released and more jobs may be scheduled. It is done by calling the finishJob function.
+  </p>
+  <p>
+   The finishJob function accepts also a second argument of the jobContext. However, in the usual scenario it is not a mandatory
+   argument; the jobContext is used only when showLog option is true in the <a href="#priorityscheduleroptions">PriorityScheduler
+   constructor</a> and is used only to log the priority of the job.
+  </p>
+  <p>
+   After calling the finishJob function, the resource should not be used anymore as it may be passed to another job for its use.
   </p>
   
-  <pre><code data-src="scripts/.js"></code></pre>
+  <pre><code>
+   scheduler.enqueueJob(
+     function jobFunc(dbConnection, jobContext) {
+       var result = dbConnection.executeQuery(jobContext.sql);
+       scheduler.finishJob(dbConnection, jobContext);
+       jobContext.callback(result);
+     },
+     /*jobContext=*/{
+       sql: 'Select Name from Owners where stocks >= 51',
+	   table: 'Owners',
+       callback: function(owners) {
+         console.log('Got ' + owners.length + ' owners');
+       }
+   );
+  </code></pre>
   
   <hr>
   <a name="yield"></a>
   <h3>Yielding a resource</h3>
   <p>
-   TBD
+   A job may decide to yield the resource in favour of higher priority jobs. To do that, simply call the tryYield function.
+   The possible responses of the scheduler are:
   </p>
+  <ul>
+   <li>
+    The scheduler may decide to not yield the resource but let it continue running. In such situation the tryYield function
+    will return false (This is the only possible response of the LifoScheduler).
+   </li>
+   <li>
+    The scheduler may decide to yield the job. Then the jobYieldedFunc callback will be executed, and the job is re-enqueued
+	with the jobContinueFunc and jobAbortedFunc for later scheduling. After the jobYieldedFunc called, the resource should
+	not be used anymore. Notice that the later jobContinueFunc function may be passed a different resource. The new resource
+	is the only one that should be used.
+   </li>
+   <li>
+    The scheduler may decide to abort the job (see <a href="#abort">Using prioritizer to abort waiting jobs</a>). Then the
+	jobAbortedFunc callback will be executed. After the jobAbortedFunc called, the resource should not be used anymore. 
+   </li>
+  </ul>
+  <p>
+   Notice that even if the jobYieldedFunc was called, the later call to jobContinueFunc (or jobAbortedFunc in case of abort)
+   may be called before the tryYield function has been returned. It may happen if other jobs scheduled during the tryYield
+   function has been finished immediately. For that reason, it is not recommended to perform any operation related to the job
+   after the tryYield function. Instead pass those operations to the end of the jobYieldedFunc callback.
+  </p>
+  <p>
+   The tryYield function accepts five arguments: the four mentioned callbacks and the resource passed in the jobFunc:
+  </p>
+  <ul>
+   <li>
+    jobContinueFunc - a callback to execute when the function is rescheduled (after yielded). Its argument are identical to
+	the jobFunc function passed to the <a href="#enqueuejob">enqueueJob</a> function.
+   </li>
+   <li>jobContext - the context of the job.</li>
+   <li>
+    jobAbortedFunc - a callback to execute if the job is aborted. Identical to the jobAbortedFunc passed to the
+    <a href="#enqueuejob">enqueueJob</a> function.
+   </li>
+   <li>jobYieldedFunc - a callback to execute if the job is yielded. It is passed only a single argument - the jobContext.</li>
+   <li>
+    resource - the resource originally passed to the jobFunc function that was passed to the <a href="#enqueuejob">enqueueJob</a>
+    function.
+   </li>
+  </ul>
   
-  <pre><code data-src="scripts/.js"></code></pre>
-
   <hr>
   <a name="prioritizer"></a>
   <h3>Implementing prioritizer for PriorityScheduler</h3>
   <p>
-   TBD
+   If the various jobs have different priorities, one can use the PriorityScheduler. The constructor of the PriorityScheduler
+   accepts a third argument, prioritizer, which is an object contains a getPriority method. This method accepts the job context
+   as an argument and returns the job's priority, which is a non-negative number. As higher the number, as higher the job priority.
+   The priority of a given job may change over time. Notice that a large number of priorities is not recommended, as it may
+   degrade performance.
   </p>
+  <p>
+   For example, the following prioritizer may match to the jobs demonstrated in the above snippets. The PriorityScheduler which
+   accepts the following prioritizer will schedule queries from table 'Owners' before queries from table 'Employees':
+  </p>
+  <pre><code>
+   var scheduler = new PriorityScheduler(
+     function createResource() {
+       return new DbConnection();
+     },
+     /*jobsLimit=*/4,
+     /*prioritizer=*/ { getPriority: function(jobContext) {
+        switch (jobContext.table) {
+          case 'Employees':
+            return 1;
+          case 'Owners':
+            return 2;
+          default:
+            return 0;
+        }
+     });
+  </code></pre>
   
-  <pre><code data-src="scripts/.js"></code></pre>
+  <hr>
+  <a name="priorityscheduleralg"></a>
+  <h3>PriorityScheduler's Scheduling algorithm</h3>
+  <p>
+   First, it is important to understand that the PriorityScheduler does not guarantee to schedule high priority jobs first. The
+   scheduler should improve performance, thus it is limited to perform short and efficient operations regularly. For the scenario
+   we used the PriorityScheduler, we found it useful enough to compare the priorities of only the last enqueued jobs and schedule
+   one of them (the number of the new enqueued jobs considered is controlled by the option argument
+   <a href="#numnewjobs">numNewJobs</a>). If you have a different scenario you are invited to contribute support of another behaviour.
+   Older jobs are scheduled only after the new ones has been scheduled, or after a "rerank" is performed (see below).
+  </p>
+  <p>
+   Second, if the priority of jobs change over time, then the probability that highest priority job will be scheduled first is
+   decreased. For performance reason the PriorityScheduler sorts the jobs when enqueued and do not recalculate priorities of jobs
+   that their priorities were already calculated as low (that's true for old jobs only; for the new jobs, as described in the previous
+   paragraph, the priority is recalculated each time that a resource is freed).
+  </p>
+  <p>
+   To partially overcome some problems raised because of the above mentioned behaviour, the PriorityScheduler performs "rerank" of
+   priorities after some jobs have been scheduled. The "rerank" recalculates priorities of all jobs in the system, and takes the highest
+   priority jobs to be the "newest jobs" so they will be scheduled first. The time to perform "rerank" is determined by the number of
+   scheduled jobs and may be controlled by the <a href="#numJobsBeforeRerankOldPriorities">numJobsBeforeRerankOldPriorities</a> argument.
+  </p>
+  <p>
+   Finally, the PriorityScheduler may not schedule low priority jobs even if a resource is free and no higher priority jobs exist. It may
+   happen if the programmer chose that higher priority jobs will always be guaranteed free resources. In such situation, lower priority job
+   will be scheduled only if after scheduling there will still be enough free resources waiting for potential higher priority jobs. This
+   option is controlled by the <a href="#resourcesGuaranteedForHighPriority"></a> and <a href="#highPriorityToGuaranteeResource"></a> options.
+   This mechanism is not active by default (Values of zero in those options implicitly cause it to be inactive).
+  </p>
   
   <hr>
   <a name="priorityscheduleroptions"></a>
   <h3>PriorityScheduler options</h3>
   <p>
-   TBD
+   The fourth argument of the PriorityScheduler constructor, is an option object that may contain the following properties:
   </p>
   <ul>
    <li>
-    showLog
+    <a name="showlog"></a>
+    showLog - Boolean. Determines if to show log to the console. Defaults to false.
    </li>
    <li>
-    schedulerName
+    <a name="schedulername"></a>
+    schedulerName - String. A scheduler name to show in the log messages (effective only if showLog = true).
    </li>
    <li>
-    numNewJobs
+    <a name="numnewjobs"></a>
+    numNewJobs - Number. Determines the number of the new jobs which are to be scheduled first (see
+	<a href="#priorityscheduleralg">PriorityScheduler's Scheduling algorithm</a> section). Defaults to 20.
    </li>
    <li>
-    numJobsBeforeRerankOldPriorities
+    <a name="numjobsbeforererankoldpriorities"></a>
+    numJobsBeforeRerankOldPriorities - Number. Determines how many jobs will be scheduled before a "rerank"
+	will be performed (see <a href="#priorityscheduleralg">PriorityScheduler's Scheduling algorithm</a>
+	section). Defaults to 20.
    </li>
    <li>
-    resourcesGuaranteedForHighPriority
+    <a name="resourcesguaranteedforhighpriority"></a>
+    resourcesGuaranteedForHighPriority - Number. Determines the amount of resources to guarantee for potential
+	high priority jobs (see <a href="#priorityscheduleralg">PriorityScheduler's Scheduling algorithm</a>
+	section). Defaults to 0.
    </li>
    <li>
-    highPriorityToGuaranteeResource
+    <a name="highprioritytoguaranteeresource"></a>
+    highPriorityToGuaranteeResource - Number. The minimal priority to guarantee resources for. Defaults to 0.
    </li>
   </ul>
   
@@ -198,10 +364,13 @@
   <a name="abort"></a>
   <h3>Using prioritizer to abort waiting jobs</h3>
   <p>
-   TBD
+   To cause a job to be aborted, the prioritizer just need to return a negative value in the getPriority function
+   when accepting the requested job.
   </p>
-  
-  <pre><code data-src="scripts/.js"></code></pre>
+  <p>
+   A job which has already been scheduled may not be aborted. Only jobs that are waiting for scheduling may be
+   aborted. Jobs which have been yielded and waiting for rescheduling may also be aborted.
+  </p>
   
   <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
   <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
