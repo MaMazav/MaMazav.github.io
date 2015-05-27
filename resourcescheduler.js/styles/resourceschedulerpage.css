@@ -18,3 +18,7 @@ h1 {
 .navlink {
 	color: #BBEEEE;
 }
+
+.columnsForm {
+	display: inline-block;
+}

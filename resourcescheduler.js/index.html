@@ -21,12 +21,13 @@
    <!--<li><a class="navlink" href="#terminology">Terminology</a></li>-->
    <li><a class="navlink" href="#createscheduler">Creating a scheduler</a></li>
    <li><a class="navlink" href="#enqueuejob">Enqueue job to scheduler</a></li>
-   <li><a class="navlink" href="#finishjob">Finishing a job and release resource</a></li>
+   <li><a class="navlink" href="#jobdone">Finishing a job and release resource</a></li>
    <li><a class="navlink" href="#yield">Yielding a resource</a></li>
    <li><a class="navlink" href="#prioritizer">Implementing prioritizer for PriorityScheduler</a></li>
    <li><a class="navlink" href="#priorityscheduleralg">PriorityScheduler's Scheduling algorithm</a></li>
    <li><a class="navlink" href="#priorityscheduleroptions">PriorityScheduler options</a></li>
    <li><a class="navlink" href="#abort">Using prioritizer to abort waiting jobs</a></li>
+   <li><a class="navlink" href="#demo">Demo!</a></li>
   </ul>
  </nav>
 
@@ -159,8 +160,8 @@
   </ul>
   <p>
    The secheduler holds the jobFunc and jobContext until the jobFunc is executed. Right after executing the function, the
-   scheduler has no information about the executed job until either <a href="#finishjob">finishJob</a> or
-   <a href="#yield">yield</a> functions are called.
+   scheduler has no information about the executed job until either <a href="#jobdone">jobDone</a> or
+   <a href="#yield">tryYield</a> functions are called.
   </p>
   
   <pre><code>
@@ -179,26 +180,26 @@
   </code></pre>
 
   <hr>
-  <a name="finishjob"></a>
+  <a name="jobDone"></a>
   <h3>Finishing a job and release resource</h3>
   <p>
    Once the job is done, the jobFunc is expected to return the resource back to the scheduler so the scheduler know it is
-   released and more jobs may be scheduled. It is done by calling the finishJob function.
+   released and more jobs may be scheduled. It is done by calling the jobDone function.
   </p>
   <p>
-   The finishJob function accepts also a second argument of the jobContext. However, in the usual scenario it is not a mandatory
+   The jobDone function accepts also a second argument of the jobContext. However, in the usual scenario it is not a mandatory
    argument; the jobContext is used only when showLog option is true in the <a href="#priorityscheduleroptions">PriorityScheduler
    constructor</a> and is used only to log the priority of the job.
   </p>
   <p>
-   After calling the finishJob function, the resource should not be used anymore as it may be passed to another job for its use.
+   After calling the jobDone function, the resource should not be used anymore as it may be passed to another job for its use.
   </p>
   
   <pre><code>
    scheduler.enqueueJob(
      function jobFunc(dbConnection, jobContext) {
        var result = dbConnection.executeQuery(jobContext.sql);
-       scheduler.finishJob(dbConnection, jobContext);
+       scheduler.jobDone(dbConnection, jobContext);
        jobContext.callback(result);
      },
      /*jobContext=*/{
@@ -372,12 +373,80 @@
    aborted. Jobs which have been yielded and waiting for rescheduling may also be aborted.
   </p>
   
+  <hr>
+  <a name="demo"></a>
+  <h3>Demo</h3>
+  <p>
+   The following demo shows the basic usage of the PriorityScheduler.
+  </p>
+  <p>
+   Let's begin with setting the environment for the job scheduling:
+  </p>
+  <pre><code data-src="scripts/demoinitialization.js"></code></pre>
+  
+  <p>
+   In the above code, the PriorityScheduler constructor was passed the createResource and prioritizer arguments
+   which are defined below. The createResource function defines a stub for a Database connection. The prioritizer
+   defines that the priority of the job is defined by number of queries remaining for the job (using data that
+   will be bookkeeped into the jobContext):
+  </p>
+  <pre><code data-src="scripts/demostubs.js"></code></pre>
+  
+  <p>
+   Now that we have the environment we can implement the job itself. In our example, the job will perform some
+   queries to the Database. The following code performs a single query:
+  </p>
+  <pre><code data-src="scripts/jobactualwork.js"></code></pre>
+  
+  <p>
+   And a simple implementation of a job can use the above code:
+  </p>
+  <pre><code data-src="scripts/simplejob.js"></code></pre>
+  
+  <p>
+   Finally, if we run the above code, we get that the code does not preserve the priorities we defined. That's
+   because after a job was scheduled it will hold the resource until performing all queries, although its priority
+   degrades when the job performs more and more queries. To overcome this problem, we may use the tryYield() function:
+  </p>
+  <pre><code data-src="scripts/yieldablejob.js"></code></pre>
+  
+  <p>
+   To run the abvoe demo code, set the parameters as you wish and execute the demo.
+  </p>
+  
+  <div class="columnsForm"><table>
+   <tr><td>newJobEveryMs</td><td><input id="newJobEveryMs" type="text" value="500"></td></tr>
+   <tr><td>maxNumQueriesPerJob</td><td><input id="maxNumQueriesPerJob" type="text" value="5"></td></tr>
+   <tr><td>jobsLimit</td><td><input id="jobsLimit" type="text" value="3"></td></tr>
+   <tr><td>numNewJobs</td><td><input id="numNewJobs" type="text" value="10"></td></tr>
+  </table></div>
+  <div class="columnsForm"><table>
+   <tr><td>numJobsBeforeRerankOldPriorities</td><td><input id="numJobsBeforeRerankOldPriorities" type="text" value="10"></td></tr>
+   <tr><td>resourcesGuaranteedForHighPriority</td><td><input id="resourcesGuaranteedForHighPriority" type="text" value="2"></td></tr>
+   <tr><td>highPriorityToGuaranteeResource</td><td><input id="highPriorityToGuaranteeResource" type="text" value="4"></td></tr>
+   <tr>
+    <td>useYield</td>
+	<td>
+	 <input id="useYield" type="checkbox" value="true">
+	 <label for="useYield">Use yield</label>
+	</td>
+   </tr>
+  </table></div>
+  
+  <br><input type="button" value="Start demo!" id="demoButton" onclick="onDemoButton()">
+  
   <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
   <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
   <script src="../scripts/mamazav.github.io.js"></script>
   
   <script src="scripts/resourcescheduler.js"></script>
   <script src="scripts/resourceschedulerpage.js"></script>
+  
+  <script src="scripts/demoinitialization.js"></script>
+  <script src="scripts/demostubs.js"></script>
+  <script src="scripts/jobactualwork.js"></script>
+  <script src="scripts/simplejob.js"></script>
+  <script src="scripts/yieldablejob.js"></script>
  </div></div></div>
  </body>
 </html>
