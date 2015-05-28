@@ -10,7 +10,7 @@ var MultipleCallbackProxy = (function MultipleCallbackProxyClosure() {
         var workerHelper = this._workerHelper;
         
         var wrappedCallback = this._workerHelper.wrapCallback(
-            internalCallbackForClear, 'someNameForErrorMessages', { isMultipleTimeCallback: true });
+            internalCallbackForClear, 'someNameForUserEvents', { isMultipleTimeCallback: true });
         
         var args = [wrappedCallback];
         this._workerHelper.callFunction('asyncFunctionWithCallbackMultiple', args);

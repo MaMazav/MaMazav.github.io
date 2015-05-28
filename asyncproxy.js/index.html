@@ -231,7 +231,7 @@ proxy.helloWorld(50000);
   <hr>
   <h4>Sending user data from slave to master</h4>
   <p>
-   The only option to send data from slave to master is by using callback arguments sent by the master or by Promises.
+   Until now, the only option to send data from slave to master is by using callback arguments sent by the master or by Promises.
    It means that the master should initiate an action to allow the slave to send data. The <code>sendUserDataToMaster</code>
    overcomes it.
   </p>
@@ -250,8 +250,21 @@ proxy.helloWorld(50000);
   <hr>
   <h4>setBeforeOperationListener</h4>
   <p>
-   TBD
+   The slave is able to listen events happen on its side. It is done by providing a listener function to
+   <code>setBeforeOperationListener</code> method.
   </p>
+  <p>
+   The first argument that the listener function is the event type. Currently the only possible event type is 'callback', and it will
+   be called before any time a callback is called by the slave instance. In case of callback the second argument of the listener function
+   is the callback name as was defined by the <a href="#callback">wrapCallback</a>, and the third argument is the arguments passed to the
+   callback.
+  </p>
+  <p>
+   It is easy to extends the AsyncProxy.js implementation to support more types of events.
+  </p>
+  <pre><code data-src="scripts/beforeoperationlistenerslave.js"></code></pre>
+  
+  <input type="button" onclick="demoSetBeforeOperationListener()" value="Start before-operation-listener demo">
   
   <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
   <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
@@ -275,6 +288,7 @@ proxy.helloWorld(50000);
   <script src="scripts/urgentfunctions.js"></script>
   <script src="scripts/customcreationmaster.js"></script>
   <script src="scripts/userdatamaster.js"></script>
+  <script src="scripts/beforeoperationlistenermaster.js"></script>
  </div></div></div>
  </body>
 </html>

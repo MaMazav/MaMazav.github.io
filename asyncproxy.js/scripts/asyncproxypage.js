@@ -75,3 +75,8 @@ function demoCustomCreation() {
 function demoUserData() {
     var proxy = new UserDataMaster();
 }
+
+function demoSetBeforeOperationListener() {
+    var proxy = new BeforeOperationListener();
+    proxy.asyncFunctionWithCallback(function callback() { });
+}

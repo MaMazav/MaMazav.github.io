@@ -8,7 +8,7 @@ var CallbackProxy = (function CallbackProxyClosure() {
     
     CallbackProxy.prototype.asyncFunctionWithCallback = function asyncFunctionWithCallback(callback) {
         var wrappedCallback = this._workerHelper.wrapCallback(
-            callback, 'someNameForErrorMessages');
+            callback, 'someNameForUserEvents');
         
         var args = [wrappedCallback];
         this._workerHelper.callFunction('asyncFunctionWithCallback', args);
