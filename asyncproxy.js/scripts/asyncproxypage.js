@@ -80,3 +80,8 @@ function demoSetBeforeOperationListener() {
     var proxy = new BeforeOperationListener();
     proxy.asyncFunctionWithCallback(function callback() { });
 }
+
+function demoScriptsToImportPool() {
+	var proxy = new ProxyWithImportDirective({ helloWorldCtorArgument: 10000 });
+	proxy.helloWorld(50000);
+}
