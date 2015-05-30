@@ -1,12 +1,9 @@
-'use strict';
-
 // Don't re-instantiate if already instantiated in other file.
 // That way you can import some files in slave
 var predefinedScriptsToImport = predefinedScriptsToImport || new AsyncProxy.ScriptsToImportPool();
+predefinedScriptsToImport.addScriptFromErrorWithStackTrace(new Error());
 
 var CalleeWithImportDirective = (function CalleeWithImportDirectiveClosure() {
-    predefinedScriptsToImport.addScriptFromErrorWithStackTrace(new Error());
-
     function CalleeWithImportDirective(ctorArgument) {
         this._ctorArgument = ctorArgument;
     }
