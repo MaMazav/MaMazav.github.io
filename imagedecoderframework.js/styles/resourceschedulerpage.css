@@ -1,0 +1,20 @@
+body {
+	background-color: #444444;
+	color: #222222;
+}
+
+.hljs {
+	background-color: #BBBBBB;
+}
+
+h1 {
+	color: #222222;
+}
+
+#content {
+	background-color: #EEEEEE;
+}
+
+.navlink {
+	color: #BBBBAA;
+}
