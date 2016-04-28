@@ -1,4 +1,4 @@
-var VectorImageImplementation = {
+var DemoImageImplementation = {
     createFetchClient: function createFetchClient() {
         var statusCallback;
         var imageParams;
@@ -6,11 +6,8 @@ var VectorImageImplementation = {
         return new DemoFetchClient();
     },
     
-    createDecoder: function createDecoder() {
-        return { decode: function decode(dataForDecode) {
-            return new Promise(function(resolve, reject) {
-            });
-        }};
+    createPixelsDecoder: function createPixelsDecoder() {
+        return new DemoPixelsDecoder();
     },
     
     getScriptsToImport: function getScriptsToImport() {
@@ -18,12 +15,14 @@ var VectorImageImplementation = {
     
         // Works only in the page of ImageDecoderFramework.js/index.html!
         
-        var baseUrl = location.href.substring(0, location.href.lastIndexOf('/'));
-        var demoImageImplementationPath = baseUrl + '/demoimageimplementation.js';
-        var demoFetchClientPath = baseUrl + '/demofetchclient.js';
+        var baseUrl = location.href.substring(0, location.href.lastIndexOf('/')) + '/scripts/';
+        var demoImageImplementationPath = baseUrl + 'demoimageimplementation.js';
+        var demoFetchClientPath = baseUrl + 'demofetchclient.js';
+		var demoDecoderPath = baseUrl + 'demopixelsdecoder.js';
         var absolutePaths = [
             demoImageImplementationPath,
-            demoFetchClientPath];
+            demoFetchClientPath,
+			demoDecoderPath];
             
         return absolutePaths;
     },
@@ -43,19 +42,8 @@ var VectorImageImplementation = {
             },
             
             getDefaultNumQualityLayers: function getDefaultNumQualityLayers() {
-                return 2;
+                return 1;
             }
         };
-    },
-    
-    // TODO: Prettify those
-    
-    getTransferablePathsOfRequestCallback: function getTransferablePathsOfRequestCallback() {
-        return [];
-    },
-    
-    getTransferablesOfRequestCallback: function getTransferablesOfRequestCallback(dataForDecode) {
-        return [];
     }
 };
-

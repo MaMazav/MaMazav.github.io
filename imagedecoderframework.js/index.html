@@ -2,8 +2,14 @@
  <head>
   <title>ImageDecoderFramework.js Examples</title>
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css">
   <link rel="stylesheet" href="../styles/mamazav.github.io.css">
   <link rel="stylesheet" href="styles/resourceschedulerpage.css">
+  <style>
+      #leafletContainer {
+          height: 80%;
+      }
+  </style>
  </head>
  <body>
   <a href="https://github.com/MaMazav/ImageDecoderFramework.js">
@@ -46,7 +52,7 @@
   </p>
   <pre><code data-src="scripts/demoimageimplementation.js"></code></pre>
   <pre><code data-src="scripts/demofetchclient.js"></code></pre>
-  <pre><code data-src="scripts/demodecoder.js"></code></pre>
+  <pre><code data-src="scripts/demopixelsdecoder.js"></code></pre>
 
   <hr>
   <a name="cesium"></a>
@@ -62,6 +68,7 @@
   <p>
    TBD
   </p>
+  <div id="leafletContainer"></div>
   <pre><code data-src="scripts/imagedecoderleafletdemo.js"></code></pre>
 
   <hr>
@@ -82,17 +89,16 @@
   
   <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
   <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
   <script src="../scripts/mamazav.github.io.js"></script>
   
   <script src="scripts/imagedecoderframework-debug.js"></script>
 
   <script src="scripts/demoimageimplementation.js"></script>
   <script src="scripts/demofetchclient.js"></script>
-  <script src="scripts/demodecoder.js"></script>
+  <script src="scripts/demopixelsdecoder.js"></script>
   
-  <script src="scripts/imagedecodercesiumdemo.js"></script>
   <script src="scripts/imagedecoderleafletdemo.js"></script>
-  <script src="scripts/imagedecoderdemo.js"></script>
   <script src="scripts/viewerimagedecoderdemo.js"></script>
  </div></div></div>
  </body>
