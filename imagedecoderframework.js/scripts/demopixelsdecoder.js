@@ -21,8 +21,6 @@ var DemoPixelsDecoder = (function DemoPixelsDecoderClosure() {
 			
 			var stride = targetImageData.width * 4;
 			var startLineOffset = (targetOffsetX + minX) * 4 + (targetOffsetY + minY) * stride;
-			console.log(key.tileX + ',' + key.tileY + ': ' + fetchedData.minCb + ',' + fetchedData.minCr + ' -> ' + fetchedData.maxCb + ',' + fetchedData.maxCr +
-				'. offset ' + targetImageOffsetX + ', ' + targetImageOffsetY + '. startLineOffset=' + startLineOffset + '. X:' + minX + '->' + maxX + '. Y:' + minY + '->' + maxY);
 			
             for (var i = minY; i < maxY; ++i) {
 				var offset = startLineOffset;
