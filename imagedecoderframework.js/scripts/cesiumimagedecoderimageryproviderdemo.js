@@ -7,7 +7,7 @@ var imageryProvider = new imageDecoderFramework.ImageDecoderImageryProvider('Dem
 
 imageryProvider.setExceptionCallback(console.log);
 
-var cesiumImageryProviderViewer = new Cesium.Viewer('cesiumImageryProviderContainer');
+var cesiumImageryProviderViewer = new Cesium.Viewer('cesiumContainer');
 imageryProvider.open(cesiumImageryProviderViewer);
 cesiumImageryProviderViewer.scene.imageryLayers.addImageryProvider(imageryProvider);
 

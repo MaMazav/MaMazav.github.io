@@ -3,22 +3,30 @@
 var DemoFetchClient = (function DemoFetchClientClosure() {
     var INTERNAL_TILE_WIDTH = 256;
     var INTERNAL_TILE_HEIGHT = 384;
-    var TILES_IN_LEVEL_X = [32, 16, 8];
-    var TILES_IN_LEVEL_Y = [12, 6, 3];
-    
-    var sizeParams = {
-        numLevels: 3,
-        levelWidths : [
-            TILES_IN_LEVEL_X[0] * INTERNAL_TILE_WIDTH,
-            TILES_IN_LEVEL_X[1] * INTERNAL_TILE_WIDTH,
-            TILES_IN_LEVEL_X[2] * INTERNAL_TILE_WIDTH
-        ],
-        levelHeights: [
-            TILES_IN_LEVEL_Y[0] * INTERNAL_TILE_HEIGHT,
-            TILES_IN_LEVEL_Y[1] * INTERNAL_TILE_HEIGHT,
-            TILES_IN_LEVEL_Y[2] * INTERNAL_TILE_HEIGHT
-        ]
-    };
+	var LEVELS = 10;
+	var LOWEST_LEVEL_TILES_X = 8;
+	var HIGHEST_LEVEL_TILES_Y = 3;
+	
+	var TILES_IN_LEVEL_X = new Array(LEVELS);
+	var TILES_IN_LEVEL_Y = new Array(LEVELS);
+	
+	var sizeParams = {
+		numLevels: LEVELS,
+		levelWidths: new Array(LEVELS),
+		levelHeights: new Array(LEVELS)
+	};
+	
+	TILES_IN_LEVEL_X[LEVELS - 1] = 8;
+	TILES_IN_LEVEL_Y[LEVELS - 1] = 3;
+	
+	for (var i = LEVELS - 1; i >= 0; --i) {
+		if (i < LEVELS - 1) {
+			TILES_IN_LEVEL_X[i] = TILES_IN_LEVEL_X[i + 1] * 2;
+			TILES_IN_LEVEL_Y[i] = TILES_IN_LEVEL_Y[i + 1] * 2;
+		}
+		sizeParams.levelWidths [i] = TILES_IN_LEVEL_X[i] * INTERNAL_TILE_WIDTH;
+		sizeParams.levelHeights[i] = TILES_IN_LEVEL_Y[i] * INTERNAL_TILE_HEIGHT;
+	}
     
     function DemoFetchClient() {
 		imageDecoderFramework.FetchClientBase.call(this);
@@ -69,7 +77,8 @@ var DemoFetchClient = (function DemoFetchClientClosure() {
 					normalizedMinX: normalizedMinX,
 					normalizedMaxX: normalizedMaxX,
 					normalizedMinY: tileY / levelTilesY,
-					normalizedMaxY: (tileY + 1) / levelTilesY
+					normalizedMaxY: (tileY + 1) / levelTilesY,
+					level: imagePartParams.numResolutionLevelsToCut
 				});
 			}
 		}
