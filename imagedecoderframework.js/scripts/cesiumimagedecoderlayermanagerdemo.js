@@ -10,5 +10,5 @@ imageDecoderLayerManager.setExceptionCallback(console.log);
 var cesiumLayerManagerViewer = new Cesium.Viewer('cesiumContainer');
 imageDecoderLayerManager.open(cesiumLayerManagerViewer);
 setTimeout(function delayedViewRectangle() {
-	cesiumLayerManagerViewer.scene.camera.setView({destination: rectangle});
+    cesiumLayerManagerViewer.scene.camera.setView({destination: rectangle});
 }, 100);

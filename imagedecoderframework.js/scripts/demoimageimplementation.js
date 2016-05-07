@@ -18,11 +18,11 @@ var DemoImageImplementation = {
         var baseUrl = location.href.substring(0, location.href.lastIndexOf('/')) + '/scripts/';
         var demoImageImplementationPath = baseUrl + 'demoimageimplementation.js';
         var demoFetchClientPath = baseUrl + 'demofetchclient.js';
-		var demoDecoderPath = baseUrl + 'demopixelsdecoder.js';
+        var demoDecoderPath = baseUrl + 'demopixelsdecoder.js';
         var absolutePaths = [
             demoImageImplementationPath,
             demoFetchClientPath,
-			demoDecoderPath];
+            demoDecoderPath];
             
         return absolutePaths;
     },
@@ -30,15 +30,28 @@ var DemoImageImplementation = {
     createImageParamsRetriever: function createImageParamsRetriever(imageParams) {
         return {
             getLevelWidth: function getLevelWidth(level) {
-                return imageParams.levelWidths[level || 0];
+                return imageParams.lowestLevelWidth * Math.pow(2, level);
             },
             
             getLevelHeight: function getLevelHeight(level) {
-                return imageParams.levelHeights[level || 0];
+                return imageParams.lowestLevelHeight * Math.pow(2, level);
+            },
+
+            getImageLevel: function getImageLevel() {
+                return imageParams.imageLevel;
             },
             
-            getDefaultNumResolutionLevels: function getDefaultNumResolutionLevels() {
-                return imageParams.numLevels;
+            getLevel: function getDefaultNumResolutionLevels(regionImageLevel) {
+                var log2 = Math.log(2);
+                var levelX = Math.log(regionImageLevel.screenWidth  / (regionImageLevel.maxXExclusive - regionImageLevel.minX)) / log2;
+                var levelY = Math.log(regionImageLevel.screenHeight / (regionImageLevel.maxYExclusive - regionImageLevel.minY)) / log2;
+                var level = Math.ceil(Math.min(levelX, levelY));
+                level = Math.max(0, level + imageParams.imageLevel);
+                return level;
+            },
+            
+            getNumResolutionLevelsForLimittedViewer: function getNumResolutionLevelsForLimittedViewer() {
+                return imageParams.imageLevel + 1;
             },
             
             getDefaultNumQualityLayers: function getDefaultNumQualityLayers() {

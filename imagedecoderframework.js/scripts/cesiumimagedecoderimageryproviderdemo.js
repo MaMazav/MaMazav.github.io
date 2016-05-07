@@ -12,5 +12,5 @@ imageryProvider.open(cesiumImageryProviderViewer);
 cesiumImageryProviderViewer.scene.imageryLayers.addImageryProvider(imageryProvider);
 
 setTimeout(function delayedViewRectangle() {
-	cesiumImageryProviderViewer.scene.camera.setView({destination: rectangle});
+    cesiumImageryProviderViewer.scene.camera.setView({destination: rectangle});
 }, 100);
