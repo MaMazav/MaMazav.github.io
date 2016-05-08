@@ -1,40 +1,73 @@
-nav {
-	float: left;
-	color: white;
-	padding: 10px;
-	white-space: normal;
-}
-
-body {
-	min-width: 1400px;
-}
-
-pre {
-	width: 90%;
-	margin: 20px;
-	border: 1px solid black;
-}
-
 code {
-	max-height: 250px;
+    max-height: 250px;
 }
 
 h1 {
-	font-family: fantasy;
+    font-family: fantasy;
 }
 
 h3, h4 {
-	font-family: cursive;
+    font-family: cursive;
 }
 
-#verticalPadding {
-	padding: 80px 0 80px 0;
+html, body {
+    width: 100%;
 }
 
-#horizontalPadding {
-	padding: 0 20% 0 20%;
+@media (min-width: 800px) {
+    nav {
+        float: left;
+        color: white;
+        padding: 10px;
+        white-space: normal;
+    }
+
+    body {
+        min-width: 1400px;
+    }
+
+    pre {
+        width: 90%;
+        margin: 20px;
+        border: 1px solid black;
+    }
+
+    #verticalPadding {
+        padding: 80px 0 80px 0;
+    }
+
+    #horizontalPadding {
+        padding: 0 20% 0 20%;
+    }
+
+    #content {
+        padding: 20px 5% 20px 5%;
+    }
 }
 
-#content {
-	padding: 20px 5% 20px 5%;
+@media (max-width: 800px) {
+    nav {
+        float: none;
+        color: white;
+        padding: 10px;
+        white-space: normal;
+    }
+    
+    pre {
+        width: 95%;
+        margin: 5px;
+        border: 1px solid black;
+    }
+        
+    #verticalPadding {
+        padding: 10px 0 10px 0;
+    }
+    
+    #horizontalPadding {
+        padding: 0 3% 0 3%;
+    }
+    
+    #content {
+        padding: 5px 3% 5px 3%;
+    }
 }
