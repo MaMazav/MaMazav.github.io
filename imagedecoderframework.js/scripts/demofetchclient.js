@@ -46,8 +46,8 @@ var DemoFetchClient = (function DemoFetchClientClosure() {
     
     DemoFetchClient.prototype.getDataKeysInternal = function getDataKeysInternal(imagePartParams) {
         var result = [];
-        var levelTilesX = lowestLevelTilesX << imagePartParams.numResolutionLevelsToCut;
-        var levelTilesY = lowestLevelTilesY << imagePartParams.numResolutionLevelsToCut;
+        var levelTilesX = lowestLevelTilesX << imagePartParams.level;
+        var levelTilesY = lowestLevelTilesY << imagePartParams.level;
         var minTileX = Math.max(0, Math.floor(imagePartParams.minX / internalTileWidth ));
         var minTileY = Math.max(0, Math.floor(imagePartParams.minY / internalTileHeight));
         var maxTileX = Math.min(levelTilesX, Math.ceil(imagePartParams.maxXExclusive / internalTileWidth ));
@@ -63,7 +63,7 @@ var DemoFetchClient = (function DemoFetchClientClosure() {
                     normalizedMaxX: normalizedMaxX,
                     normalizedMinY: tileY / levelTilesY,
                     normalizedMaxY: (tileY + 1) / levelTilesY,
-                    level: imagePartParams.numResolutionLevelsToCut
+                    level: imagePartParams.level
                 });
             }
         }
