@@ -28,18 +28,61 @@ var DemoFetchClient = (function DemoFetchClientClosure() {
         });
     };
     
-    DemoFetchClient.prototype.fetchInternal = function fetch(dataKey) {
+    DemoFetchClient.prototype.fetchInternal = function fetch(key) {
         // Usually we fetch here some data from server, but for this example we'll only
         // perform a simple calculation of converting spatial position to gradient color
         return new Promise(function(resolve) {
-            // A typical implementation will perform here some AJAX call before calling resolve()
+            // A typical implementation will perform here some AJAX call before calling resolve().
+            // Instead here we only calculate the sierpinski squares falls in the tile
+            
+            var largestSierpinskiMaxY = 3 << key.level; // Match sierpinski on the lowest resolution level
+            var largestSierpinskiMaxX = 3 << key.level;
+            var tileMinX = internalTileWidth  * key.tileX;
+            var tileMinY = internalTileHeight * key.tileY;
+            var tileMaxX = internalTileWidth  * (key.tileX + 1);
+            var tileMaxY = internalTileHeight * (key.tileY + 1);
+            while (tileMaxY > largestSierpinskiMaxY || tileMaxX > largestSierpinskiMaxX) {
+                largestSierpinskiMaxY *= 3;
+                largestSierpinskiMaxX *= 3;
+            }
+            var sierpinskiSquaresCoordinates = [];
+            
+            collectSierpinski(0, 0, largestSierpinskiMaxX, largestSierpinskiMaxY, sierpinskiSquaresCoordinates);
+            
+            function collectSierpinski(sierpinskiMinX, sierpinskiMinY, sierpinskiMaxX, sierpinskiMaxY, result) {
+                if (sierpinskiMinY > tileMaxY || sierpinskiMaxY < tileMinY || sierpinskiMinX > tileMaxX || sierpinskiMaxX < tileMinX) {
+                    return;
+                }
+                var smallSquareHeight = (sierpinskiMaxY - sierpinskiMinY) / 3;
+                var smallSquareWidth  = (sierpinskiMaxX - sierpinskiMinX) / 3;
+                if (smallSquareHeight < 1) {
+                    return;
+                }
+                
+                var ySmallSquares = [sierpinskiMinY, sierpinskiMinY + smallSquareHeight, sierpinskiMaxY - smallSquareHeight, sierpinskiMaxY];
+                var xSmallSquares = [sierpinskiMinX, sierpinskiMinX + smallSquareWidth , sierpinskiMaxX - smallSquareWidth , sierpinskiMaxX];
+                for (var ySquare = 0; ySquare < 3; ++ySquare) {
+                    for (var xSquare = 0; xSquare < 3; ++xSquare) {
+                        if (xSquare !== 1 || ySquare !== 1) {
+                            collectSierpinski(xSmallSquares[xSquare], ySmallSquares[ySquare], xSmallSquares[xSquare + 1], ySmallSquares[ySquare + 1], result);
+                        }
+                    }
+                }
+                
+                result.push(xSmallSquares[1]);
+                result.push(ySmallSquares[1]);
+                result.push(xSmallSquares[2]);
+                result.push(ySmallSquares[2]);
+            }
+            
             resolve({
                 TILE_WIDTH: internalTileWidth,
                 TILE_HEIGHT: internalTileHeight,
-                minCb: 256 * dataKey.normalizedMinX,
-                minCr: 256 * dataKey.normalizedMinY,
-                maxCb: 256 * dataKey.normalizedMaxX,
-                maxCr: 256 * dataKey.normalizedMaxY
+                minCb: 256 * key.normalizedMinX,
+                minCr: 256 * key.normalizedMinY,
+                maxCb: 256 * key.normalizedMaxX,
+                maxCr: 256 * key.normalizedMaxY,
+                sierpinskiSquaresCoordinates: sierpinskiSquaresCoordinates
             });
         });
     };

@@ -54,8 +54,12 @@ var DemoImageImplementation = {
                 return imageParams.imageLevel + 1;
             },
             
-            getDefaultNumQualityLayers: function getDefaultNumQualityLayers() {
-                return 1;
+            getLowestQuality: function getLowestQuality() {
+                return 'arbitrary value';
+            },
+            
+            getHighestQuality: function getHighestQuality() {
+                return 'Another arbitrary value';
             }
         };
     }

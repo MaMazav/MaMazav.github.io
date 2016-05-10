@@ -23,31 +23,9 @@ var DemoPixelsDecoder = (function DemoPixelsDecoderClosure() {
             var startLineOffset = (tileOffsetInImageX + minX) * 4 + (tileOffsetInImageY + minY) * stride;
             
             for (var i = minY; i < maxY; ++i) {
-                //var yInOriginalImage = (key.tileY * fetchedData.TILE_HEIGHT + i) << key.level;
                 var offset = startLineOffset;
                 startLineOffset += stride;
                 for (var j = minX; j < maxX; ++j) {
-                    /*
-                    var xInOriginalImage = (key.tileX * fetchedData.TILE_WIDTH + j) << key.level;
-                    var isBlackSierpinskiPixel = true;
-                    var yTmp = yInOriginalImage;
-                    var xTmp = xInOriginalImage;
-                    while (yTmp > 0 || xTmp > 0) {
-                        if (yTmp % 3 === 1 && xTmp % 3 === 1) {
-                            isBlackSierpinskiPixel = false;
-                            break;
-                        }
-                        yTmp /= 3;
-                        xTmp /= 3;
-                    }
-                    if (isBlackSierpinskiPixel) {
-                        targetImageData.data[offset++] = 0;
-                        targetImageData.data[offset++] = 0;
-                        targetImageData.data[offset++] = 0;
-                        targetImageData.data[offset++] = 255; // Alpha
-                        continue;
-                    }
-                    //*/
 
                     // Some demonstration calculation
                     var intensity = 230;
@@ -64,48 +42,19 @@ var DemoPixelsDecoder = (function DemoPixelsDecoderClosure() {
                 }
             }
             
-            var largestSierpinskiMaxY = 3 << key.level; // Match sierpinski on the lowest resolution level
-            var largestSierpinskiMaxX = 3 << key.level;
-            var tileMinY = (key.tileY * fetchedData.TILE_HEIGHT + minY)/* << key.level*/;
-            var tileMaxY = (key.tileY * fetchedData.TILE_HEIGHT + maxY)/* << key.level*/;
-            var tileMinX = (key.tileX * fetchedData.TILE_WIDTH  + minX)/* << key.level*/;
-            var tileMaxX = (key.tileX * fetchedData.TILE_WIDTH  + maxX)/* << key.level*/;
-            while (tileMaxY > largestSierpinskiMaxY || tileMaxX > largestSierpinskiMaxX) {
-                largestSierpinskiMaxY *= 3;
-                largestSierpinskiMaxX *= 3;
-            }
-            paintSierpinski(0, 0, largestSierpinskiMaxX, largestSierpinskiMaxY);
-            
-            function paintSierpinski(sierpinskiMinX, sierpinskiMinY, sierpinskiMaxX, sierpinskiMaxY) {
-                if (sierpinskiMinY > tileMaxY || sierpinskiMaxY < tileMinY || sierpinskiMinX > tileMaxX || sierpinskiMaxX < tileMinX) {
-                    return;
-                }
-                var smallSquareHeight = (sierpinskiMaxY - sierpinskiMinY) / 3;
-                var smallSquareWidth  = (sierpinskiMaxX - sierpinskiMinX) / 3;
-                if (smallSquareHeight < 1) { //(1 << key.level)) {
-                    return;
-                }
+            var coords = fetchedData.sierpinskiSquaresCoordinates;
+            for (var i = 0; i < coords.length; i += 4) {
+                // Move sierpinski square coordinates to pixel position in tile
+                var squareMinX = Math.max(minX, Math.floor(coords[i    ]) - targetImageOffsetX - tileOffsetInImageX);
+                var squareMinY = Math.max(minY, Math.floor(coords[i + 1]) - targetImageOffsetY - tileOffsetInImageY);
+                var squareMaxX = Math.min(maxX, Math.floor(coords[i + 2]) - targetImageOffsetX - tileOffsetInImageX);
+                var squareMaxY = Math.min(maxY, Math.floor(coords[i + 3]) - targetImageOffsetY - tileOffsetInImageY);
+                var startLineOffset = (tileOffsetInImageX + squareMinX) * 4 + (tileOffsetInImageY + squareMinY) * stride;
                 
-                var ySmallSquares = [sierpinskiMinY, sierpinskiMinY + smallSquareHeight, sierpinskiMaxY - smallSquareHeight, sierpinskiMaxY];
-                var xSmallSquares = [sierpinskiMinX, sierpinskiMinX + smallSquareWidth , sierpinskiMaxX - smallSquareWidth , sierpinskiMaxX];
-                for (var ySquare = 0; ySquare < 3; ++ySquare) {
-                    for (var xSquare = 0; xSquare < 3; ++xSquare) {
-                        if (xSquare !== 1 || ySquare !== 1) {
-                            paintSierpinski(xSmallSquares[xSquare], ySmallSquares[ySquare], xSmallSquares[xSquare + 1], ySmallSquares[ySquare + 1]);
-                        }
-                    }
-                }
-                
-                var centralSquareMinY = Math.max(minY, Math.floor(ySmallSquares[1]) - targetImageOffsetY - tileOffsetInImageY);
-                var centralSquareMinX = Math.max(minX, Math.floor(xSmallSquares[1]) - targetImageOffsetX - tileOffsetInImageX);
-                var centralSquareMaxY = Math.min(maxY, Math.floor(ySmallSquares[2]) - targetImageOffsetY - tileOffsetInImageY);
-                var centralSquareMaxX = Math.min(maxX, Math.floor(xSmallSquares[2]) - targetImageOffsetX - tileOffsetInImageX);
-                var startLineOffset = (tileOffsetInImageX + centralSquareMinX) * 4 + (tileOffsetInImageY + centralSquareMinY) * stride;
-                
-                for (var i = centralSquareMinY; i < centralSquareMaxY; ++i) {
+                for (var y = squareMinY; y < squareMaxY; ++y) {
                     var offset = startLineOffset;
                     startLineOffset += stride;
-                    for (var j = centralSquareMinX; j < centralSquareMaxX; ++j) {
+                    for (var x = squareMinX; x < squareMaxX; ++x) {
                         targetImageData.data[offset++] = 0;
                         targetImageData.data[offset++] = 0;
                         targetImageData.data[offset++] = 0;
