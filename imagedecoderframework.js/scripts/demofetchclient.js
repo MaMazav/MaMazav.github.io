@@ -5,6 +5,7 @@ var DemoFetchClient = (function DemoFetchClientClosure() {
     var internalTileHeight;
     var lowestLevelTilesX;
     var lowestLevelTilesY;
+    var lowestLevelCarpetSize;
     
     function DemoFetchClient() {
         imageDecoderFramework.FetchClientBase.call(this);
@@ -24,6 +25,10 @@ var DemoFetchClient = (function DemoFetchClientClosure() {
                 lowestLevelHeight: internalTileHeight * lowestLevelTilesY,
                 imageLevel: 10
             };
+            
+            var minCarpetSize = Math.max(sizeParams.lowestLevelWidth, sizeParams.lowestLevelHeight);
+            lowestLevelCarpetSize = Math.pow(3, Math.ceil(Math.log(minCarpetSize) / Math.log(3)));
+            
             resolve(sizeParams);
         });
     };
@@ -35,45 +40,14 @@ var DemoFetchClient = (function DemoFetchClientClosure() {
             // A typical implementation will perform here some AJAX call before calling resolve().
             // Instead here we only calculate the sierpinski squares falls in the tile
             
-            var largestSierpinskiMaxY = 3 << key.level; // Match sierpinski on the lowest resolution level
-            var largestSierpinskiMaxX = 3 << key.level;
+            var carpetSize  = lowestLevelCarpetSize << key.level;
             var tileMinX = internalTileWidth  * key.tileX;
             var tileMinY = internalTileHeight * key.tileY;
             var tileMaxX = internalTileWidth  * (key.tileX + 1);
             var tileMaxY = internalTileHeight * (key.tileY + 1);
-            while (tileMaxY > largestSierpinskiMaxY || tileMaxX > largestSierpinskiMaxX) {
-                largestSierpinskiMaxY *= 3;
-                largestSierpinskiMaxX *= 3;
-            }
-            var sierpinskiSquaresCoordinates = [];
             
-            collectSierpinski(0, 0, largestSierpinskiMaxX, largestSierpinskiMaxY, sierpinskiSquaresCoordinates);
-            
-            function collectSierpinski(sierpinskiMinX, sierpinskiMinY, sierpinskiMaxX, sierpinskiMaxY, result) {
-                if (sierpinskiMinY > tileMaxY || sierpinskiMaxY < tileMinY || sierpinskiMinX > tileMaxX || sierpinskiMaxX < tileMinX) {
-                    return;
-                }
-                var smallSquareHeight = (sierpinskiMaxY - sierpinskiMinY) / 3;
-                var smallSquareWidth  = (sierpinskiMaxX - sierpinskiMinX) / 3;
-                if (smallSquareHeight < 1) {
-                    return;
-                }
-                
-                var ySmallSquares = [sierpinskiMinY, sierpinskiMinY + smallSquareHeight, sierpinskiMaxY - smallSquareHeight, sierpinskiMaxY];
-                var xSmallSquares = [sierpinskiMinX, sierpinskiMinX + smallSquareWidth , sierpinskiMaxX - smallSquareWidth , sierpinskiMaxX];
-                for (var ySquare = 0; ySquare < 3; ++ySquare) {
-                    for (var xSquare = 0; xSquare < 3; ++xSquare) {
-                        if (xSquare !== 1 || ySquare !== 1) {
-                            collectSierpinski(xSmallSquares[xSquare], ySmallSquares[ySquare], xSmallSquares[xSquare + 1], ySmallSquares[ySquare + 1], result);
-                        }
-                    }
-                }
-                
-                result.push(xSmallSquares[1]);
-                result.push(ySmallSquares[1]);
-                result.push(xSmallSquares[2]);
-                result.push(ySmallSquares[2]);
-            }
+            var sierpinskiSquaresCoordinates = collectSierpinskiSquares(
+                tileMinX, tileMinY, tileMaxX, tileMaxY, carpetSize);
             
             resolve({
                 TILE_WIDTH: internalTileWidth,
