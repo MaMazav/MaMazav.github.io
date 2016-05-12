@@ -46,16 +46,14 @@ var DemoFetchClient = (function DemoFetchClientClosure() {
             var tileMaxX = internalTileWidth  * (key.tileX + 1);
             var tileMaxY = internalTileHeight * (key.tileY + 1);
             
-            var sierpinskiSquaresCoordinates = collectSierpinskiSquares(
+            var sierpinskiSquaresCoordinates = graphicsLibrary.collectSierpinskiSquares(
                 tileMinX, tileMinY, tileMaxX, tileMaxY, carpetSize);
             
             resolve({
-                TILE_WIDTH: internalTileWidth,
+                TILE_WIDTH : internalTileWidth,
                 TILE_HEIGHT: internalTileHeight,
-                minCb: 256 * key.normalizedMinX,
-                minCr: 256 * key.normalizedMinY,
-                maxCb: 256 * key.normalizedMaxX,
-                maxCr: 256 * key.normalizedMaxY,
+                LEVEL_WIDTH : internalTileWidth  * lowestLevelTilesX << key.level,
+                LEVEL_HEIGHT: internalTileHeight * lowestLevelTilesY << key.level,
                 sierpinskiSquaresCoordinates: sierpinskiSquaresCoordinates
             });
         });
@@ -70,16 +68,10 @@ var DemoFetchClient = (function DemoFetchClientClosure() {
         var maxTileX = Math.min(levelTilesX, Math.ceil(imagePartParams.maxXExclusive / internalTileWidth ));
         var maxTileY = Math.min(levelTilesY, Math.ceil(imagePartParams.maxYExclusive / internalTileHeight));
         for (var tileX = minTileX; tileX < maxTileX; ++tileX) {
-            var normalizedMinX = tileX / levelTilesX;
-            var normalizedMaxX = (tileX + 1) / levelTilesX;
             for (var tileY = minTileY; tileY < maxTileY; ++tileY) {
                 result.push({
                     tileX: tileX,
                     tileY: tileY,
-                    normalizedMinX: normalizedMinX,
-                    normalizedMaxX: normalizedMaxX,
-                    normalizedMinY: tileY / levelTilesY,
-                    normalizedMaxY: (tileY + 1) / levelTilesY,
                     level: imagePartParams.level
                 });
             }

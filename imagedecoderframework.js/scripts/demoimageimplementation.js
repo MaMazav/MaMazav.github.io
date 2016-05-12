@@ -16,12 +16,12 @@ var DemoImageImplementation = {
         // Works only in the page of ImageDecoderFramework.js/index.html!
         
         var baseUrl = location.href.substring(0, location.href.lastIndexOf('/')) + '/scripts/';
-        var collectSierpinskiSquaresPath = baseUrl + 'collectsierpinskisquares.js';
+        var graphicslibraryPath = baseUrl + 'graphicslibrary.js';
         var demoImageImplementationPath = baseUrl + 'demoimageimplementation.js';
         var demoFetchClientPath = baseUrl + 'demofetchclient.js';
         var demoDecoderPath = baseUrl + 'demopixelsdecoder.js';
         var absolutePaths = [
-            collectSierpinskiSquaresPath,
+            graphicslibraryPath,
             demoImageImplementationPath,
             demoFetchClientPath,
             demoDecoderPath];
