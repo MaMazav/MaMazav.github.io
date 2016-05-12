@@ -14,8 +14,6 @@ var DemoPixelsDecoder = (function DemoPixelsDecoderClosure() {
             var maxY = Math.min(key.tileY * fetchedData.TILE_HEIGHT - targetImageOffsetY + fetchedData.TILE_HEIGHT, targetImageData.height);
             var maxX = Math.min(key.tileX * fetchedData.TILE_WIDTH  - targetImageOffsetX + fetchedData.TILE_WIDTH , targetImageData.width);
             
-            var stride = targetImageData.width * 4;
-            
             // Gradient
             
             var minCr = (minY + targetImageOffsetY) * 256 / fetchedData.LEVEL_HEIGHT;
@@ -33,37 +31,21 @@ var DemoPixelsDecoder = (function DemoPixelsDecoderClosure() {
                 var squareMaxX = coords[i + 2];
                 var squareMaxY = coords[i + 3];
                 // Move sierpinski square coordinates to pixel position in tile
-                var squareInTileMinX = Math.max(minX, Math.floor(squareMinX) - targetImageOffsetX);
-                var squareInTileMinY = Math.max(minY, Math.floor(squareMinY) - targetImageOffsetY);
-                var squareInTileMaxX = Math.min(maxX, Math.floor(squareMaxX) - targetImageOffsetX);
-                var squareInTileMaxY = Math.min(maxY, Math.floor(squareMaxY) - targetImageOffsetY);
-                graphicsLibrary.inverseColors(targetImageData, squareInTileMinX, squareInTileMinY, squareInTileMaxX, squareInTileMaxY)
+                var intersectMinX = Math.max(minX, Math.floor(squareMinX) - targetImageOffsetX);
+                var intersectMinY = Math.max(minY, Math.floor(squareMinY) - targetImageOffsetY);
+                var intersectMaxX = Math.min(maxX, Math.floor(squareMaxX) - targetImageOffsetX);
+                var intersectMaxY = Math.min(maxY, Math.floor(squareMaxY) - targetImageOffsetY);
+                graphicsLibrary.inverseColors(targetImageData, intersectMinX, intersectMinY, intersectMaxX, intersectMaxY)
                 
                 // Smiley
                 
-                var circleRadius = Math.min(squareMaxX - squareMinX, squareMaxY - squareMinY) / 2 - 8;
-                if (circleRadius < 20) {
-                    continue;
+                var smileyRadius = Math.min(squareMaxX - squareMinX, squareMaxY - squareMinY) / 2 - 8;
+                if (smileyRadius > 20) {
+					var centerX = Math.floor((squareMinX + squareMaxX) / 2 - targetImageOffsetX);
+					var centerY = Math.floor((squareMinY + squareMaxY) / 2 - targetImageOffsetY);
+					graphicsLibrary.paintIntersectedSmiley(targetImageData, smileyRadius, centerX, centerY, intersectMinX, intersectMinY, intersectMaxX, intersectMaxY, /*thickness=*/5)
+					
                 }
-                
-                var centerX = Math.floor((squareMinX + squareMaxX) / 2 - targetImageOffsetX);
-                var centerY = Math.floor((squareMinY + squareMaxY) / 2 - targetImageOffsetY);
-                graphicsLibrary.paintIntersectedCircle(
-                    targetImageData, circleRadius, centerX, centerY, squareInTileMinX, squareInTileMinY, squareInTileMaxX, squareInTileMaxY, /*thickness=*/5);
-                
-                var eyeRadius = circleRadius / 10;
-                var eyeY = centerY - circleRadius * 0.5;
-                var  leftEyeX = centerX - circleRadius * 0.5;
-                var rightEyeX = centerX + circleRadius * 0.5;
-                graphicsLibrary.paintIntersectedCircle(
-                    targetImageData, eyeRadius,  leftEyeX, eyeY, squareInTileMinX, squareInTileMinY, squareInTileMaxX, squareInTileMaxY, /*thickness=*/5);
-                graphicsLibrary.paintIntersectedCircle(
-                    targetImageData, eyeRadius, rightEyeX, eyeY, squareInTileMinX, squareInTileMinY, squareInTileMaxX, squareInTileMaxY, /*thickness=*/5);
-                
-                var mouthY = centerY + circleRadius * 0.5;
-                var mouthRadius = circleRadius / 5;
-                graphicsLibrary.paintIntersectedCircle(
-                    targetImageData, mouthRadius, centerX, mouthY, squareInTileMinX, squareInTileMinY, squareInTileMaxX, squareInTileMaxY, /*thickness=*/5);
             }
             
             resolve();

@@ -122,5 +122,25 @@ var graphicsLibrary = {
                 targetImageData.data[offset++] = 255; // Alpha
             }
         }
-    }
+    },
+	
+	paintIntersectedSmiley: function(targetImageData, radius, centerX, centerY, intersectMinX, intersectMinY, intersectMaxX, intersectMaxY, thickness) {
+		graphicsLibrary.paintIntersectedCircle(
+			targetImageData, radius, centerX, centerY, intersectMinX, intersectMinY, intersectMaxX, intersectMaxY, thickness);
+		
+		var eyeRadius = radius / 10;
+		var eyeY = centerY - radius * 0.5;
+		var  leftEyeX = centerX - radius * 0.5;
+		var rightEyeX = centerX + radius * 0.5;
+		graphicsLibrary.paintIntersectedCircle(
+			targetImageData, eyeRadius,  leftEyeX, eyeY, intersectMinX, intersectMinY, intersectMaxX, intersectMaxY, thickness);
+		graphicsLibrary.paintIntersectedCircle(
+			targetImageData, eyeRadius, rightEyeX, eyeY, intersectMinX, intersectMinY, intersectMaxX, intersectMaxY, thickness);
+		
+		var mouthY = centerY + radius * 0.5;
+		var mouthRadius = radius / 5;
+		graphicsLibrary.paintIntersectedCircle(
+			targetImageData, mouthRadius, centerX, mouthY, intersectMinX, intersectMinY, intersectMaxX, intersectMaxY, thickness);
+
+	}
 };
