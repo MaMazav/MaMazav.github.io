@@ -1,0 +1,7 @@
+{
+    "internalTileWidth"  : 256,
+    "internalTileHeight" : 384,
+    "lowestLevelTilesX" : 8,
+    "lowestLevelTilesY" : 4,
+    "imageLevel": 10
+}

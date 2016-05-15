@@ -1,7 +1,7 @@
 var rectangle = Cesium.Rectangle.fromDegrees(-2.0, -1.0, 2.0, 1.0);
 
-var imageDecoderLayerManager = new imageDecoderFramework.CesiumImageDecoderLayerManager('DemoImageImplementation', {
-    url: 'dummyUrl', // this argument is passed to DemoFetchClient.openInternal() function
+var imageDecoderLayerManager = new imageDecoderFramework.CesiumImageDecoderLayerManager('SierpinskiImageImplementation', {
+    url: location.href.substring(0, location.href.lastIndexOf('/')) + '/sierpinskiimageurl.json', // Must be absolute path
     rectangle: rectangle
 });
 

@@ -1,15 +1,15 @@
 'use strict';
 
-var SimpleDemoPixelsDecoder = (function DemoPixelsDecoderClosure() {
+var GridPixelsDecoder = (function GridPixelsDecoderClosure() {
 	var BORDER_THICKNESS = 5;
 	
-    function SimpleDemoPixelsDecoder() {
+    function GridPixelsDecoder() {
         imageDecoderFramework.SimplePixelsDecoderBase.call(this);
     }
     
-    SimpleDemoPixelsDecoder.prototype = Object.create(imageDecoderFramework.SimplePixelsDecoderBase.prototype);
+    GridPixelsDecoder.prototype = Object.create(imageDecoderFramework.SimplePixelsDecoderBase.prototype);
     
-    SimpleDemoPixelsDecoder.prototype.decodeRegion = function decodeRegion(targetImageData, targetImageOffsetX, targetImageOffsetY, key, fetchedData) {
+    GridPixelsDecoder.prototype.decodeRegion = function decodeRegion(targetImageData, targetImageOffsetX, targetImageOffsetY, key, fetchedData) {
         return new Promise(function(resolve, reject) {
             var minY = Math.max(key.tileY * fetchedData.TILE_HEIGHT - targetImageOffsetY, 0);
             var minX = Math.max(key.tileX * fetchedData.TILE_WIDTH  - targetImageOffsetX, 0);
@@ -37,5 +37,5 @@ var SimpleDemoPixelsDecoder = (function DemoPixelsDecoderClosure() {
         });
     };
     
-    return SimpleDemoPixelsDecoder;
+    return GridPixelsDecoder;
 })();
