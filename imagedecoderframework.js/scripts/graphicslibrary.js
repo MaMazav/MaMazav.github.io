@@ -1,16 +1,31 @@
 var graphicsLibrary = {
-    collectSierpinskiSquares: (function collectSierpinskiSquaresClosure() {
-        function collectSierpinskiSquares(regionMinX, regionMinY, regionMaxX, regionMaxY, carpetSize, minSquareSize, maxSquareSize, result) {
-            result = result || [];
-            collectSierpinskiSquaresRecursively(result, regionMinX, regionMinY, regionMaxX, regionMaxY, 0, 0, carpetSize, carpetSize, minSquareSize || 2, minSquareSize || 2, maxSquareSize, maxSquareSize);
-            return result;
-        }
+    createSierpinskiSquaresCollector: function createSierpinskiSquaresCollector(
+		regionMinX, regionMinY, regionMaxX, regionMaxY, carpetSize) {
+		
+		var collectedSquares = [];
+		var nextStageStartRegions = [0, 0, carpetSize, carpetSize];
+		
+		var result = {
+			getCollectedSquaresCoordinates: function getCollectedSquares() {
+				return collectedSquares;
+			},
+			
+			collect: function collect(minSquareSize) {
+				var startRegion = nextStageStartRegions;
+				nextStageStartRegions = [];
+				for (var i = 0; i < startRegion.length; i += 4) {
+					collectSierpinskiSquaresRecursively(
+						regionMinX, regionMinY, regionMaxX, regionMaxY,
+						startRegion[i], startRegion[i + 1], startRegion[i + 2], startRegion[i + 3],
+						minSquareSize || 2, minSquareSize || 2);
+				}
+			}
+		};
 
         function collectSierpinskiSquaresRecursively(
-            result,
             regionMinX, regionMinY, regionMaxX, regionMaxY,
             carpetMinX, carpetMinY, carpetMaxX, carpetMaxY,
-            minSquareWidth, minSquareHeight, maxSquareWidth, maxSquareHeight) {
+            minSquareWidth, minSquareHeight) {
                 
             if (carpetMinY > regionMaxY || carpetMaxY < regionMinY || carpetMinX > regionMaxX || carpetMaxX < regionMinX) {
                 return;
@@ -18,6 +33,10 @@ var graphicsLibrary = {
             var smallSquareHeight = (carpetMaxY - carpetMinY) / 3;
             var smallSquareWidth  = (carpetMaxX - carpetMinX) / 3;
             if (smallSquareHeight < minSquareHeight || smallSquareWidth < minSquareWidth) {
+				nextStageStartRegions.push(carpetMinX);
+				nextStageStartRegions.push(carpetMinY);
+				nextStageStartRegions.push(carpetMaxX);
+				nextStageStartRegions.push(carpetMaxY);
                 return;
             }
             
@@ -27,7 +46,6 @@ var graphicsLibrary = {
                 for (var xSquare = 0; xSquare < 3; ++xSquare) {
                     if (xSquare !== 1 || ySquare !== 1) {
                         collectSierpinskiSquaresRecursively(
-                            result,
                             regionMinX, regionMinY, regionMaxX, regionMaxY,
                             xSmallSquares[xSquare], ySmallSquares[ySquare], xSmallSquares[xSquare + 1], ySmallSquares[ySquare + 1],
                             minSquareWidth, minSquareHeight);
@@ -35,17 +53,14 @@ var graphicsLibrary = {
                 }
             }
             
-            if (smallSquareHeight > maxSquareHeight || smallSquareWidth > maxSquareWidth) {
-                return;
-            }
-            result.push(xSmallSquares[1]);
-            result.push(ySmallSquares[1]);
-            result.push(xSmallSquares[2]);
-            result.push(ySmallSquares[2]);
+            collectedSquares.push(xSmallSquares[1]);
+            collectedSquares.push(ySmallSquares[1]);
+            collectedSquares.push(xSmallSquares[2]);
+            collectedSquares.push(ySmallSquares[2]);
         }
         
-        return collectSierpinskiSquares;
-    })(),
+        return result;
+    },
     
     paintIntersectedCircle: function(targetImageData, radius, centerX, centerY, intersectMinX, intersectMinY, intersectMaxX, intersectMaxY, thickness) {
         thickness = thickness || 1;

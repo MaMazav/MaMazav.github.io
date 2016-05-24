@@ -5,6 +5,9 @@ var SierpinskiImageParamsRetriever = (function SierpinskiImageParamsRetrieverClo
         this._imageLevel = imageParams.imageLevel;
 	}
 	
+	SierpinskiImageParamsRetriever.LOWEST_QUALITY_SIERPINSKI_SQUARE_SIZE = 81;
+	SierpinskiImageParamsRetriever.HIGHEST_QUALITY_SIERPINSKI_SQUARE_SIZE = 10;
+	
 	SierpinskiImageParamsRetriever.prototype.getLevelWidth = function getLevelWidth(level) {
 		return this._lowestLevelWidth * Math.pow(2, level);
 	};
@@ -31,11 +34,11 @@ var SierpinskiImageParamsRetriever = (function SierpinskiImageParamsRetrieverClo
 	};
 	
 	SierpinskiImageParamsRetriever.prototype.getLowestQuality = function getLowestQuality() {
-		return 'arbitrary value';
+		return SierpinskiImageParamsRetriever.LOWEST_QUALITY_SIERPINSKI_SQUARE_SIZE;
 	};
 	
 	SierpinskiImageParamsRetriever.prototype.getHighestQuality = function getHighestQuality() {
-		return 'Another arbitrary value';
+		return SierpinskiImageParamsRetriever.HIGHEST_QUALITY_SIERPINSKI_SQUARE_SIZE;
 	};
 	
 	return SierpinskiImageParamsRetriever;

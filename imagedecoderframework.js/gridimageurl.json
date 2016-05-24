@@ -1,6 +1,6 @@
 {
-    "internalTileWidth"  : 256,
-    "internalTileHeight" : 384,
+    "internalTileWidth"  : 128,
+    "internalTileHeight" : 192,
     "lowestLevelTilesX" : 8,
     "lowestLevelTilesY" : 4,
     "levels": 4

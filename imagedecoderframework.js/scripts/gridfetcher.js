@@ -42,11 +42,11 @@ var GridFetcher = (function GridFetcherClosure() {
         return result;
     };
     
-    GridFetcher.prototype.getHashCode = function getHashCode(tileKey) {
+    GridFetcher.prototype.getHashCodeInternal = function getHashCodeInternal(tileKey) {
         return tileKey.tileX + tileKey.tileY * (this._imageParams.lowestLevelTilesX << tileKey.level);
     };
 
-    GridFetcher.prototype.isEqual = function getHashCode(key1, key2) {
+    GridFetcher.prototype.isEqualInternal = function isEqualInternal(key1, key2) {
         return key1.tileX === key2.tileX && key1.tileY === key2.tileY;
     };
 

@@ -22,14 +22,16 @@ var SierpinskiFetcher = (function SierpinskiFetcherClosure() {
             // A typical implementation will perform here some AJAX call before calling resolve().
             // Instead here we only calculate the sierpinski squares falls in the tile
             
-            var carpetSize  = self._lowestLevelCarpetSize << key.level;
             var tileMinX = self._imageParams.internalTileWidth  * key.tileX;
             var tileMinY = self._imageParams.internalTileHeight * key.tileY;
             var tileMaxX = self._imageParams.internalTileWidth  * (key.tileX + 1);
             var tileMaxY = self._imageParams.internalTileHeight * (key.tileY + 1);
-            
-            var sierpinskiSquaresCoordinates = graphicsLibrary.collectSierpinskiSquares(
-                tileMinX, tileMinY, tileMaxX, tileMaxY, carpetSize);
+            var carpetSize  = self._lowestLevelCarpetSize << key.level;
+			var sierpinskiCollector = graphicsLibrary.createSierpinskiSquaresCollector(
+				tileMinX, tileMinY, tileMaxX, tileMaxY, carpetSize);
+			
+			sierpinskiCollector.collect();
+			var sierpinskiSquaresCoordinates = sierpinskiCollector.getCollectedSquaresCoordinates();
             
             resolve({
                 TILE_WIDTH : self._imageParams.internalTileWidth,
@@ -61,11 +63,11 @@ var SierpinskiFetcher = (function SierpinskiFetcherClosure() {
         return result;
     };
     
-    SierpinskiFetcher.prototype.getHashCode = function getHashCode(tileKey) {
+    SierpinskiFetcher.prototype.getHashCodeInternal = function getHashCodeInternal(tileKey) {
         return tileKey.tileX + tileKey.tileY * (this._imageParams.lowestLevelTilesX << tileKey.level);
     };
 
-    SierpinskiFetcher.prototype.isEqual = function getHashCode(key1, key2) {
+    SierpinskiFetcher.prototype.isEqualInternal = function isEqualInternal(key1, key2) {
         return key1.tileX === key2.tileX && key1.tileY === key2.tileY;
     };
 
