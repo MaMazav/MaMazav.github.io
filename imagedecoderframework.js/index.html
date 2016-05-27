@@ -31,8 +31,10 @@
  <nav>
   <ul>
    <li><a class="navlink" href="#imageimplementation">Implementing an image</a></li>
-   <li><a class="navlink" href="#cesium">Showing image in Cesium</a></li>
    <li><a class="navlink" href="#leaflet">Showing image in Leaflet</a></li>
+   <li><a class="navlink" href="#sierpinski">Another image: Sierpinski carpet</a></li>
+   <li><a class="navlink" href="#progressive">Progressive fetch</a></li>
+   <li><a class="navlink" href="#cesium">Showing image in Cesium</a></li>
    <li><a class="navlink" href="#imagedecoder">Programmatically decode region in image</a></li>
    <li><a class="navlink" href="#viewerimagedecoder">Showing image in arbitrary viewer</a></li>
   </ul>
@@ -54,7 +56,6 @@
   <hr>
   <a name="imageimplementation"></a>
   <h3>Implementing an image</h3>
-  
   <p>
    TBD
   </p>
@@ -73,8 +74,8 @@
   <pre><code data-src="scripts/gridleafletdemo.js"></code></pre>
 
   <hr>
-  <a name="leaflet"></a>
-  <h3>Another decoder</h3>
+  <a name="sierpinski"></a>
+  <h3>Another image: Sierpinski carpet</h3>
   <p>
    TBD
   </p>
@@ -85,21 +86,38 @@
   <pre><code data-src="scripts/sierpinskifetcher.js"></code></pre>
   <pre><code data-src="scripts/sierpinskipixelsdecoder.js"></code></pre>
   <pre><code data-src="scripts/sierpinskiimageparamsretriever.js"></code></pre>
+  
+  <hr>
+  <a name="progressive"></a>
+  <h3>Progressive fetch</h3>
+  <p>
+   TBD
+  </p>
+  <p>
+   <a href="leafletprogressivedemo.html">Leaflet Progressive ImageDecoder Demo</a>
+  </p>
+  <pre><code data-src="scripts/sierpinskiprogressiveimageimplementation.js"></code></pre>
+  <pre><code data-src="scripts/sierpinskiprogressivefetcher.js"></code></pre>
 
   <hr>
   <a name="cesium"></a>
-  <h3>Showing image in Cesium using CesiumImageDecoderLayerManager</h3>
+  <h3>Showing image in Cesium</h3>
+  <p>
+   Two alternatives:
+  </p>
+  <h4>CesiumImageDecoderLayerManager</h4>
   <p>
    TBD
+  </p>
+  <p>
+   Supports progressiveness, but less stable and not enjoy ImageryProvider's advantages (caching, etc.).
   </p>
   <p>
    <a href="cesiumlayermanagerdemo.html">CesiumImageDecoderLayerManager Demo</a>
   </p>
   <pre><code data-src="scripts/cesiumlayermanagerdemo.js"></code></pre>
-
-  <hr>
-  <a name="cesium"></a>
-  <h3>Showing image in Cesium using ImageDecoderImageryProvider</h3>
+  <!----------->
+  <h4>ImageDecoderImageryProvider</h4>
   <p>
    TBD
   </p>
@@ -132,13 +150,13 @@
   <script src="scripts/imagedecoderframework-debug.js"></script>
 
   <script src="scripts/graphicslibrary.js"></script>
-  <script src="scripts/sierpinskiimageimplementation.js"></script>
+  <script src="scripts/sierpinskiprogressiveimageimplementation.js"></script>
   <script src="scripts/sierpinskipixelsdecoder.js"></script>
-  <script src="scripts/sierpinskifetcher.js"></script>
+  <script src="scripts/sierpinskiprogressivefetcher.js"></script>
   <script src="scripts/sierpinskiimageparamsretriever.js"></script>
   <script src="scripts/sierpinskiprogressiveimageimplementation.js"></script>
   <script src="scripts/sierpinskiprogressivefetcher.js"></script>
-  <script src="scripts/sierpinskileafletdemo.js"></script>
+  <script src="scripts/sierpinskiprogressiveleafletdemo.js"></script>
 
   <script src="scripts/gridimageimplementation.js"></script>
   <script src="scripts/gridpixelsdecoder.js"></script>

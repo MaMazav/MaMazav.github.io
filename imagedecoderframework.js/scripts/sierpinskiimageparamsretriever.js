@@ -6,7 +6,7 @@ var SierpinskiImageParamsRetriever = (function SierpinskiImageParamsRetrieverClo
 	}
 	
 	SierpinskiImageParamsRetriever.LOWEST_QUALITY_SIERPINSKI_SQUARE_SIZE = 81;
-	SierpinskiImageParamsRetriever.HIGHEST_QUALITY_SIERPINSKI_SQUARE_SIZE = 10;
+	SierpinskiImageParamsRetriever.HIGHEST_QUALITY_SIERPINSKI_SQUARE_SIZE = 4;
 	
 	SierpinskiImageParamsRetriever.prototype.getLevelWidth = function getLevelWidth(level) {
 		return this._lowestLevelWidth * Math.pow(2, level);

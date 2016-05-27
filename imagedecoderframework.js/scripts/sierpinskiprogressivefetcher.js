@@ -19,6 +19,8 @@ var SierpinskiProgressiveFetcher = (function SierpinskiProgressiveFetcherClosure
     SierpinskiProgressiveFetcher.prototype.fetchProgressiveInternal = function fetchProgressiveInternal(dataKeys, dataCallback, queryIsKeyNeedFetch, maxQuality) {
         var self = this;
 		var resolveAbort = null;
+		var isAbortRequested = false;
+		var isFetchTerminated = false;
 		var nextStageMinSquareSize = SierpinskiImageParamsRetriever.LOWEST_QUALITY_SIERPINSKI_SQUARE_SIZE;
 		var maxQualityMinSquareSize = maxQuality;
 
@@ -36,9 +38,12 @@ var SierpinskiProgressiveFetcher = (function SierpinskiProgressiveFetcherClosure
 		}
 		
 		var interval = setInterval(function() {
-			if (resolveAbort) {
+			if (isAbortRequested) {
 				clearInterval(interval);
-				resolveAbort();
+				isFetchTerminated = true;
+				if (resolveAbort) {
+					resolveAbort();
+				}
 				return;
 			}
 			
@@ -66,6 +71,7 @@ var SierpinskiProgressiveFetcher = (function SierpinskiProgressiveFetcherClosure
 			}
 			
 			if (isMaxQuality) {
+				isFetchTerminated = true;
 				clearInterval(interval);
 			} else {
 				nextStageMinSquareSize /= 3;
@@ -74,8 +80,13 @@ var SierpinskiProgressiveFetcher = (function SierpinskiProgressiveFetcherClosure
 		
 		return {
 			abortAsync: function() {
+				isAbortRequested = true;
 				return new Promise(function(resolve, reject) {
-					resolveAbort = resolve;
+					if (isFetchTerminated) {
+						resolve();
+					} else {
+						resolveAbort = resolve;
+					}
 				});
 			}
 		};
