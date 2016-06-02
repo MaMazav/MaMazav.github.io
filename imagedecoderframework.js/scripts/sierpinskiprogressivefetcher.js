@@ -16,7 +16,7 @@ var SierpinskiProgressiveFetcher = (function SierpinskiProgressiveFetcherClosure
     
     SierpinskiProgressiveFetcher.prototype = Object.create(imageDecoderFramework.SimpleFetcherBase.prototype);
     
-    SierpinskiProgressiveFetcher.prototype.fetchProgressiveInternal = function fetchProgressiveInternal(dataKeys, dataCallback, queryIsKeyNeedFetch, maxQuality) {
+    SierpinskiProgressiveFetcher.prototype.fetchProgressiveInternal = function fetchProgressiveInternal(imagePartParams, dataKeys, dataCallback, queryIsKeyNeedFetch, maxQuality) {
         var self = this;
 		var resolveAbort = null;
 		var isAbortRequested = false;

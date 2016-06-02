@@ -14,10 +14,10 @@ function decodeRegionByImageDecoder() {
     }
     
     var regionParams = {
-        minX: 100,
-        minY: 100,
-        maxXExclusive: 200,
-        maxYExclusive: 200,
+        minX: 150,
+        minY: 50,
+        maxXExclusive: 250,
+        maxYExclusive: 150,
         screenWidth: 300,
         screenHeight: 300
     };

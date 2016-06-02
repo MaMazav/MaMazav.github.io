@@ -157,5 +157,154 @@ var graphicsLibrary = {
 		graphicsLibrary.paintIntersectedCircle(
 			targetImageData, mouthRadius, centerX, mouthY, intersectMinX, intersectMinY, intersectMaxX, intersectMaxY, thickness);
 
-	}
+	},
+    
+    createViewer: function(divContainerId, viewChangedCallback, startPosition) {
+        var viewerElement;
+        var viewerCanvas;
+        buildViewerHtmlElements();
+        
+        var viewerCanvasPosition = null;
+        var viewerElementPosition = JSON.parse(JSON.stringify(startPosition));
+        
+        setTimeout(function() {
+            moveViewer(0, 0, 0, 0);
+        }, 0);
+        
+        return {
+            getCanvas: function() {
+                return viewerCanvas;
+            },
+            
+            updateCanvasPosition: function(newPosition) {
+                viewerCanvasPosition = JSON.parse(JSON.stringify(newPosition));
+
+                fixAspectRatio();
+                setCanvasPosition();
+            }
+        };
+        
+        function setCanvasPosition() {
+            var resolution = viewerElement.clientWidth  / (viewerElementPosition.east - viewerElementPosition.west );
+            var viewerCanvasLeft   = (viewerCanvasPosition .west  - viewerElementPosition.west ) * resolution;
+            var viewerCanvasTop    = (viewerElementPosition.north - viewerCanvasPosition .north) * resolution;
+            var viewerCanvasWidth  = (viewerCanvasPosition .east  - viewerCanvasPosition .west ) * resolution;
+            var viewerCanvasHeight = (viewerCanvasPosition .north - viewerCanvasPosition .south) * resolution;
+            viewerCanvas.style.left   = viewerCanvasLeft   + 'px';
+            viewerCanvas.style.top    = viewerCanvasTop    + 'px';
+            viewerCanvas.style.width  = viewerCanvasWidth  + 'px';
+            viewerCanvas.style.height = viewerCanvasHeight + 'px';
+        }
+        
+        function fixAspectRatio() {
+            var width  = viewerElementPosition.east  - viewerElementPosition.west;
+            var height = viewerElementPosition.north - viewerElementPosition.south;
+
+            var cartographicRatio = width / height;
+            var pixelRatio = viewerElement.clientWidth / viewerElement.clientHeight;
+            width  = cartographicRatio > pixelRatio ? width  : height * pixelRatio;
+            height = cartographicRatio < pixelRatio ? height : width  / pixelRatio;
+
+            var centerX = (viewerElementPosition.east  + viewerElementPosition.west ) / 2;
+            var centerY = (viewerElementPosition.north + viewerElementPosition.south) / 2;
+            viewerElementPosition.west  = centerX - width  / 2;
+            viewerElementPosition.east  = centerX + width  / 2;
+            viewerElementPosition.south = centerY - height / 2;
+            viewerElementPosition.north = centerY + height / 2;
+        }
+
+        function moveViewer(westDelta, eastDelta, southDelta, northDelta) {
+            if (viewerElementPosition === null) {
+                alert('Image has not been loaded yet');
+                return;
+            }
+            
+            fixAspectRatio();
+            
+            viewerElementPosition.west  +=  westDelta * (viewerElementPosition.east  - viewerElementPosition.west );
+            viewerElementPosition.east  +=  eastDelta * (viewerElementPosition.east  - viewerElementPosition.west );
+            viewerElementPosition.south += southDelta * (viewerElementPosition.north - viewerElementPosition.south);
+            viewerElementPosition.north += northDelta * (viewerElementPosition.north - viewerElementPosition.south);
+            
+            if (viewerCanvasPosition !== null) {
+                setCanvasPosition();
+            }
+            
+            viewChangedCallback(viewerElementPosition, viewerElement.clientWidth, viewerElement.clientHeight);
+        }
+        
+        function buildViewerHtmlElements() {
+            viewerElement = document.createElement('td');
+            viewerCanvas = document.createElement('canvas');
+
+            var viewerRelativeDiv = document.createElement('div');
+            viewerRelativeDiv.appendChild(viewerCanvas);
+            viewerElement.appendChild(viewerRelativeDiv);
+            viewerRelativeDiv.style.position = 'relative';
+            viewerRelativeDiv.style.width = 0;
+            viewerRelativeDiv.style.height = 0;
+            viewerElement.style.overflow = 'hidden';
+            viewerElement.style.width  = '100%';
+            viewerElement.style.height = '100%';
+            viewerElement.style.textAlign = 'left';
+            viewerElement.style.verticalAlign = 'top';
+            viewerCanvas.style.position = 'absolute';
+            
+            var table = document.createElement('table');
+            table.style.width  = '100%';
+            table.style.height = '100%';
+            
+            var zoomTr = document.createElement('tr');
+            var zoomTd = document.createElement('td');
+            zoomTd.appendChild(createMoveButton( 0.1  , -0.1  ,  0.1  , -0.1  , '   +   '));
+            zoomTd.appendChild(createMoveButton(-0.125,  0.125, -0.125,  0.125, '   -   '));
+            zoomTd.colSpan = 3;
+            zoomTr.appendChild(zoomTd);
+            table.appendChild(zoomTr);
+            
+            addRow([null, createButtonTd(0, 0, 0.1,  0.1, '^', '100%', '20px', null, 'bottom'), null]);
+            addRow([createButtonTd(-0.1, -0.1, 0, 0, '<', '20px', '100%', 'right'), viewerElement, createButtonTd(0.1, 0.1, 0, 0, '>', '20px', '100%', 'left')]);
+            addRow([null, createButtonTd(0, 0, -0.1, -0.1, 'V', '100%', '20px', null, 'top'), null]);
+
+            document.getElementById(divContainerId).appendChild(table);
+            
+            function createButtonTd(westDelta, eastDelta, southDelta, northDelta, value, width, height, horizontalAlign, verticalAlign) {
+                var moveButton;
+                moveButton = createMoveButton(westDelta, eastDelta, southDelta, northDelta, value);
+                moveButton.style.width  = width ;
+                moveButton.style.height = height;
+                var td = document.createElement('td');
+                td.appendChild(moveButton);
+                td.style.textAlign = horizontalAlign || 'center';
+                td.style.verticalAlign = verticalAlign || 'middle';
+                return td;
+            }
+            
+            function createMoveButton(westDelta, eastDelta, southDelta, northDelta, value) {
+                var moveButton = document.createElement('input');
+                moveButton.type = 'button';
+                moveButton.value = value;
+                
+                moveButton.addEventListener('click', function() {
+                    moveViewer(westDelta, eastDelta, southDelta, northDelta);
+                });
+                
+                return moveButton;
+            }
+            
+            function addRow(elementArray) {
+                var tr = document.createElement('tr');
+                for (var i = 0; i < elementArray.length; ++i) {
+                    var td = elementArray[i];
+                    if (!td) {
+                        td = document.createElement('td');
+                        td.style.textAlign = 'center';
+                        td.style.verticalAlign = 'middle';
+                    }
+                    tr.appendChild(td);
+                }
+                table.appendChild(tr);
+            }
+        }
+    }
 };
