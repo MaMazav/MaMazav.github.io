@@ -27,7 +27,7 @@
    <li><a class="navlink" href="#sierpinski">Another image: Sierpinski carpet</a></li>
    <li><a class="navlink" href="#progressive">Progressive fetch</a></li>
    <li><a class="navlink" href="#cesium">Showing image in Cesium</a></li>
-   <li><a class="navlink" href="#imagedecoder">Programmatically decode region in image</a></li>
+   <li><a class="navlink" href="#imagedecoder">Programmatically get pixels of region in image</a></li>
    <li><a class="navlink" href="#viewerimagedecoder">Showing image in arbitrary viewer</a></li>
   </ul>
  </nav>
@@ -45,34 +45,148 @@
    Leaflet. However it contains API also for general purpose image decoder.
   </p>
   
+  <p>
+   The main advantages of using the library over implementing your image on one of the popular viewers
+   API (e.g. Cesium's ImageryProvider or Leaflet's layers) are:
+  </p>
+  <ul>
+   <li>Heavy use of Web Workers, which allow better interactivity.</li>
+   <li>Support in progressive fetch of gradually improved quality.</li>
+   <li>An intermediate level between image implementation and viewer: Once an image is implemented, it may
+       be used easily in both Leaflet and Cesium. Moreover, once implemented a plugin for your favorite
+       viewer you may use it for any image.</li>
+  </ul>
+  <p>
+   Once an image is implemented, the API of using it (for example to show part of it in HTML page or put
+   it on a viewer) is relatively simple. However implementing the underlying image requires getting used of
+   the structure of the image, which should handle with splitting the work between Web Workers. In addition,
+   the spatial calclations of the exact data to be fetched and pixels to be drawn on decode may be
+   unintuitive without some experience with viewer infrastructure implementations.
+  </p>
+  
   <hr>
   <a name="imageimplementation"></a>
   <h3>Implementing an image</h3>
   <p>
-   TBD
+   An image requires implementating four classes. Each object of these classes may live in another Web Worker.
+   Thus all method arguments, method results and even exceptions should be serializable. You don't need to
+   treat its serialization and manage the Web Workers, just make sure that all data support
+   <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm#Things_that_don't_work_with_structured_clones">
+   structured clones</a>.
+  </p>
+  <ol>
+   <li>Fetcher - fetches the image parameters and the image data from server. A single fetcher instance is
+       created for each image instance and it lives in its own Web Worker.</li>
+   <li>PixelsDecoder - performs the decoding of the fetched data and converting it into pixels. There may
+       be some decoders for a single image instance and each one lives in its own Web Worker.</li>
+   <li>ImageParamsRetreiver - a lightweight object which accepts the image parameters fetched by the Fetcher
+       and expose them in the ImageDecoderFramework API methods. ImageParamsRetreiver instances will be
+       created and used by the framework as auxiliary classes near the Fetcher and PixelDecoders.</li>
+   <li>ImageImplementation - the entry point of creating an image. It contains factory methods for creating
+       instances of the classes mentioned above. In addition it tells the framework which scripts should be
+       imported on other Web Workers to instantiate and use your image. Similarly to ImageParamsRetreiver,
+       the ImageImplementation should also be reachable by all Web Workers.
+  </ol>
+  <p>
+   Let's look on a simple example. This example shows an image that contains some resolution levels. Each
+   resolution level is splitted into rectangular tiles (as in a standard "pyramid" - a common technique in
+   the area of graphic viewers). The image is blue except of the tile borders which are cyan.
+  </p>
+  <p>
+   The most simple way to implement an image is using SimpleFetcher and SimplePixelsDecoder. It contains a
+   key-based mechanism for splitting the image data into parts, like tiles.
+  </p>
+  <p>
+   First, we will implement two "beurocratical" classes: The ImageParamsRetreiver and the ImageImplementation.
+  </p>
+  <p>
+   The ImageImplementation is the entry point of creating an image. It contains three factory methods: Two of
+   them, for creating PixelsDecoder and ImageParamsRetreiver are regular factory methods. The third method,
+   "createFetcher", is the first called method for a given image instance. It opens the image by a given URL
+   and returns asynchronously (promise-based) a Fetcher object and a sizeParams data object. This sizeParams
+   structure is up to your decision and it will be passed later to ImageParamsRetreiver instances. Just make
+   sure that the sizeParams is serializable.
+  </p>
+  <p>
+   Besides the factory methods, the image implementation should also provide a list of script files to be
+   imported on the other Web Workers in the system. These files should contain all code needed for allocating
+   and using the image parts. If you are not familiar with Web Worker, just imagine that this scripts are
+   included in a new HTML page, and think about all dependent scripts that should be loaded in order this
+   script to work there properly.
   </p>
   <pre><code data-src="scripts/gridimageimplementation.js"></code></pre>
-  <pre><code data-src="scripts/gridfetcher.js"></code></pre>
-  <pre><code data-src="scripts/gridpixelsdecoder.js"></code></pre>
+  <p>
+   Now let's define the ImageParamsRetreiver. It is only an API for the framework to query about the image
+   parameters. It contains the following methods:
+  </p>
+  <ul>
+   <li>getNumResolutionLevelsForLimittedViewer - Some viewers' API (like Cesium's ImageryProvider) requires
+       to provide the count of the resolution levels in the image prior to its rendering. This method is for
+       them.</li>
+   <li>getImageLevel - This level will be used as the best level for limitted viewers (see previous method).
+       In addition, the framework will later use this level as a reference level when indicating a region in
+       the image (see method getLevel). The calculations below assumes that each level contains pixels count
+       which is four times the number of pixels of its ancestor level (two times each axis).</li>
+   <li>getLevelWidth, getLevelHeight - returns the number of the pixels in the width or the height of a given
+       level.</li>
+   <li>getLevel - given a screen size and region in the image (in coordinates of the image level - see
+       getImageLevel above), this method should tell the framework which level should be used to show this
+       region.</li>
+   <li>getLowestQuality, getHighestQuality - for progressiveness. In this stage you may return here any value
+       you would like to</li>
+  </ul>
   <pre><code data-src="scripts/gridimageparamsretriever.js"></code></pre>
+  <p>
+   Now let's go to the implementation of the two core parts of the image: the Fetcher and the PixelsDecoder.
+   Given that you decided using SimpleFetcher and SimplePixelsDecoder (the only option you know right now :)
+   ), you should decide how to split the image. The fetcher requires providing the following methods:
+   <ul>
+    <li>getDataKeys - calculates the keys needed for a given region in the image.</li>
+    <li>fetch - actually fetches a single tile.</li>
+    <li>getHashCode and isEqual - auxiliary methods for the framework to efficiently treat the image keys.
+        </li>
+  </p>
+  <pre><code data-src="scripts/gridfetcher.js"></code></pre>
+  <p>
+   The fetched data will be passed to a PixelsDecoder, which in turn will accept requests to decode a given
+   region and key.
+  </p>
+  <p>
+   Notice that the framework tries to optimize the fetch and decode requests for maximal reuse. Thus the
+   PixelsDecoder should support decoding of partial region. You should calculate the intersection between the
+   data related with the given key, and the region requested by the framework.
+  </p>
+  <pre><code data-src="scripts/gridpixelsdecoder.js"></code></pre>
+  <p>
+   That's all! now you have an implemented image. Now let's see how can you easily convert this code into a
+   graphic view using your favorite viewer, like Leaflet or Cesium.
 
   <hr>
   <a name="leaflet"></a>
   <h3>Showing image in Leaflet</h3>
-  <p>
-   TBD
-  </p>
   <div id="leafletContainerGrid"></div>
+  <p>
+   Using the following several lines, your image will be shown in leaflet:
+  </p>
   <pre><code data-src="scripts/gridleafletdemo.js"></code></pre>
 
   <hr>
   <a name="sierpinski"></a>
   <h3>Another image: Sierpinski carpet</h3>
   <p>
-   TBD
+   The following example is more complex example of a <a href="https://en.wikipedia.org/wiki/Sierpinski_carpet">
+   sierpinski carpet</a> image. It uses a <a href="scripts/graphicslibrary.js">graphics library</a> which luckily
+   supports by-region partial calculation of the sierpinski squares coordinates (well, actually this "library" was
+   written especially for this demo page...).
   </p>
   <p>
-   <a href="leafletimagedecoderdemo.html">Leaflet ImageDecoder Demo</a>
+   The sierpinski carpet image does not demonstrate a new feature of the framework. It is just another more complex
+   reference example of the framework. In addition we will improve this example to demonstrate progressiveness later
+   (please ignore the getLowestQuality and getHighestQuality methods now - as mentioned above, they are not effective
+   without progressiveness support).
+  </p>
+  <p>
+   <a href="leafletimagedecoderdemo.html">Leaflet Sierpinski ImageDecoder Demo</a>
   </p>
   <pre><code data-src="scripts/sierpinskiimageimplementation.js"></code></pre>
   <pre><code data-src="scripts/sierpinskifetcher.js"></code></pre>
@@ -83,35 +197,63 @@
   <a name="progressive"></a>
   <h3>Progressive fetch</h3>
   <p>
-   TBD
+   Assume you have a heavy image, which is hard to be loaded or decoded. However this image may be splitted
+   into lower qualities, which allows showing a quick lower quality image until the better image will be
+   shown. In this case you may find progressiveness a very useful feature. Unfortunately not all viewers
+   support it easily.
+  </p>
+  <p>
+   Imagine that calculating sierpinski square positions is a very heavy task. (later we'll demonstrate it by
+   adding 500ms delay). As we show squares of smaller size, the count of the square increases and the quality
+   improves. Luckily again, the graphics library enable bounding the square size to a minimal value to
+   improve performance over quality. Let's reimplement our fetcher to support progressive calculation of
+   sierpinski squares (notice the signature of fetchProgressive method, which should be implemented instead
+   of the non progressive fetch method):
   </p>
   <p>
    <a href="leafletprogressivedemo.html">Leaflet Progressive ImageDecoder Demo</a>
   </p>
-  <pre><code data-src="scripts/sierpinskiprogressiveimageimplementation.js"></code></pre>
   <pre><code data-src="scripts/sierpinskiprogressivefetcher.js"></code></pre>
+  <p>
+   The quality is transparent to the PixelsDecoder which only takes a list of squares as an input (although
+   there may be cases in which the PixelsDecoder implementation should be changed to support progressiveness).
+   The ImageParamsRetreiver however should be aware of quality - it should implement the getLowestQuality and
+   getHighestQuality methods so the framework will be able to limit fetch quality and optimize the view (see
+   ImageParamsRetreiver implementation above).
+  </p>
+  <p>
+   Now, just fix the script file and class name to those of the SierpinskiProgressiveFetcher, and we got the
+   progressive version of the sierpinski carpet you can see at the top of the page:
+  </p>
+  <pre><code data-src="scripts/sierpinskiprogressiveimageimplementation.js"></code></pre>
 
   <hr>
   <a name="cesium"></a>
   <h3>Showing image in Cesium</h3>
   <p>
-   Two alternatives:
+   The natural way to implement an image in Cesium is to implement an
+   <a href="https://cesiumjs.org/Cesium/Build/Documentation/ImageryProvider.html">ImageryProvider</a>. This
+   API has a lot of advantages like natural integration into Cesium, tile caching, etc. However this API
+   does not support progressiveness. We provide the two alternatives: CesiumImageDecoderLayerManager is an
+   implementation which support progressiveness, and ImageDecoderImageryProvider which is more stable and
+   enjoys other Cesium's ImageryProvider advantages if you don't care about progressiveness:
   </p>
   <h4>CesiumImageDecoderLayerManager</h4>
   <p>
-   TBD
-  </p>
-  <p>
-   Supports progressiveness, but less stable and not enjoy ImageryProvider's advantages (caching, etc.).
-  </p>
-  <p>
    <a href="cesiumlayermanagerdemo.html">CesiumImageDecoderLayerManager Demo</a>
+  </p>
+  <p>
+   (In new Cesium versions we have a serious blinking issue, hope to solve it soon).
   </p>
   <pre><code data-src="scripts/cesiumlayermanagerdemo.js"></code></pre>
   <!----------->
   <h4>ImageDecoderImageryProvider</h4>
   <p>
-   TBD
+   One may be surprised about the fact that ImageDecoderImageryProvider requires its parent viewer or widget, as standard ImageryProviders
+   do not require this. The reason is performance: Cesium tends to request a lot of tiles, especially when the user moves quickly but also
+   for prefetch reasons. It may significantly degrade performance in the context of heavy decoding images. Thus the framework uses
+   scheduling mechanism to prioritize and even abort some requests. The framework uses the information about the current view area for this
+   prioritization, thus it needs the viewer.
   </p>
   <p>
    <a href="cesiumimageryproviderdemo.html">ImageDecoderImageryProvider Demo</a>
@@ -120,20 +262,31 @@
 
   <hr>
   <a name="imagedecoder"></a>
-  <h3>Programmatically decode region in image</h3>
-  <input type="button" value="Show image!" onclick="decodeRegionByImageDecoder()">
-  <br>
-  <canvas id="imageDecoderDemoCanvas"></canvas>
+  <h3>Programmatically get pixels of region in image</h3>
   <p>
-   TBD
+   Until now we saw only high level interfaces for using the image with Leaflet and Cesium viewers. One can
+   also use the ImageDecoder class to get the pixels programmatically and do it whatever he would like. The
+   following example demonstrate how to decode a region of interest from the image and use it within a simple
+   canvas (click on the button below the code to activate the demo):
   </p>
   <pre><code data-src="scripts/imagedecoderdemo.js"></code></pre>
+  <input type="button" value="Show image!" onclick="decodeRegionByImageDecoder()">
+  <br><br>
+  <canvas id="imageDecoderDemoCanvas"></canvas>
 
   <hr>
   <a name="viewerimagedecoder"></a>
   <h3>Showing image in arbitrary viewer</h3>
   <p>
-   TBD
+   Besides the ImageDecoder demonstrated above, there is also API which is more optimized for viewers. The
+   class ViewerImageDecoder will manage a canvas for you. In case of move it will render only new regions
+   instead of all screen, resize the canvas, copy the pixels and will show a low quality overview of the 
+   image in the background to avoid blinking. You only need to let the ViewerImageDecoder know when and where
+   the viewer moves, and update the canvas position according to the ViewerImageDecoder callbacks.
+  </p>
+  <p>
+   The example below shows how to use the image with a super simple viewer implemented in the graphics
+   library mentioned above.
   </p>
   <div id="viewerDiv">
   </div>
