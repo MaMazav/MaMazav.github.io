@@ -8,7 +8,8 @@ viewerImageDecoder = new imageDecoderFramework.ViewerImageDecoder('SierpinskiPro
         south: 0,
         north: 1
     },
-    adaptProportions: true
+    adaptProportions: true,
+    workersLimit: 3
 });
 viewerImageDecoder.open(url).then(function() {
     var imageBounds = viewerImageDecoder.getBounds();

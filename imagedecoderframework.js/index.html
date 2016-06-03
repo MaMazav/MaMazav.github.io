@@ -169,6 +169,11 @@
    Using the following several lines, your image will be shown in leaflet:
   </p>
   <pre><code data-src="scripts/gridleafletdemo.js"></code></pre>
+  <p>
+   Notice that you the workersLimit argument is optional and has a default value of 5. This argument limits the
+   count of Web Workers used for decoding (excluding the fetch Web Worker). I limitted it in this demo because
+   this page contains four images, and too many Web Workers causes instability issues in mobile device browsers.
+  </p>
 
   <hr>
   <a name="sierpinski"></a>
