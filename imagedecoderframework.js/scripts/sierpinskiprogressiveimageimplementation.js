@@ -7,7 +7,7 @@ var SierpinskiProgressiveImageImplementation = {
                 if (xhttp.readyState === 4 && xhttp.status === 200) {
                     var json = JSON.parse(xhttp.responseText);
                     resolve({
-                        fetcher: new SierpinskiProgressiveFetcher(json),
+                        fetcher: new imageDecoderFramework.SimpleFetcher(new SierpinskiProgressiveFetcher(json)),
                         sizesParams: json
                     });
                 }

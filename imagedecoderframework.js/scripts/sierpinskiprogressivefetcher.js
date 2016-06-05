@@ -2,8 +2,6 @@
 
 var SierpinskiProgressiveFetcher = (function SierpinskiProgressiveFetcherClosure() {
     function SierpinskiProgressiveFetcher(imageParams) {
-        imageDecoderFramework.SimpleFetcherBase.call(this);
-        
         this._imageParams = imageParams;
         
         var lowestLevelWidth  = imageParams.internalTileWidth  * imageParams.lowestLevelTilesX;
@@ -13,10 +11,8 @@ var SierpinskiProgressiveFetcher = (function SierpinskiProgressiveFetcherClosure
         // Make sure the carpet size is a complete power of 3, so square edges lies exactly on pixels
         this._lowestLevelCarpetSize = Math.pow(3, Math.ceil(Math.log(minCarpetSize) / Math.log(3)));
     }
-    
-    SierpinskiProgressiveFetcher.prototype = Object.create(imageDecoderFramework.SimpleFetcherBase.prototype);
-    
-    SierpinskiProgressiveFetcher.prototype.fetchProgressiveInternal = function fetchProgressiveInternal(imagePartParams, dataKeys, dataCallback, queryIsKeyNeedFetch, maxQuality) {
+        
+    SierpinskiProgressiveFetcher.prototype.fetchProgressive = function fetchProgressive(imagePartParams, dataKeys, dataCallback, queryIsKeyNeedFetch, maxQuality) {
         var self = this;
 		var resolveAbort = null;
 		var isAbortRequested = false;
@@ -92,7 +88,7 @@ var SierpinskiProgressiveFetcher = (function SierpinskiProgressiveFetcherClosure
 		};
     };
     
-    SierpinskiProgressiveFetcher.prototype.getDataKeysInternal = function getDataKeysInternal(imagePartParams) {
+    SierpinskiProgressiveFetcher.prototype.getDataKeys = function getDataKeys(imagePartParams) {
         var result = [];
         var levelTilesX = this._imageParams.lowestLevelTilesX << imagePartParams.level;
         var levelTilesY = this._imageParams.lowestLevelTilesY << imagePartParams.level;
@@ -112,11 +108,11 @@ var SierpinskiProgressiveFetcher = (function SierpinskiProgressiveFetcherClosure
         return result;
     };
     
-    SierpinskiProgressiveFetcher.prototype.getHashCodeInternal = function getHashCodeInternal(tileKey) {
+    SierpinskiProgressiveFetcher.prototype.getHashCode = function getHashCode(tileKey) {
         return tileKey.tileX + tileKey.tileY * (this._imageParams.lowestLevelTilesX << tileKey.level);
     };
 
-    SierpinskiProgressiveFetcher.prototype.isEqualInternal = function isEqualInternal(key1, key2) {
+    SierpinskiProgressiveFetcher.prototype.isEqual = function isEqual(key1, key2) {
         return key1.tileX === key2.tileX && key1.tileY === key2.tileY;
     };
 

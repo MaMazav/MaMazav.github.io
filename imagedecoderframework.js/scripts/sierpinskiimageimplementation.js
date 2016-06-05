@@ -7,7 +7,7 @@ var SierpinskiImageImplementation = {
                 if (xhttp.readyState === 4 && xhttp.status === 200) {
                     var json = JSON.parse(xhttp.responseText);
                     resolve({
-                        fetcher: new SierpinskiFetcher(json),
+                        fetcher: new imageDecoderFramework.SimpleFetcher(new SierpinskiFetcher(json)),
                         sizesParams: json
                     });
                 }

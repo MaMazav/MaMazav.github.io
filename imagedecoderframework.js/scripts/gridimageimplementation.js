@@ -7,7 +7,7 @@ var GridImageImplementation = {
                 if (xhttp.readyState === 4 && xhttp.status === 200) {
                     var json = JSON.parse(xhttp.responseText);
                     resolve({
-                        fetcher: new GridFetcher(json),
+                        fetcher: new imageDecoderFramework.SimpleFetcher(new GridFetcher(json)),
                         sizesParams: json
                     });
                 }

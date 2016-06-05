@@ -2,8 +2,6 @@
 
 var SierpinskiFetcher = (function SierpinskiFetcherClosure() {
     function SierpinskiFetcher(imageParams) {
-        imageDecoderFramework.SimpleFetcherBase.call(this);
-        
         this._imageParams = imageParams;
         
         var lowestLevelWidth  = imageParams.internalTileWidth  * imageParams.lowestLevelTilesX;
@@ -14,9 +12,7 @@ var SierpinskiFetcher = (function SierpinskiFetcherClosure() {
         this._lowestLevelCarpetSize = Math.pow(3, Math.ceil(Math.log(minCarpetSize) / Math.log(3)));
     }
     
-    SierpinskiFetcher.prototype = Object.create(imageDecoderFramework.SimpleFetcherBase.prototype);
-    
-    SierpinskiFetcher.prototype.fetchInternal = function fetch(key) {
+    SierpinskiFetcher.prototype.fetch = function fetch(key) {
         var self = this;
         return new Promise(function(resolve) {
             // A typical implementation will perform here some AJAX call before calling resolve().
@@ -43,7 +39,7 @@ var SierpinskiFetcher = (function SierpinskiFetcherClosure() {
         });
     };
     
-    SierpinskiFetcher.prototype.getDataKeysInternal = function getDataKeysInternal(imagePartParams) {
+    SierpinskiFetcher.prototype.getDataKeys = function getDataKeys(imagePartParams) {
         var result = [];
         var levelTilesX = this._imageParams.lowestLevelTilesX << imagePartParams.level;
         var levelTilesY = this._imageParams.lowestLevelTilesY << imagePartParams.level;
@@ -63,11 +59,11 @@ var SierpinskiFetcher = (function SierpinskiFetcherClosure() {
         return result;
     };
     
-    SierpinskiFetcher.prototype.getHashCodeInternal = function getHashCodeInternal(tileKey) {
+    SierpinskiFetcher.prototype.getHashCode = function getHashCode(tileKey) {
         return tileKey.tileX + tileKey.tileY * (this._imageParams.lowestLevelTilesX << tileKey.level);
     };
 
-    SierpinskiFetcher.prototype.isEqualInternal = function isEqualInternal(key1, key2) {
+    SierpinskiFetcher.prototype.isEqual = function isEqual(key1, key2) {
         return key1.tileX === key2.tileX && key1.tileY === key2.tileY;
     };
 

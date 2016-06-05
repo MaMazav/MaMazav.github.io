@@ -2,13 +2,10 @@
 
 var GridFetcher = (function GridFetcherClosure() {
     function GridFetcher(imageParams) {
-        imageDecoderFramework.SimpleFetcherBase.call(this);
         this._imageParams = imageParams;
     }
     
-    GridFetcher.prototype = Object.create(imageDecoderFramework.SimpleFetcherBase.prototype);
-    
-    GridFetcher.prototype.fetchInternal = function fetch(key) {
+    GridFetcher.prototype.fetch = function fetch(key) {
         var self = this;
         return new Promise(function(resolve) {
             // A typical implementation will perform here some AJAX call before calling resolve().
@@ -21,7 +18,7 @@ var GridFetcher = (function GridFetcherClosure() {
         });
     };
     
-    GridFetcher.prototype.getDataKeysInternal = function getDataKeysInternal(imagePartParams) {
+    GridFetcher.prototype.getDataKeys = function getDataKeys(imagePartParams) {
 		// A classic spatial tile calculation of a grid-tiled image
         var result = [];
         var levelTilesX = this._imageParams.lowestLevelTilesX << imagePartParams.level;
@@ -42,11 +39,11 @@ var GridFetcher = (function GridFetcherClosure() {
         return result;
     };
     
-    GridFetcher.prototype.getHashCodeInternal = function getHashCodeInternal(tileKey) {
+    GridFetcher.prototype.getHashCode = function getHashCode(tileKey) {
         return tileKey.tileX + tileKey.tileY * (this._imageParams.lowestLevelTilesX << tileKey.level);
     };
 
-    GridFetcher.prototype.isEqualInternal = function isEqualInternal(key1, key2) {
+    GridFetcher.prototype.isEqual = function isEqual(key1, key2) {
         return key1.tileX === key2.tileX && key1.tileY === key2.tileY;
     };
 
