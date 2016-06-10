@@ -45,41 +45,6 @@
    for tasks which can be prioritized.
   </p>
   
-  <!--
-  <hr>
-  <a name="terminology"></a>
-  <h3>Terminology</h3>
-  
-  <h4>Scheduler</h4>
-  <p>
-   TBD
-  </p>
-  
-  <h4>Resource</h4>
-  <p>
-   TBD
-  </p>
-  
-  <h4>Job</h4>
-  <p>
-   TBD
-  </p>
-  
-  <h4>Queue</h4>
-  <p>
-   TBD
-  </p>
-  
-  <h4>Priority</h4>
-  <p>
-   TBD
-  </p>
-  
-  <h4>Job Context</h4>
-  <p>
-   TBD
-  </p>
-  -->
   <hr>
   <a name="createscheduler"></a>
   <h3>Creating a scheduler</h3>
@@ -262,6 +227,15 @@
     function.
    </li>
   </ul>
+  <p>
+   If releasing of the resource on abort or yield takes some time, you may use the shouldYieldOrAbort function. The function will
+   perform a check if tryYield should be called. If the function returns false, then calling tryYield would have no effect. If the
+   function returns true, you should start to release the resource and call tryYield when the resource really released. Notice
+   however that until you call the tryYield, the situation might be changed and tryYield would have act differently.
+  </p>
+  <p>
+   shouldYieldOrAbort accepts a single argument, the context of the job.
+  </p>
   
   <hr>
   <a name="prioritizer"></a>
@@ -430,7 +404,7 @@
    <tr>
     <td>useYield</td>
 	<td>
-	 <input id="useYield" type="checkbox" value="true">
+	 <input id="useYield" type="checkbox" checked="true">
 	 <label for="useYield">Use yield</label>
 	</td>
    </tr>

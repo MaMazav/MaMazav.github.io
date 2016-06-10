@@ -19,7 +19,7 @@ function initializeScheduling(
 }
 
 function createJob(id, numQueries, useYield, finishedJobCallback) {
-    var jobFunc = useYield ? continueSimpleJob : continueYieldableJob;
+    var jobFunc = useYield ? continueYieldableJob : continueSimpleJob;
     
     var jobContext = {
         performedQueries: 0,

@@ -1,13 +1,15 @@
 function createDbConnectionResource() {
     return {
-        performQuery: function performQuery(sql, callback) {
-            // Simulate query
-            
-            setTimeout(querySimulationEnded, 1000);
-            
-            function querySimulationEnded() {
-                callback('Dummy result');
-            }
+        performQuery: function performQuery(sql) {
+            return new Promise(function(resolve, reject) {
+                // Simulate query
+                
+                setTimeout(querySimulationEnded, 1000);
+                
+                function querySimulationEnded() {
+                    resolve('Dummy result');
+                }
+            });
         }
     };
 }
@@ -18,7 +20,7 @@ var prioritizer = {
             return -1;
         }
         
-        // As much queries the job has performed, as higher the job's priority
+        // As much queries remaining for the job to perform, as higher the job's priority
         return jobContext.numQueries - jobContext.performedQueries;
     }
 };

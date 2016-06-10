@@ -26,7 +26,7 @@ function startSchedulingDemo() {
     var numJobsBeforeRerankOldPriorities = +document.getElementById('numJobsBeforeRerankOldPriorities').value;
     var resourcesGuaranteedForHighPriority = +document.getElementById('resourcesGuaranteedForHighPriority').value;
     var highPriorityToGuaranteeResource = +document.getElementById('highPriorityToGuaranteeResource').value;
-    var useYield = Boolean(document.getElementById('useYield').value);
+    var useYield = Boolean(document.getElementById('useYield').checked);
     
     activeJobs = 0;
     jobsCounter = 0;
