@@ -11,12 +11,18 @@ var SierpinskiProgressiveFetcher = (function SierpinskiProgressiveFetcherClosure
         // Make sure the carpet size is a complete power of 3, so square edges lies exactly on pixels
         this._lowestLevelCarpetSize = Math.pow(3, Math.ceil(Math.log(minCarpetSize) / Math.log(3)));
     }
+    
+    var FetchStatus = {
+        ACTIVE: 1,
+        ABOUT_TO_STOP: 2,
+        STOPPED: 3,
+        FINISHED: 4
+    }
         
     SierpinskiProgressiveFetcher.prototype.fetchProgressive = function fetchProgressive(imagePartParams, dataKeys, dataCallback, queryIsKeyNeedFetch, maxQuality) {
         var self = this;
-		var resolveAbort = null;
-		var isAbortRequested = false;
-		var isFetchTerminated = false;
+		var resolveStop = null;
+		var status = FetchStatus.ACTIVE;
 		var nextStageMinSquareSize = SierpinskiImageParamsRetriever.LOWEST_QUALITY_SIERPINSKI_SQUARE_SIZE;
 		var maxQualityMinSquareSize = maxQuality;
 
@@ -33,13 +39,17 @@ var SierpinskiProgressiveFetcher = (function SierpinskiProgressiveFetcherClosure
 				tileMinX, tileMinY, tileMaxX, tileMaxY, carpetSize));
 		}
 		
-		var interval = setInterval(function() {
-			if (isAbortRequested) {
-				clearInterval(interval);
-				isFetchTerminated = true;
-				if (resolveAbort) {
-					resolveAbort();
+        // Simulate 500ms time for each fetch stage
+		var interval = setInterval(calculateSingleStageFetchResult, 500);
+        
+        function calculateSingleStageFetchResult() {
+			if (status === FetchStatus.ABOUT_TO_STOP) {
+				if (!resolveStop) {
+                    throw 'Internal error: no resolveStop although stop requested';
 				}
+				clearInterval(interval);
+                status = FetchStatus.STOPPED;
+                resolveStop();
 				return;
 			}
 			
@@ -67,24 +77,40 @@ var SierpinskiProgressiveFetcher = (function SierpinskiProgressiveFetcherClosure
 			}
 			
 			if (isMaxQuality) {
-				isFetchTerminated = true;
+				status = FetchStatus.FINISHED;
 				clearInterval(interval);
 			} else {
 				nextStageMinSquareSize /= 3;
 			}
-		}, 500);
+		}
 		
 		return {
-			abortAsync: function() {
-				isAbortRequested = true;
+			stopAsync: function() {
+                if (status === FetchStatus.STOPPED || status === FetchStatus.ABOUT_TO_STOP) {
+                    throw 'Already requested top';
+                }
 				return new Promise(function(resolve, reject) {
-					if (isFetchTerminated) {
-						resolve();
-					} else {
-						resolveAbort = resolve;
-					}
+                    switch (status) {
+                        case FetchStatus.FINISHED:
+                            resolve();
+                            break;
+                        case FetchStatus.ACTIVE:
+                            status = FetchStatus.ABOUT_TO_STOP;
+                            resolveStop = resolve;
+                            break;
+                        default:
+                            throw 'Internal error: fetch status changed until promise loaded';
+                    }
 				});
-			}
+			},
+            
+            resume: function() {
+                if (status !== FetchStatus.STOPPED) {
+                    throw 'Cannot resume non-stopped fetch';
+                }
+                status = FetchStatus.ACTIVE;
+                interval = setInterval(calculateSingleStageFetchResult, 500);
+            }
 		};
     };
     

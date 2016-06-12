@@ -7,7 +7,14 @@ var imageDecoderLayerManager = new imageDecoderFramework.CesiumImageDecoderLayer
 
 imageDecoderLayerManager.setExceptionCallback(console.log);
 
-var cesiumLayerManagerViewer = new Cesium.Viewer('cesiumContainer');
+var cesiumLayerManagerViewer = new Cesium.Viewer('cesiumContainer', {
+    // Only for demo purpose: avoid loading online data
+    imageryProvider : Cesium.createTileMapServiceImageryProvider({
+        url : Cesium.buildModuleUrl('Assets/Textures/NaturalEarthII')
+    }),
+    baseLayerPicker : false,
+    geocoder : false
+});
 imageDecoderLayerManager.open(cesiumLayerManagerViewer);
 setTimeout(function delayedViewRectangle() {
     cesiumLayerManagerViewer.scene.camera.setView({destination: rectangle});

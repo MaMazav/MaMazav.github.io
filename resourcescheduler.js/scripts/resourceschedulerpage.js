@@ -9,10 +9,8 @@ function onDemoButton() {
     var demoButton = document.getElementById('demoButton');
     if (demoState === 'idle') {
         startSchedulingDemo();
-        demoButton.value = 'Stop demo';
     } else if (demoState === 'run') {
         stopSchedulingDemo();
-        demoButton.value = 'Start demo!';
     } else {
         alert('Please wait. Demo is still running');
     }
@@ -31,6 +29,7 @@ function startSchedulingDemo() {
     activeJobs = 0;
     jobsCounter = 0;
     demoState = 'run';
+    demoButton.value = 'Stop demo';
     
     initializeScheduling(
         jobsLimit,
@@ -47,11 +46,17 @@ function startSchedulingDemo() {
         console.log('Starting job ' + id + ' with ' + numQueries + ' queries to perform');
         
         createJob(id, numQueries, useYield, finishedSingleJobCallback);
+        
+        if (activeJobs > 1000) {
+            // This demo spawning more and more jobs, avoid crashing the browser
+            stopSchedulingDemo();
+        }
     }, newJobEveryMs);
 }
 
 function stopSchedulingDemo() {
     demoState = 'waitEnd';
+    demoButton.value = 'Start demo!';
     clearInterval(newJobsIntervalHandle);
     endScheduling();
     

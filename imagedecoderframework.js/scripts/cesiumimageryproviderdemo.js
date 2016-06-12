@@ -7,7 +7,14 @@ var imageryProvider = new imageDecoderFramework.ImageDecoderImageryProvider('Sie
 
 imageryProvider.setExceptionCallback(console.log);
 
-var cesiumImageryProviderViewer = new Cesium.Viewer('cesiumContainer');
+var cesiumImageryProviderViewer = new Cesium.Viewer('cesiumContainer', {
+    // Only for demo purpose: avoid loading online data
+    imageryProvider : Cesium.createTileMapServiceImageryProvider({
+        url : Cesium.buildModuleUrl('Assets/Textures/NaturalEarthII')
+    }),
+    baseLayerPicker : false,
+    geocoder : false
+});
 imageryProvider.open(cesiumImageryProviderViewer);
 cesiumImageryProviderViewer.scene.imageryLayers.addImageryProvider(imageryProvider);
 
