@@ -1,0 +1,24 @@
+body {
+	background-color: red;
+	color: red;
+}
+
+.hljs {
+	background-color: #ffee88;
+}
+
+h1 {
+	color: red;
+}
+
+#content {
+	background-color: #ffcc66;
+}
+
+.navlink {
+	color: #ffcc66;
+}
+
+#leafletContainer {
+	height: 80%;
+}
