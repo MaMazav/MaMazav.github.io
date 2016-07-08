@@ -50,14 +50,14 @@
   <h3>Creating a scheduler</h3>
   
   <p>
-   To begin the work with the ResourceScheduler.js library, include <a href="scripts/resourcescheduler.js">
-   resourcescheduler.js</a> script in your page. Then you have two types of scheduler available: LifoScheduler
-   and PriorityScheduler.
+   To begin the work with the ResourceScheduler.js library, include the following script in your page:
   </p>
+  <pre><code>&lt;script src="http://MaMazav.github.io/cdn/resource-scheduler.dev.js">&lt;/script></code></pre>
   
   <p>
-   The most simplest scheduler to use is LifoScheduler. It just schedule the most recent job in queue when it
-   has an available resource. The LifoScheduler constructor accepts two mandatory arguments:
+   The library contains two types of scheduler available: LifoScheduler and PriorityScheduler. The
+   most simplest scheduler to use is LifoScheduler. It just schedule the most recent job in queue
+   when it has an available resource. The LifoScheduler constructor accepts two mandatory arguments:
   </p>
   <ul>
    <li>
@@ -416,7 +416,7 @@
   <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
   <script src="../scripts/mamazav.github.io.js"></script>
   
-  <script src="scripts/resourcescheduler.js"></script>
+  <script src="../cdn/resource-scheduler.dev.js"></script>
   <script src="scripts/resourceschedulerpage.js"></script>
   
   <script src="scripts/demoinitialization.js"></script>

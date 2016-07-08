@@ -63,7 +63,14 @@
    the spatial calclations of the exact data to be fetched and pixels to be drawn on decode may be
    unintuitive without some experience with viewer infrastructure implementations.
   </p>
-  
+  <p>
+   Using the library requires the following script imports:
+  </p>
+  <pre><code>   &lt;script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js">&lt;/script>
+   &lt;script src="Cesium-1.20/Cesium.js">&lt;/script>&lt;!-- downloaded locally -->
+   &lt;script src="http://MaMazav.github.io/cdn/image-decoder-framework.dev.js">&lt;/script>
+  </code></pre>
+   
   <hr>
   <a name="imageimplementation"></a>
   <h3>Implementing an image</h3>
@@ -302,7 +309,7 @@
   <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
   <script src="../scripts/mamazav.github.io.js"></script>
   
-  <script src="scripts/imagedecoderframework-debug.js"></script>
+  <script src="../cdn/image-decoder-framework.dev.js"></script>
 
   <script src="scripts/graphicslibrary.js"></script>
   <script src="scripts/sierpinskipixelsdecoder.js"></script>

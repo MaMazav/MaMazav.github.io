@@ -39,25 +39,48 @@
    Cesium viewers. Progressive display of quality layers is supported.
   </p>
   
+  <p>
+   
+  </p>
+  
   <hr>
   <a name="showimage"></a>
   <h3>Show an image</h3>
-
-  <div id="leafletContainer"></div>
-
-  <pre><code data-src="scripts/leaflet-jpip.js"></code></pre>
   
   <p>
-   TBD
+   Enter JPIP http URL:
   </p>
+  <input type="text" id="txtUrl" value="http://kdu-server/path/to/file.jp2">
+  <input type="button" value="Show image!" onclick="showImage()">
+  <br>
+  <div id="leafletContainer"></div>
+
+  <p>
+   The below demo requires leaflet and image-decoder-framework libraries besides webjpip:
+  </p>
+  <pre><code>   &lt;script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js">&lt;/script>
+   &lt;script src="http://MaMazav.github.io/cdn/image-decoder-framework.dev.js">&lt;/script>
+   &lt;script src="http://MaMazav.github.io/cdn/webjpip.dev.js">&lt;/script></code></pre>
+  
+  <p>
+   Then the <a href="../imagedecoderframework.js">image-decoder-framework.js API</a> should be used.
+   This API allows you using webjpip.js with
+   <a href="../imagedecoderframework.js#leaflet">Leaflet</a>,
+   <a href="../imagedecoderframework.js#cesium">Cesium</a>,
+   <a href="../imagedecoderframework.js#viewerimagedecoder">Arbirary viewer</a> or simply
+   <a href="../imagedecoderframework.js#imagedecoder">decode regions programmatically</a>.
+   For example, here is the code-behind of the above demo:
+  </p>
+  
+  <pre><code data-src="scripts/leaflet-jpip.js"></code></pre>
   
   <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
   <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
   <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
   <script src="../scripts/mamazav.github.io.js"></script>
   
-  <script src="scripts/webjpip-debug.js"></script>
-  <script src="scripts/imagedecoderframework-debug.js"></script>
+  <script src="../cdn/webjpip.dev.js"></script>
+  <script src="../cdn/image-decoder-framework.dev.js"></script>
   <!--<script src="scripts/webjpippage.js"></script>-->
   
   <script src="scripts/leaflet-jpip.js"></script>
