@@ -304,6 +304,45 @@ proxy.helloWorld(50000);
   
   <input type="button" onclick="demoScriptsToImportPool()" value="Start ScriptsToImportPool demo">
   
+  <a name="uniqueworkers"></a>
+  <hr>
+  <h3>UniqueWorkers</h3>
+  <p>
+   If you have a lot of tasks that are common to some processings, you might want to reduce duplication of processing. The
+   <code>UniqueWorkers</code> is an auxiliary class which will spawn the tasks for you and will ensure that there are no
+   duplicated processings. You just need to attach a key to any calculation (which is defined by getHashCode() and isEqual()
+   method implementations used by the UniqueWorkers) and provide inputs to those tasks using Promises.
+  </p>
+  <p>
+   The UniqueWorkers is especially good for siutations of some dependent tasks. The output of one task may be used for the
+   next task. For example, the following code shows the <a href="https://en.wikipedia.org/wiki/Pascal%27s_triangle">Pascal
+   Triangle</a>, in which every cell is a sum of its two ancestor. You can trace the log prints to ensure that there is
+   only single calculation for each task although many potential calls to it.
+  </p>
+  
+  <p>
+   The worker code is simple as:
+  </p>
+  <pre><code data-src="scripts/uniqueworker.js"></code></pre>
+  
+  <p>
+   And the use of UniqueWorkers goes as follows:
+  </p>
+  <pre><code data-src="scripts/uniqueworkersdemo.js"></code></pre>
+  
+  <input type="button" onclick="demoUniqueWorkers()" value="Start UniqueWorkers demo">
+
+  <table cellpadding="5">
+   <tr><td id="pascal_0_0"></td></tr>
+   <tr><td id="pascal_1_0"><td id="pascal_1_1"></td></tr>
+   <tr><td id="pascal_2_0"><td id="pascal_2_1"><td id="pascal_2_2"></td></tr>
+   <tr><td id="pascal_3_0"><td id="pascal_3_1"><td id="pascal_3_2"><td id="pascal_3_3"></td></tr>
+   <tr><td id="pascal_4_0"><td id="pascal_4_1"><td id="pascal_4_2"><td id="pascal_4_3"><td id="pascal_4_4"></td></tr>
+   <tr><td id="pascal_5_0"><td id="pascal_5_1"><td id="pascal_5_2"><td id="pascal_5_3"><td id="pascal_5_4"><td id="pascal_5_5"></td></tr>
+   <tr><td id="pascal_6_0"><td id="pascal_6_1"><td id="pascal_6_2"><td id="pascal_6_3"><td id="pascal_6_4"><td id="pascal_6_5"><td id="pascal_6_6"></td></tr>
+   <tr><td id="pascal_7_0"><td id="pascal_7_1"><td id="pascal_7_2"><td id="pascal_7_3"><td id="pascal_7_4"><td id="pascal_7_5"><td id="pascal_7_6"><td id="pascal_7_7"></td></tr>
+  </table>
+  
   <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
   <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
   <script src="../scripts/mamazav.github.io.js"></script>
@@ -329,6 +368,8 @@ proxy.helloWorld(50000);
   <script src="scripts/beforeoperationlistenermaster.js"></script>
   <script src="scripts/calleewithimportdirective.js"></script>
   <script src="scripts/proxywithimportdirective.js"></script>
+  <script src="scripts/uniqueworker.js"></script>
+  <script src="scripts/uniqueworkersdemo.js"></script>
  </div></div></div>
  </body>
 </html>
