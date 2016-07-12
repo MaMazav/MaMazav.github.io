@@ -304,18 +304,18 @@ proxy.helloWorld(50000);
   
   <input type="button" onclick="demoScriptsToImportPool()" value="Start ScriptsToImportPool demo">
   
-  <a name="uniqueworkers"></a>
+  <a name="dependencyworkers"></a>
   <hr>
-  <h3>UniqueWorkers</h3>
+  <h3>DependencyWorkers</h3>
   <p>
    If you have a lot of tasks that are common to some processings, you might want to reduce duplication of processing. The
-   <code>UniqueWorkers</code> is an auxiliary class which will spawn the tasks for you and will ensure that there are no
+   <code>DependencyWorkers</code> is an auxiliary class which will spawn the tasks for you and will ensure that there are no
    duplicated processings. You just need to attach a key to any calculation (which is defined by getHashCode() and isEqual()
-   method implementations used by the UniqueWorkers) and provide inputs to those tasks using Promises.
+   method implementations used by the DependencyWorkers) and provide inputs to those tasks using Promises.
   </p>
   <p>
-   The UniqueWorkers is especially good for siutations of some dependent tasks. The output of one task may be used for the
-   next task. For example, the following code shows the <a href="https://en.wikipedia.org/wiki/Pascal%27s_triangle">Pascal
+   The DependencyWorkers is especially good for siutations of some dependent tasks. The output of one task may be used for
+   the next task. For example, the following code shows the <a href="https://en.wikipedia.org/wiki/Pascal%27s_triangle">Pascal
    Triangle</a>, in which every cell is a sum of its two ancestor. You can trace the log prints to ensure that there is
    only single calculation for each task although many potential calls to it.
   </p>
@@ -323,14 +323,14 @@ proxy.helloWorld(50000);
   <p>
    The worker code is simple as:
   </p>
-  <pre><code data-src="scripts/uniqueworker.js"></code></pre>
+  <pre><code data-src="scripts/pascalcellcalculator.js"></code></pre>
   
   <p>
-   And the use of UniqueWorkers goes as follows:
+   And the use of DependencyWorkers goes as follows:
   </p>
-  <pre><code data-src="scripts/uniqueworkersdemo.js"></code></pre>
+  <pre><code data-src="scripts/dependencyworkersdemo.js"></code></pre>
   
-  <input type="button" onclick="demoUniqueWorkers()" value="Start UniqueWorkers demo">
+  <input type="button" onclick="demoDependencyWorkers()" value="Start DependencyWorkers demo">
 
   <table cellpadding="5">
    <tr><td id="pascal_0_0"></td></tr>
@@ -368,8 +368,8 @@ proxy.helloWorld(50000);
   <script src="scripts/beforeoperationlistenermaster.js"></script>
   <script src="scripts/calleewithimportdirective.js"></script>
   <script src="scripts/proxywithimportdirective.js"></script>
-  <script src="scripts/uniqueworker.js"></script>
-  <script src="scripts/uniqueworkersdemo.js"></script>
+  <script src="scripts/pascalcellcalculator.js"></script>
+  <script src="scripts/dependencyworkersdemo.js"></script>
  </div></div></div>
  </body>
 </html>
