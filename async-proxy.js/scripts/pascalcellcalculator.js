@@ -1,17 +1,19 @@
 var PascalCellCalculator = (function PascalCellCalculatorClosure() {
     function PascalCellCalculator(dummyCtorArguments) {
-        
     }
     
     PascalCellCalculator.prototype.start = function start(
-            dependantTaskResults, dependantTaskKeys) {
+            dependantTaskResults, taskKey) {
                 
         console.log(
-            'Performing very heavy calculation: sum of cells (' +
-            dependantTaskKeys[0].row + ', ' + dependantTaskKeys[0].col + ') and (' +
-            dependantTaskKeys[1].row + ', ' + dependantTaskKeys[1].col + ')');
+            'Performing very heavy calculation: sum of cell (' +
+            taskKey.row + ', ' + taskKey.col + ')');
         
-        return Promise.resolve(dependantTaskResults[0] + dependantTaskResults[1]);
+        var result = 0;
+        for (var i = 0; i < dependantTaskResults.length; ++i) {
+            result += dependantTaskResults[i];
+        }
+        return Promise.resolve(result);
     };
     
     return PascalCellCalculator;
