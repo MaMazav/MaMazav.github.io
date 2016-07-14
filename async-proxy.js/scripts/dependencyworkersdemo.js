@@ -9,18 +9,21 @@ var pascalTriangleDependencyWorkers = new AsyncProxy.DependencyWorkers(
 function demoDependencyWorkers() {
     for (var row = 0; row < 8; ++row) {
         for (var col = 0; col <= row; ++col) {
-            calculatePascalTriangleCell(row, col);
+            var targetElement = document.getElementById('pascal_' + row + '_' + col);
+            targetElement.innerHTML = '?';
+            calculatePascalTriangleCell(targetElement, row, col);
         }
     }
 }
 
-function calculatePascalTriangleCell(row, col) {
-    pascalTriangleDependencyWorkers.startTask(
+function calculatePascalTriangleCell(targetElement, row, col) {
+    var taskHandle = pascalTriangleDependencyWorkers.startTask(
         { row: row, col: col },
         function onData(result) {
-            document.getElementById('pascal_' + row + '_' + col).innerHTML = result;
+            targetElement.innerHTML = result;
         }
     );
+    taskHandle.setPriority(col);
 }
 
 function createPascalCellInputRetreiver() {
@@ -47,7 +50,12 @@ setInterval(function emulateResourceLimitation() {
             break;
         }
         var job = readyPrioritizedJobs.pop();
+        
+        // onDataReadyToProcess() may be called some times, for progressive calculation
         job.onDataReadyToProcess(job.subTaskResults);
+        
+        // After last calculation done, onTerminated() should be called
+        job.onTerminated();
     }
 }, 500);
 
