@@ -19,17 +19,20 @@ function demoDependencyWorkers() {
 function calculatePascalTriangleCell(targetElement, row, col) {
     var taskHandle = pascalTriangleDependencyWorkers.startTask(
         { row: row, col: col },
-        function onData(result) {
-            targetElement.innerHTML = result;
+        { onData: function(result) {
+              targetElement.innerHTML = result;
+          }, onTerminated: function() {
+              targetElement.innerHTML = targetElement.innerHTML + '!';
+          }
         }
     );
-    taskHandle.setPriority(col);
+    taskHandle.setPriority(col / (row + 1));
 }
 
 function createPascalCellInputRetreiver() {
     return {
-        createTaskContext: function (taskKey, onDataReadyToProcess, onTerminated) {
-            return new PascalCellTaskContext(taskKey, onDataReadyToProcess, onTerminated);
+        createTaskContext: function (taskKey, callbacks) {
+            return new PascalCellTaskContext(taskKey, callbacks);
         },
         
         getHashCode: function getHashCode(taskKey) {
@@ -45,70 +48,82 @@ function createPascalCellInputRetreiver() {
 
 var readyPrioritizedJobs = [];
 setInterval(function emulateResourceLimitation() {
-    for (var i = 0; i < 3; ++i) {
-        if (readyPrioritizedJobs.length === 0) {
-            break;
-        }
-        var job = readyPrioritizedJobs.pop();
-        
-        // onDataReadyToProcess() may be called some times, for progressive calculation
-        job.onDataReadyToProcess(job.subTaskResults);
-        
-        // After last calculation done, onTerminated() should be called
-        job.onTerminated();
+    if (readyPrioritizedJobs.length === 0) {
+        return;
     }
-}, 500);
-
-function PascalCellTaskContext(taskKey, onDataReadyToProcess, onTerminated) {
-    this.taskKey = taskKey;
-    this.onDataReadyToProcess = onDataReadyToProcess;
-    this.onTerminated = onTerminated;
+    var job = readyPrioritizedJobs.pop();
+    job.isWaitingForResource = false;
     
-    var dependsTasks = this.dependsOnTasks.length;
-    if (dependsTasks === 0) {
-        this.subTaskResults = [1];
+    // Some heavy calculation can go here, and then...
+    var processingEndedPromise = job.callbacks.onDataReadyToProcess(job.subTaskResults);
+}, 50);
+
+function PascalCellTaskContext(taskKey, callbacks) {
+    this.callbacks = callbacks;
+    this.isWaitingForResource = false;
+    this.priority = 0; // Default priority
+
+    this._taskKey = taskKey;
+    
+    if (this.dependsOnTasks.length === 0) {
+        this.subTaskResults = [1]; // dummy. Just need to pass to the worker an array with sum of 1
         readyPrioritizedJobs.push(this);
+        this.isWaitingForResource = true;
     } else {
-        this.subTaskResults = new Array(dependsTasks);
+        this.subTaskResults = [0, 0];
     }
 }
 
 Object.defineProperty(PascalCellTaskContext.prototype, 'dependsOnTasks', {
     get: function getDependsOnTasks() {
-        if (this.taskKey.col === 0 || this.taskKey.col === this.taskKey.row) {
+        if (this._taskKey.col === 0 || this._taskKey.col === this._taskKey.row) {
             return [];
         } else {
-            return [ { row: this.taskKey.row - 1, col: this.taskKey.col - 1 },
-                     { row: this.taskKey.row - 1, col: this.taskKey.col     } ];
+            return [ { row: this._taskKey.row - 1, col: this._taskKey.col - 1 },
+                     { row: this._taskKey.row - 1, col: this._taskKey.col     } ];
         }
     }
 });
 
-PascalCellTaskContext.prototype.setPriority = function(priority) {
-    // The priority is the maximum of all dependant tasks' priorities.
-    // Use it if you have a resource limitation, as in this demo
-    this.priority = priority;
-    readyPrioritizedJobs.sort(function(a, b) {
-        return a.priority - b.priority;
-    });
-};
-
-PascalCellTaskContext.prototype.unregistered = function() {
-    // Use this to stop unnecessary tasks and reduce resource usage
-};
-
 PascalCellTaskContext.prototype.onDependencyTaskResult = function(value, key) {
-    if (key.row !== this.taskKey.row - 1) {
+    if (key.row !== this._taskKey.row - 1) {
         throw 'Unexpected row ' + key.row + '. Expected ' +
-            (this.taskKey.row - 1);
+            (this._taskKey.row - 1);
     }
     switch (key.col) {
-        case this.taskKey.col - 1: this.subTaskResults[0] = value; break;
-        case this.taskKey.col    : this.subTaskResults[1] = value; break;
+        case this._taskKey.col - 1: this.subTaskResults[0] = value; break;
+        case this._taskKey.col    : this.subTaskResults[1] = value; break;
         default: throw 'Unexpected col ' + key.col + '. Expected ' +
-            (this.taskKey.col - 1) + ' or ' + this.taskKey.col;
+            (this._taskKey.col - 1) + ' or ' + this._taskKey.col;
     }
-    if (this.subTaskResults[0] && this.subTaskResults[1]) {
+    
+    if (!this.isWaitingForResource) {
+        this.isWaitingForResource = true;
         readyPrioritizedJobs.push(this);
+    }
+};
+
+PascalCellTaskContext.prototype.statusUpdated = function(status) {
+    if (status.priority !== this.priority) {
+        this.priority = status.priority;
+        readyPrioritizedJobs.sort(function(a, b) {
+            return a.priority - b.priority;
+        });
+    }
+    
+    var isWorkerFinished =
+        status.isIdle && // Not waiting for active worker in DependencyWorkers
+        !this.isWaitingForResource && // Not waiting for resource
+        status.terminatedDependsTasks === this.dependsOnTasks.length; // Not waiting for dependency task
+    
+    if (isWorkerFinished) {
+        console.log('Calculation of (' + this._taskKey.row + ', ' + this._taskKey.col + ') ended');
+        this.callbacks.onTerminated();
+    }
+
+    if (!status.hasListeners) {
+        // if no listeners the calculation can be stopped. It may happen if
+        // taskHandle.unregister() is called.
+        // In this demo taskHandle.unregister() is not called, so nothing to do there.
     }
 };

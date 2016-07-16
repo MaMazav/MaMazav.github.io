@@ -311,7 +311,7 @@ proxy.helloWorld(50000);
    If you have a lot of tasks that are common to some processings, you might want to reduce duplication of processing. The
    <code>DependencyWorkers</code> is an auxiliary class which will spawn the tasks for you and will ensure that there are no
    duplicated processings. You just need to attach a key to any calculation (which is defined by getHashCode() and isEqual()
-   method implementations used by the DependencyWorkers) and provide inputs to those tasks using Promises.
+   method implementations used by the DependencyWorkers) and provide inputs to those tasks using Promises or callbacks.
   </p>
   <p>
    The DependencyWorkers is especially good for siutations of some dependent tasks. The output of one task may be used for
@@ -319,16 +319,52 @@ proxy.helloWorld(50000);
    Triangle</a>, in which every cell is a sum of its two ancestor. You can trace the log prints to ensure that there is
    only single calculation for each task although many potential calls to it.
   </p>
+  <p>
+   The most simplest way to use the DependencyWorkers, is to use the implementor PromiseDependencyWorkers. Its API is based
+   on Promises. It requires to define for each task on which other task results it depends on (using the getDependsOnTasks
+   method), define a pre-worker method to process the data returned by depends tasks and two methods for key searching -
+   getHashCode() and isEqual():
+  </p>
+  <pre><code data-src="scripts/promisedependencyworkersdemo.js"></code></pre>
   
   <p>
-   The worker code is simple as:
+   And the worker code is simple as:
   </p>
   <pre><code data-src="scripts/pascalcellcalculator.js"></code></pre>
+
+  <input type="button" onclick="demoPromiseDependencyWorkers()" value="Start PromiseDependencyWorkers demo">
+  <table cellpadding="5">
+   <tr><td id="pascal_promise_0_0"></td></tr>
+   <tr><td id="pascal_promise_1_0"><td id="pascal_promise_1_1"></td></tr>
+   <tr><td id="pascal_promise_2_0"><td id="pascal_promise_2_1"><td id="pascal_promise_2_2"></td></tr>
+   <tr><td id="pascal_promise_3_0"><td id="pascal_promise_3_1"><td id="pascal_promise_3_2"><td id="pascal_promise_3_3"></td></tr>
+   <tr><td id="pascal_promise_4_0"><td id="pascal_promise_4_1"><td id="pascal_promise_4_2"><td id="pascal_promise_4_3"><td id="pascal_promise_4_4"></td></tr>
+   <tr><td id="pascal_promise_5_0"><td id="pascal_promise_5_1"><td id="pascal_promise_5_2"><td id="pascal_promise_5_3"><td id="pascal_promise_5_4"><td id="pascal_promise_5_5"></td></tr>
+   <tr><td id="pascal_promise_6_0"><td id="pascal_promise_6_1"><td id="pascal_promise_6_2"><td id="pascal_promise_6_3"><td id="pascal_promise_6_4"><td id="pascal_promise_6_5"><td id="pascal_promise_6_6"></td></tr>
+   <tr><td id="pascal_promise_7_0"><td id="pascal_promise_7_1"><td id="pascal_promise_7_2"><td id="pascal_promise_7_3"><td id="pascal_promise_7_4"><td id="pascal_promise_7_5"><td id="pascal_promise_7_6"><td id="pascal_promise_7_7"></td></tr>
+  </table>
   
   <p>
-   And the use of DependencyWorkers goes as follows:
+   In some situations more advanced features are needed, in which the PromiseDependencyWorkers demonstrated above is not enough:
   </p>
+  <ul>
+   <li>Progressive calculation (tasks emit more than a single result before termination).</li>
+   <li>Priorities between tasks due to limitted pre-worker calculation resources.</li>
+   <li>Limitation on count of concurrent workers.</li>
+  </ul>
+  <p>
+   For this you would probable prefer to use the DependencyWorkers class:
+  </p>
+  
   <pre><code data-src="scripts/dependencyworkersdemo.js"></code></pre>
+  
+  <p>
+   This code is of course much complex, so better to use the PromiseDependencyWorkers if the above mentioned features are not
+   needed. Notice that the generic DependencyWorkers only tries to let tools so you can maintain those features, but it doesn't
+   do it for you. For example, it will not limit number of workers for you - if you want to do that you should delay the call
+   to onData() callback. Also it doesn't prioritize tasks for you, but only aggregates for each task the maximal priorities of
+   all dependant tasks so you can decide what to do with that information.
+  </p>
   
   <input type="button" onclick="demoDependencyWorkers()" value="Start DependencyWorkers demo">
 
@@ -347,7 +383,7 @@ proxy.helloWorld(50000);
   <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
   <script src="../scripts/mamazav.github.io.js"></script>
   
-  <script src="../cdn/async-proxy.dev.js"></script>
+  <script src="../cdn/async-proxy.dev.debug.js"></script>
   <script src="scripts/asyncproxypage.js"></script>
 
   <script src="scripts/demourgentfunctions.js"></script>
@@ -369,6 +405,7 @@ proxy.helloWorld(50000);
   <script src="scripts/calleewithimportdirective.js"></script>
   <script src="scripts/proxywithimportdirective.js"></script>
   <script src="scripts/pascalcellcalculator.js"></script>
+  <script src="scripts/promisedependencyworkersdemo.js"></script>
   <script src="scripts/dependencyworkersdemo.js"></script>
  </div></div></div>
  </body>
