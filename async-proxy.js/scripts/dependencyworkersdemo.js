@@ -14,6 +14,26 @@ function demoDependencyWorkers() {
             calculatePascalTriangleCell(targetElement, row, col);
         }
     }
+    
+    // Demonstrates how to use getTaskContext() to provide data from external
+    // source (only for already-spawned tasks)
+    for (var row = 0; row < 8; ++row) {
+        var contextFirstInLine = pascalTriangleDependencyWorkers.getTaskContext(
+            {row: row, col: 0});
+        var contextLastInLine = pascalTriangleDependencyWorkers.getTaskContext(
+            {row: row, col: row});
+
+        if (contextFirstInLine === null || contextLastInLine === null) {
+            throw 'Error: task has not been spawned yet';
+        }
+        
+        // dummy. Just need to pass to the worker an array with sum of 1
+        contextFirstInLine.subTaskResults = [1]; 
+        contextLastInLine.subTaskResults = [1];
+        
+        contextFirstInLine.scheduleTask();
+        contextLastInLine.scheduleTask();
+    }
 }
 
 function calculatePascalTriangleCell(targetElement, row, col) {
@@ -61,17 +81,12 @@ setInterval(function emulateResourceLimitation() {
 function PascalCellTaskContext(taskKey, callbacks) {
     this.callbacks = callbacks;
     this.isWaitingForResource = false;
+    this.isProcessedAtLeastOnce = false;
     this.priority = 0; // Default priority
 
     this._taskKey = taskKey;
     
-    if (this.dependsOnTasks.length === 0) {
-        this.subTaskResults = [1]; // dummy. Just need to pass to the worker an array with sum of 1
-        readyPrioritizedJobs.push(this);
-        this.isWaitingForResource = true;
-    } else {
-        this.subTaskResults = [0, 0];
-    }
+    this.subTaskResults = [0, 0];
 }
 
 Object.defineProperty(PascalCellTaskContext.prototype, 'dependsOnTasks', {
@@ -97,8 +112,13 @@ PascalCellTaskContext.prototype.onDependencyTaskResult = function(value, key) {
             (this._taskKey.col - 1) + ' or ' + this._taskKey.col;
     }
     
+    this.scheduleTask();
+};
+
+PascalCellTaskContext.prototype.scheduleTask = function() {
     if (!this.isWaitingForResource) {
         this.isWaitingForResource = true;
+        this.isProcessedAtLeastOnce = true;
         readyPrioritizedJobs.push(this);
     }
 };
@@ -114,7 +134,8 @@ PascalCellTaskContext.prototype.statusUpdated = function(status) {
     var isWorkerFinished =
         status.isIdle && // Not waiting for active worker in DependencyWorkers
         !this.isWaitingForResource && // Not waiting for resource
-        status.terminatedDependsTasks === this.dependsOnTasks.length; // Not waiting for dependency task
+        status.terminatedDependsTasks === this.dependsOnTasks.length && // Not waiting for dependency task
+        this.isProcessedAtLeastOnce; // Avoid immediate termination in tasks with no dependencies
     
     if (isWorkerFinished) {
         console.log('Calculation of (' + this._taskKey.row + ', ' + this._taskKey.col + ') ended');
