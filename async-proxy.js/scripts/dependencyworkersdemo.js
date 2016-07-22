@@ -27,12 +27,13 @@ function demoDependencyWorkers() {
             throw 'Error: task has not been spawned yet';
         }
         
-        // dummy. Just need to pass to the worker an array with sum of 1
-        contextFirstInLine.subTaskResults = [1]; 
-        contextLastInLine.subTaskResults = [1];
-        
-        contextFirstInLine.scheduleTask();
-        contextLastInLine.scheduleTask();
+        // No need for worker for edge cells; Result always 1
+        contextFirstInLine.callbacks.onDataReadyToProcess(1, /*isDisableWorker=*/true);
+        contextFirstInLine.callbacks.onTerminated();
+        if (row > 0) {
+            contextLastInLine.callbacks.onDataReadyToProcess(1, /*isDisableWorker=*/true);
+            contextLastInLine.callbacks.onTerminated();
+        }
     }
 }
 

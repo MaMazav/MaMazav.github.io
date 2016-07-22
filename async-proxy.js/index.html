@@ -351,7 +351,8 @@ proxy.helloWorld(50000);
    <li>Progressive calculation (tasks emit more than a single result before termination).</li>
    <li>Priorities between tasks due to limitted pre-worker calculation resources.</li>
    <li>Limitation on count of concurrent workers.</li>
-   <li>Adding task dependency dynamically after task has already started.
+   <li>Adding task dependency dynamically after task has already started.</li>
+   <li>Tasks which do not need Workers but only Main-thread calculation.</li>
   </ul>
   <p>
    For this you would probable prefer to use the DependencyWorkers class:
