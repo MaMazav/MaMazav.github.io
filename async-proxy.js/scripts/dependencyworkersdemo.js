@@ -87,18 +87,12 @@ function PascalCellTaskContext(taskKey, callbacks) {
     this._taskKey = taskKey;
     
     this.subTaskResults = [0, 0];
-}
-
-Object.defineProperty(PascalCellTaskContext.prototype, 'dependsOnTasks', {
-    get: function getDependsOnTasks() {
-        if (this._taskKey.col === 0 || this._taskKey.col === this._taskKey.row) {
-            return [];
-        } else {
-            return [ { row: this._taskKey.row - 1, col: this._taskKey.col - 1 },
-                     { row: this._taskKey.row - 1, col: this._taskKey.col     } ];
-        }
+    
+    if (taskKey.col > 0 && taskKey.col < taskKey.row) {
+        callbacks.registerTaskDependency({ row: this._taskKey.row - 1, col: this._taskKey.col - 1 });
+        callbacks.registerTaskDependency({ row: this._taskKey.row - 1, col: this._taskKey.col });
     }
-});
+}
 
 PascalCellTaskContext.prototype.onDependencyTaskResult = function(value, key) {
     if (key.row !== this._taskKey.row - 1) {
@@ -134,7 +128,7 @@ PascalCellTaskContext.prototype.statusUpdated = function(status) {
     var isWorkerFinished =
         status.isIdle && // Not waiting for active worker in DependencyWorkers
         !this.isWaitingForResource && // Not waiting for resource
-        status.terminatedDependsTasks === this.dependsOnTasks.length && // Not waiting for dependency task
+        status.terminatedDependsTasks === status.dependsTasks && // Not waiting for dependency task
         this.isProcessedAtLeastOnce; // Avoid immediate termination in tasks with no dependencies
     
     if (isWorkerFinished) {
