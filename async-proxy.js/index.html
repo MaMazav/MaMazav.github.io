@@ -355,18 +355,24 @@ proxy.helloWorld(50000);
    <li>Tasks which do not need Workers but only Main-thread calculation.</li>
   </ul>
   <p>
-   For this you would probable prefer to use the DependencyWorkers class:
+   For this you would probable prefer to use the generic DependencyWorkers and/or SchedulerDependencyWorkers classes. The
+   DependencyWorkers class tries to be as much generic as possible. The DependencyWorkers doesn't maintain the mentioned features
+   for you but only provide you the API and all information needed to do it for you: It will aggregate the maximal priority of all
+   dependant tasks for each task, and it let you call to onData() callback whenever you want to limit concurrent active workers
+   and to apply priority. The SchedulerDependencyWorkers, however, is less generic and maintain priority and worker limitation
+   for you - you only need to provide an appropriate <a href="../resource-scheduler.js">Scheduler</a>.
+  </p>
+  <p>
+   .
+  </p>
+  
+  <p>
+   Following an example for using DependencyWorkers in order to maintain progressive calculation (each task emits more than a single
+   result). This example does not include priority or workers count limitation. The code for using DependencyWorkers is of course
+   much complex, so better to use the PromiseDependencyWorkers if the above mentioned features are not needed:
   </p>
   
   <pre><code data-src="scripts/dependencyworkersdemo.js"></code></pre>
-  
-  <p>
-   This code is of course much complex, so better to use the PromiseDependencyWorkers if the above mentioned features are not
-   needed. Notice that the generic DependencyWorkers only tries to let tools so you can maintain those features, but it doesn't
-   do it for you. For example, it will not limit number of workers for you - if you want to do that you should delay the call
-   to onData() callback. Also it doesn't prioritize tasks for you, but only aggregates for each task the maximal priorities of
-   all dependant tasks so you can decide what to do with that information.
-  </p>
   
   <input type="button" onclick="demoDependencyWorkers()" value="Start DependencyWorkers demo">
 
@@ -381,11 +387,32 @@ proxy.helloWorld(50000);
    <tr><td id="pascal_7_0"><td id="pascal_7_1"><td id="pascal_7_2"><td id="pascal_7_3"><td id="pascal_7_4"><td id="pascal_7_5"><td id="pascal_7_6"><td id="pascal_7_7"></td></tr>
   </table>
   
+  <p>
+   If you would like to add the Worker count limitation and Prioritization featues, you may use the SchedulerWrapperInputRetreiver
+   with an appropriate <a href="../resource-scheduler.js">Scheduler</a>:
+  </p>
+  
+  <pre><code data-src="scripts/dependencyworkerswithschedulerdemo.js"></code></pre>
+
+  <input type="button" onclick="demoDependencyWorkersWithScheduler()" value="Start DependencyWorkers demo with Scheduler">
+  
+  <table cellpadding="5">
+   <tr><td id="scheduler_pascal_0_0"></td></tr>
+   <tr><td id="scheduler_pascal_1_0"><td id="scheduler_pascal_1_1"></td></tr>
+   <tr><td id="scheduler_pascal_2_0"><td id="scheduler_pascal_2_1"><td id="scheduler_pascal_2_2"></td></tr>
+   <tr><td id="scheduler_pascal_3_0"><td id="scheduler_pascal_3_1"><td id="scheduler_pascal_3_2"><td id="scheduler_pascal_3_3"></td></tr>
+   <tr><td id="scheduler_pascal_4_0"><td id="scheduler_pascal_4_1"><td id="scheduler_pascal_4_2"><td id="scheduler_pascal_4_3"><td id="scheduler_pascal_4_4"></td></tr>
+   <tr><td id="scheduler_pascal_5_0"><td id="scheduler_pascal_5_1"><td id="scheduler_pascal_5_2"><td id="scheduler_pascal_5_3"><td id="scheduler_pascal_5_4"><td id="scheduler_pascal_5_5"></td></tr>
+   <tr><td id="scheduler_pascal_6_0"><td id="scheduler_pascal_6_1"><td id="scheduler_pascal_6_2"><td id="scheduler_pascal_6_3"><td id="scheduler_pascal_6_4"><td id="scheduler_pascal_6_5"><td id="scheduler_pascal_6_6"></td></tr>
+   <tr><td id="scheduler_pascal_7_0"><td id="scheduler_pascal_7_1"><td id="scheduler_pascal_7_2"><td id="scheduler_pascal_7_3"><td id="scheduler_pascal_7_4"><td id="scheduler_pascal_7_5"><td id="scheduler_pascal_7_6"><td id="scheduler_pascal_7_7"></td></tr>
+  </table>
+  
   <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
   <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
   <script src="../scripts/mamazav.github.io.js"></script>
   
   <script src="../cdn/async-proxy.dev.js"></script>
+  <script src="../cdn/resource-scheduler.dev.js"></script>
   <script src="scripts/asyncproxypage.js"></script>
 
   <script src="scripts/demourgentfunctions.js"></script>
@@ -409,6 +436,7 @@ proxy.helloWorld(50000);
   <script src="scripts/pascalcellcalculator.js"></script>
   <script src="scripts/promisedependencyworkersdemo.js"></script>
   <script src="scripts/dependencyworkersdemo.js"></script>
+  <script src="scripts/dependencyworkerswithschedulerdemo.js"></script>
  </div></div></div>
  </body>
 </html>
