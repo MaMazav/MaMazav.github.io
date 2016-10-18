@@ -1,6 +1,3 @@
-var scriptsToImport = [AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/pascalcellcalculator.js'];
-var ctorNameOnWorkerSide = 'PascalCellCalculator';
-var ctorArgsOnWorkerSide = ['dummyCtorArg'];
 var workerInputRetreiver = createPascalCellInputRetreiver();
 
 var scheduler = new ResourceScheduler.PriorityScheduler(
@@ -13,7 +10,7 @@ var scheduler = new ResourceScheduler.PriorityScheduler(
     }});
 
 var schedulerDependencyWorkers = new AsyncProxy.SchedulerDependencyWorkers(
-    scheduler, scriptsToImport, ctorNameOnWorkerSide, ctorArgsOnWorkerSide, workerInputRetreiver);
+    scheduler, workerInputRetreiver);
 
 function demoDependencyWorkersWithScheduler() {
     startDemoDependencyWorkers('scheduler_', schedulerDependencyWorkers);

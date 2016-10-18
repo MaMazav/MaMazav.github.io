@@ -1,10 +1,6 @@
-var scriptsToImport = [AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/pascalcellcalculator.js'];
-var ctorNameOnWorkerSide = 'PascalCellCalculator';
-var ctorArgsOnWorkerSide = ['dummyCtorArg'];
 var workerInputRetreiver = createPascalCellPromiseInputRetreiver();
 
-var pascalTrianglePromiseDependencyWorkers = new AsyncProxy.PromiseDependencyWorkers(
-    scriptsToImport, ctorNameOnWorkerSide, ctorArgsOnWorkerSide, workerInputRetreiver);
+var pascalTrianglePromiseDependencyWorkers = new AsyncProxy.PromiseDependencyWorkers(workerInputRetreiver);
 
 function demoPromiseDependencyWorkers() {
     for (var row = 0; row < 8; ++row) {
@@ -18,7 +14,7 @@ function demoPromiseDependencyWorkers() {
 
 function calculatePascalTriangleCellUsingPromiseDependencyWorkers(targetElement, row, col) {
     var taskPromise = pascalTrianglePromiseDependencyWorkers.startTaskPromise(
-            { row: row, col: col });
+            keyFromRowCol(row, col));
 
     taskPromise.then(function(result) {
         targetElement.innerHTML = result;
@@ -28,28 +24,49 @@ function calculatePascalTriangleCellUsingPromiseDependencyWorkers(targetElement,
 function createPascalCellPromiseInputRetreiver() {
     return {
         getDependsOnTasks: function (taskKey) {
-            if (taskKey.col === 0 || taskKey.col === taskKey.row) {
+            var row = rowFromKey(taskKey);
+            var col = colFromKey(taskKey);
+            if (col === 0 || col === row) {
                 return [];
             } else {
-                return [ { row: taskKey.row - 1, col: taskKey.col - 1 },
-                         { row: taskKey.row - 1, col: taskKey.col     } ];
+                return [ keyFromRowCol(row - 1, col - 1),
+                         keyFromRowCol(row - 1, col) ];
             }
         },
+        
         preWorkerProcess: function (dependsTaskResults, dependsTaskKeys, taskKey) {
+            var row = rowFromKey(taskKey);
+            var col = colFromKey(taskKey);
             // Do nothing; pass the depends task results array to the worker as-is
-            if (taskKey.col === 0 || taskKey.col === taskKey.row) {
-                dependsTaskResults = [1];
+            if (col > 0 && col < row) {
+                return Promise.resolve(dependsTaskResults);
+            } else {
+                return Promise.resolve([1]);
             }
-            return Promise.resolve(dependsTaskResults);
         },
         
-        getHashCode: function getHashCode(taskKey) {
-            // Arbitrary scrambling
-            return (taskKey.row << 16 + taskKey.row >> 16) ^ taskKey.col;
+        getWorkerTypeByTaskKey: function getWorkerTypeByTaskKey(taskKey) {
+            return 0;
         },
         
-        isEqual: function isEqual(taskKey1, taskKey2) {
-            return taskKey1.row === taskKey2.row && taskKey1.col === taskKey2.col;
+        getTaskOptions: function getTaskOptions(workerType) {
+            return {
+                scriptsToImport: [AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/pascalcellcalculator.js'],
+                ctorName: 'PascalCellCalculator',
+                ctorArgs: ['dummyCtorArg']
+            }
         }
     };
+}
+
+function keyFromRowCol(row, col) {
+    return row + ':' + col;
+}
+
+function rowFromKey(taskKey) {
+    return Number(taskKey.substr(0, taskKey.indexOf(':')));
+}
+
+function colFromKey(taskKey) {
+    return Number(taskKey.substr(taskKey.indexOf(':') + 1));
 }
