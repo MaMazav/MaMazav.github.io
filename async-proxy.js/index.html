@@ -60,7 +60,7 @@
    We would like to call the helloWorld() function in a web worker. We can create a proxy class that wraps Callee class
    using the AsyncProxy library. The following code shows how it should be done:
   </p>
-  <pre><code data-src="scripts/asyncproxyhelloworld.js"></code></pre>
+  <pre><code data-src="scripts/async-proxy-hello-world.js"></code></pre>
   <p>
    Notice the call to getEntryUrl(): When using the AsyncProxy library, you cannot use relative paths to import scripts
    (indirectly by the AsyncProxy library or directly by importScripts() function). You can use getEntryUrl() to get an
@@ -79,7 +79,21 @@ var proxy = new AsyncProxyHelloWorld({ helloWorldCtorArgument: 10000 });
 proxy.helloWorld(50000);
   </code></pre>
   
-  <input type="button" onclick="demoHelloWorld()" value="Hello world demo!"><br><br>
+  <input type="button" onclick="demoHelloWorld()" value="Hello world demo!">
+  
+  <p>
+   And that's it!
+  </p>
+  <p>
+   Another equivalent way is to define the method by custom way:
+  </p>
+  <pre><code data-src="scripts/async-proxy-hello-world-custom.js"></code></pre>
+  <p>
+   This code is equivalent to the one defined in async-proxy-hello-world, unless it uses the _getWorkerHelper() internal
+   method ad allow you to define any custom code you would like to when calling a method. It may be even more useful for
+   more complex features that will be shown below.
+  </p>
+  <br><br>
 
   <hr>
   <a name="subworkeremulation"></a>
@@ -100,6 +114,20 @@ proxy.helloWorld(50000);
   </p>
   <input type="button" onclick="demoSubWorker()" value="Start Sub worker demo">
   
+  <hr>
+  <a name="methods"></a>
+  <h3>Passing special arguments and results</h3>
+  <p>
+   TBD
+  </p>
+  <pre code data-src="scripts/async-proxy-methods.js"></code></pre>
+  <input type="button" onclick="demoMethods()" value="Start passing arguments demo">
+
+  <p>
+   And the custom way to define those methods:
+  </p>
+  <pre code data-src="scripts/async-proxy-methods-custom.js"></code></pre>
+  <!--
   <hr>
   <a name="promise"></a>
   <h3>Promise</h3>
@@ -127,7 +155,7 @@ proxy.helloWorld(50000);
   </p>
   <pre><code data-src="scripts/multiplecallbackproxy.js"></code></pre>
   <input type="button" onclick="demoMultipleCallback()" value="Start multiple-time Callback demo">
-  
+  -->
   <hr>
   <a name="termination"></a>
   <h3>Manual termination</h3>
@@ -142,6 +170,16 @@ proxy.helloWorld(50000);
   <pre><code data-src="scripts/terminate.js"></code></pre>
   <input type="button" onclick="demoTerminate()" value="Start terminate demo">
   
+  <hr>
+  <a name="customcallback"></a>
+  <h3>Custom callback options</h3>
+  <p>
+   TBD
+  </p>
+  <pre><code data-src="scripts/custom-callback-proxy.js"></code></pre>
+  <input type="button" onclick="demoCustomCallback()" value="Start custom callback demo">
+  
+  <!--
   <h3>Performance</h3>
   <hr>
   <a name="transferables"></a>
@@ -168,11 +206,10 @@ proxy.helloWorld(50000);
   </p>
   <pre><code data-src="scripts/transferablesfrompromise.js"></code></pre>
   <input type="button" onclick="demoTransferablesFromPromise()" value="Start promise transferables demo">
-  
   <p>
    Similarly you should know the paths to transferables when wrapping a callback:
   </p>
-  <pre><code data-src="scripts/transferablesfromcallback.js"></code></pre>
+  <pre><code data-src="scripts/transferables-from-callback.js"></code></pre>
   <input type="button" onclick="demoTransferablesFromCallback()" value="Start callback transferables demo">
   
   <a name="buffersize"></a>
@@ -193,14 +230,15 @@ proxy.helloWorld(50000);
    property of the options object.
   </p>
   
-  <pre><code data-src="scripts/urgentfunctions.js"></code></pre>
+  <pre><code data-src="scripts/urgent-functions.js"></code></pre>
   
   <p>
    The client code of the demo below is:
   </p>
-  <pre><code data-src="scripts/demourgentfunctions.js"></code></pre>
+  <pre><code data-src="scripts/demo-urgent-functions.js"></code></pre>
   
   <input type="button" onclick="demoUrgentFunctions()" value="Start urgent functions demo">
+  -->
   
   <a name="slavesidefeatures"></a>
   <h3>Slave-side features</h3>
@@ -229,12 +267,12 @@ proxy.helloWorld(50000);
   <p>
    The slave-side script should call the setSlaveSideCreator function:
   </p>
-  <pre><code data-src="scripts/customcreationslave.js"></code></pre>
+  <pre><code data-src="scripts/custom-creation-slave.js"></code></pre>
   
   <p>
    The master-side proxy definition should indicate that the above script is needed to be imported on the slave side:
   </p>
-  <pre><code data-src="scripts/customcreationmaster.js"></code></pre>
+  <pre><code data-src="scripts/custom-creation-master.js"></code></pre>
   
   <input type="button" onclick="demoCustomCreation()" value="Start custom creation demo">
   
@@ -248,12 +286,12 @@ proxy.helloWorld(50000);
   <p>
    The slave only need to send the data whenever he would like to:
   </p>
-  <pre><code data-src="scripts/userdataslave.js"></code></pre>
+  <pre><code data-src="scripts/user-data-slave.js"></code></pre>
   
   <p>
    The master can receive the sent data by setting a handler for this:
   </p>
-  <pre><code data-src="scripts/userdatamaster.js"></code></pre>
+  <pre><code data-src="scripts/user-data-master.js"></code></pre>
   
   <input type="button" onclick="demoUserData()" value="Start user-data demo">
   
@@ -272,7 +310,7 @@ proxy.helloWorld(50000);
   <p>
    It is easy to extends the AsyncProxy.js implementation to support more types of events.
   </p>
-  <pre><code data-src="scripts/beforeoperationlistenerslave.js"></code></pre>
+  <pre><code data-src="scripts/before-operation-listener-slave.js"></code></pre>
   
   <input type="button" onclick="demoSetBeforeOperationListener()" value="Start before-operation-listener demo">
   
@@ -295,12 +333,12 @@ proxy.helloWorld(50000);
   <p>
    Practically, to use the ScriptsToImportPool, add two lines in the file contains the proxied class implementation:
   </p>
-  <pre><code data-src="scripts/calleewithimportdirective.js"></code></pre>
+  <pre><code data-src="scripts/callee-with-import-directive.js"></code></pre>
   
   <p>
    Then you can use it when implementing the proxy:
   </p>
-  <pre><code data-src="scripts/proxywithimportdirective.js"></code></pre>
+  <pre><code data-src="scripts/proxy-with-import-directive.js"></code></pre>
   
   <input type="button" onclick="demoScriptsToImportPool()" value="Start ScriptsToImportPool demo">
   
@@ -325,12 +363,12 @@ proxy.helloWorld(50000);
    method), define a pre-worker method to process the data returned by depends tasks and two methods for key searching -
    getHashCode() and isEqual():
   </p>
-  <pre><code data-src="scripts/promisedependencyworkersdemo.js"></code></pre>
+  <pre><code data-src="scripts/promise-dependency-workers-demo.js"></code></pre>
   
   <p>
    And the worker code is simple as:
   </p>
-  <pre><code data-src="scripts/pascalcellcalculator.js"></code></pre>
+  <pre><code data-src="scripts/pascal-cell-calculator.js"></code></pre>
 
   <input type="button" onclick="demoPromiseDependencyWorkers()" value="Start PromiseDependencyWorkers demo">
   <table cellpadding="5">
@@ -372,7 +410,7 @@ proxy.helloWorld(50000);
    much complex, so better to use the PromiseDependencyWorkers if the above mentioned features are not needed:
   </p>
   
-  <pre><code data-src="scripts/dependencyworkersdemo.js"></code></pre>
+  <pre><code data-src="scripts/dependency-workers-demo.js"></code></pre>
   
   <input type="button" onclick="demoDependencyWorkers()" value="Start DependencyWorkers demo">
 
@@ -392,7 +430,7 @@ proxy.helloWorld(50000);
    with an appropriate <a href="../resource-scheduler.js">Scheduler</a>:
   </p>
   
-  <pre><code data-src="scripts/dependencyworkerswithschedulerdemo.js"></code></pre>
+  <pre><code data-src="scripts/dependency-workers-with-scheduler-demo.js"></code></pre>
 
   <input type="button" onclick="demoDependencyWorkersWithScheduler()" value="Start DependencyWorkers demo with Scheduler">
   
@@ -413,30 +451,29 @@ proxy.helloWorld(50000);
   
   <script src="../cdn/async-proxy.dev.js"></script>
   <script src="../cdn/resource-scheduler.dev.js"></script>
-  <script src="scripts/asyncproxypage.js"></script>
 
-  <script src="scripts/demourgentfunctions.js"></script>
+  <script src="scripts/demo-urgent-functions.js"></script>
   <script src="scripts/callee.js"></script>
 
-  <script src="scripts/asyncproxyhelloworld.js"></script>
-  <script src="scripts/subworkerproxy.js"></script>
-  <script src="scripts/promiseproxy.js"></script>
-  <script src="scripts/callbackproxy.js"></script>
-  <script src="scripts/multiplecallbackproxy.js"></script>
+  <script src="scripts/async-proxy-hello-world.js"></script>
+  <script src="scripts/async-proxy-hello-world-custom.js"></script>
+  <script src="scripts/async-proxy-methods.js"></script>
+  <script src="scripts/async-proxy-methods-custom.js"></script>
+  <script src="scripts/sub-worker-proxy.js"></script>
+  <script src="scripts/custom-callback-proxy.js"></script>
   <script src="scripts/terminate.js"></script>
-  <script src="scripts/transferablestoworker.js"></script>
-  <script src="scripts/transferablesfrompromise.js"></script>
-  <script src="scripts/transferablesfromcallback.js"></script>
-  <script src="scripts/urgentfunctions.js"></script>
-  <script src="scripts/customcreationmaster.js"></script>
-  <script src="scripts/userdatamaster.js"></script>
-  <script src="scripts/beforeoperationlistenermaster.js"></script>
-  <script src="scripts/calleewithimportdirective.js"></script>
-  <script src="scripts/proxywithimportdirective.js"></script>
-  <script src="scripts/pascalcellcalculator.js"></script>
-  <script src="scripts/promisedependencyworkersdemo.js"></script>
-  <script src="scripts/dependencyworkersdemo.js"></script>
-  <script src="scripts/dependencyworkerswithschedulerdemo.js"></script>
- </div></div></div>
+  <script src="scripts/custom-creation-master.js"></script>
+  <script src="scripts/user-data-master.js"></script>
+  <script src="scripts/before-operation-listener-master.js"></script>
+  <script src="scripts/callee-with-import-directive.js"></script>
+  <script src="scripts/proxy-with-import-directive.js"></script>
+  <script src="scripts/pascal-cell-calculator.js"></script>
+  <script src="scripts/promise-dependency-workers-demo.js"></script>
+  <script src="scripts/dependency-workers-demo.js"></script>
+  <script src="scripts/dependency-workers-with-scheduler-demo.js"></script>
+
+  <script src="scripts/asyncproxypage.js"></script>
+
+  </div></div></div>
  </body>
 </html>

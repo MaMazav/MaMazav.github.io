@@ -51,7 +51,7 @@ function createPascalCellPromiseInputRetreiver() {
         
         getTaskOptions: function getTaskOptions(workerType) {
             return {
-                scriptsToImport: [AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/pascalcellcalculator.js'],
+                scriptsToImport: [AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/pascal-cell-calculator.js'],
                 ctorName: 'PascalCellCalculator',
                 ctorArgs: ['dummyCtorArg']
             }

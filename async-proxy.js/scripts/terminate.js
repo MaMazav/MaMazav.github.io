@@ -1,27 +1,19 @@
 'use strict';
 
-var TerminateProxy = (function TerminateProxyClosure() {
-    function TerminateProxy() {
-        var scriptsToImport = [
-            AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/callee.js',
-            AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/subworkerproxy.js'];
-        this._workerHelper = new AsyncProxy.AsyncProxyMaster(scriptsToImport, 'Callee');
-    }
-    
-    TerminateProxy.prototype.callSubWorker = function callSubWorker(depth) {
-        var args = [depth];
-        this._workerHelper.callFunction('callSubWorker', args);
-    };
-    
-    TerminateProxy.prototype.releaseResources = function releaseResources() {
-        var args = [];
-        var promise = this._workerHelper.callFunction('releaseResources', args, { isReturnPromise: true });
-        
-        var workerHelper = this._workerHelper;
-        return promise.then(function() {
-            workerHelper.terminate();
-        });
-    };
-    
-    return TerminateProxy;
-})();
+var TerminateProxy = AsyncProxy.AsyncProxyFactory.create(
+	[AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/callee.js',
+	 AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/sub-worker-proxy.js'],
+	'Callee',
+	{
+		'callSubWorker': [],
+		'releaseResources': function() {
+			var workerHelper = this._getWorkerHelper();
+			var args = [];
+			var promise = workerHelper.callFunction('releaseResources', args, { isReturnPromise: true });
+			
+			return promise.then(function() {
+				workerHelper.terminate();
+			});
+		}
+	}
+);

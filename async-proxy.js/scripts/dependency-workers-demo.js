@@ -62,7 +62,7 @@ function createPascalCellInputRetreiver() {
         getTaskOptions: function getTaskOptions(taskType) {
             // In this demo: taskType always equals TASK_TYPE
             return {
-                scriptsToImport: [AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/pascalcellcalculator.js'],
+                scriptsToImport: [AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/pascal-cell-calculator.js'],
                 ctorName: 'PascalCellCalculator',
                 ctorArgs: ['dummyCtorArg']
             }

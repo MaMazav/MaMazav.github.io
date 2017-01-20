@@ -40,24 +40,6 @@ var Callee = (function CalleeClosure() {
         }, 1000);
     };
     
-    Callee.prototype.asyncFunctionWithCallbackMultiple = function asyncFunctionWithCallbackMultiple(callback) {
-        var remainingCalls = 3;
-        
-        var intervalHandle = setInterval(function() {
-            var isFinished = (--remainingCalls) <= 0;
-            var message = 'Still not finished, only status message';
-            if (isFinished) {
-                message = 'Finished! can clear the callback';
-                clearInterval(intervalHandle);
-            }
-            
-            callback({
-                message: message,
-                isFinished: isFinished
-            });
-        }, 1000);
-    };
-    
     Callee.prototype.releaseResources = function releaseResources() {
         var promise = new Promise(function(resolve, reject) {
             setTimeout(function() {
@@ -80,37 +62,48 @@ var Callee = (function CalleeClosure() {
                     throw 'Wrong element';
                 }
                 
-                console.log('Array is still accessible on worker');
+                console.log('Array is still accessible on worker. BUG!');
             } catch(e) {
-                console.log('Array is not accessible anymore on worker!');
+                console.log('Array is not accessible anymore on worker. As expected.');
             }
-        }, 1000);
+        }, 5);
         
         return new Promise(function (resolve, reject) {
             resolve({ someProperty: uint8Array });
         });
     };
     
-    Callee.prototype.returnArrayBufferByCallback = function returnArrayBufferByCallback(callback) {
-        var uint8Array = new Uint8Array(2);
-        uint8Array[0] = 22;
-        uint8Array[1] = 93;
+    Callee.prototype.returnArrayBufferByCallbackMultipleTimes = function returnArrayBufferByCallback(callback) {
+        var remainingCalls = 0;
         
-        var secondElement = uint8Array[1];
-        console.log('Second element of array - on worker: ' + secondElement);
-        
-        callback({ anotherArrayProperty: [uint8Array] });
-        
-        try {
-            var element = uint8Array[1];
-            if (element !== secondElement) {
-                throw 'Wrong element';
-            }
+        var intervalHandle = setInterval(function() {
+            var isFinished = (++remainingCalls) >= 3;
+            var message = isFinished ? 'Last status message: Finished! Can clear the callback'
+									 : 'Status message ' + remainingCalls + ' of 3: not finished yet';
+            if (isFinished) {
+                clearInterval(intervalHandle);
+			}
             
-            console.log('Array is still accessible on worker');
-        } catch(e) {
-            console.log('Array is not accessible anymore on worker!');
-        }
+			var uint8Array = new Uint8Array(2);
+			uint8Array[0] = 22;
+			uint8Array[1] = 93;
+
+            callback({
+                message: message,
+                isFinished: isFinished,
+				arrayProperty: uint8Array
+            });
+			
+			try {
+				var element = uint8Array[1];
+				if (element !== secondElement) {
+					throw 'Wrong element';
+				}
+				console.log('Array is still accessible on worker. BUG!');
+			} catch(e) {
+				console.log('Array is not accessible anymore on worker, as expected.');
+			}
+        }, 1000);
     };
     
     Callee.prototype.urgentFunction = function urgentFunction(callNumber) {

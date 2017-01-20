@@ -1,11 +1,19 @@
 'use strict';
 
+var UserDataMaster = AsyncProxy.AsyncProxyFactory.create(
+	[AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/user-data-slave.js',
+     AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/callee.js'],
+	'Callee',
+	{ 'helloWorld': [] }
+);
+
+/*
 var UserDataMaster = (function UserDataMasterClosure() {
     function UserDataMaster(ctorArgument) {
         var args = [ctorArgument];
         var scriptsToImport = [
             AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/callee.js',
-            AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/userdataslave.js'];
+            AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/user-data-slave.js'];
         this._workerHelper = new AsyncProxy.AsyncProxyMaster(scriptsToImport, 'Callee', args);
         
         this._workerHelper.setUserDataHandler(function(data) {
@@ -20,3 +28,4 @@ var UserDataMaster = (function UserDataMasterClosure() {
     
     return UserDataMaster;
 })();
+*/
