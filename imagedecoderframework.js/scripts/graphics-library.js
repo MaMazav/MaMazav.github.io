@@ -306,5 +306,30 @@ var graphicsLibrary = {
                 table.appendChild(tr);
             }
         }
+    },
+    
+    // Simple AJAX request. You can use AJAX wrapper from your favorite library instead
+    ajax: function ajax(url) {
+        return new Promise(function(resolve, reject){
+            var xhttp = new XMLHttpRequest();
+            var finished = false;
+            xhttp.onreadystatechange = function() {
+                if (xhttp.readyState !== 4 || finished) {
+                    return;
+                }
+                finished = true;
+                
+                if (xhttp.status !== 200) {
+                    reject('Status code ' + xhttp.status);
+                    return;
+                }
+                
+                var json = JSON.parse(xhttp.responseText);
+                self._imageParams = json;
+                resolve(json);
+            };
+            xhttp.open('GET', url, true);
+            xhttp.send();
+        });
     }
 };

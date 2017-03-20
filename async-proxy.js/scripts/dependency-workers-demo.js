@@ -20,9 +20,9 @@ function startDemoDependencyWorkers(htmlElementPrefix, dependencyWorkers) {
     // source (only for already-spawned tasks)
     for (var row = 0; row < 8; ++row) {
         var contextFirstInLine = dependencyWorkers.getTaskContext(
-            keyFromRowCol(row, 0));
+            {row: row, col: 0});
         var contextLastInLine = dependencyWorkers.getTaskContext(
-            keyFromRowCol(row, row));
+            {row: row, col: row});
 
         if (contextFirstInLine === null || contextLastInLine === null) {
             throw 'Error: task has not been spawned yet';
@@ -40,7 +40,7 @@ function startDemoDependencyWorkers(htmlElementPrefix, dependencyWorkers) {
 
 function calculatePascalTriangleCell(dependencyWorkers, targetElement, row, col) {
     var taskHandle = dependencyWorkers.startTask(
-        keyFromRowCol(row, col),
+        {row: row, col: col},
         { onData: function(result) {
               targetElement.innerHTML = result;
           }, onTerminated: function() {
@@ -53,19 +53,19 @@ function calculatePascalTriangleCell(dependencyWorkers, targetElement, row, col)
 
 function createPascalCellInputRetreiver() {
     return {
-        createTaskContext: function (taskKey, callbacks) {
+        createTaskContext: function(taskKey, callbacks) {
             return new PascalCellTaskContext(taskKey, callbacks);
         },
-        getWorkerTypeByTaskKey: function getWorkerTypeByTaskKey(taskKey) {
-            return 0;
-        },
-        getTaskOptions: function getTaskOptions(taskType) {
+        getTaskTypeOptions: function(taskType) {
             // In this demo: taskType always equals TASK_TYPE
             return {
                 scriptsToImport: [AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/pascal-cell-calculator.js'],
                 ctorName: 'PascalCellCalculator',
                 ctorArgs: ['dummyCtorArg']
             }
+        },
+        getKeyAsString: function(taskKey) {
+            return taskKey.row + ':' + taskKey.col;
         }
     };
 }
@@ -78,23 +78,20 @@ function PascalCellTaskContext(taskKey, callbacks) {
     this._isWaitingForWorkerToStart = false;
     this._subTaskResults = [0, 0];
     
-    var colonPos = taskKey.indexOf(':');
-    this._row = rowFromKey(taskKey);
-    this._col = colFromKey(taskKey);
+    this._taskKey = taskKey;
     
-    if (this._col > 0 && this._col < this._row) {
-        callbacks.registerTaskDependency(keyFromRowCol(this._row - 1, this._col - 1));
-        callbacks.registerTaskDependency(keyFromRowCol(this._row - 1, this._col));
+    if (this._taskKey.col > 0 && this._taskKey.col < this._taskKey.row) {
+        callbacks.registerTaskDependency({row: this._taskKey.row - 1, col: this._taskKey.col - 1});
+        callbacks.registerTaskDependency({row: this._taskKey.row - 1, col: this._taskKey.col});
     }
 }
 
 PascalCellTaskContext.prototype.onDependencyTaskResult = function(value, key) {
-    var col = colFromKey(key);
-    switch (col) {
-        case this._col - 1: this._subTaskResults[0] = value; break;
-        case this._col    : this._subTaskResults[1] = value; break;
-        default: throw 'Unexpected col ' + col + '. Expected ' +
-            (this._col - 1) + ' or ' + this._col;
+    switch (key.col) {
+        case this._taskKey.col - 1: this._subTaskResults[0] = value; break;
+        case this._taskKey.col    : this._subTaskResults[1] = value; break;
+        default: throw 'Unexpected col ' + key.col + '. Expected ' +
+            (this._taskKey.col - 1) + ' or ' + this._taskKey.col;
     }
     
     if (this._isWaitingForWorkerToStart) {
@@ -124,7 +121,7 @@ PascalCellTaskContext.prototype.statusUpdated = function(status) {
         this._isProcessedAtLeastOnce; // Avoid immediate termination in tasks with no dependencies
     
     if (isTaskFinished) {
-        console.log('Calculation of (' + this._row + ', ' + this._col + ') ended');
+        console.log('Calculation of (' + this._taskKey.row + ', ' + this._taskKey.col + ') ended');
         this.callbacks.onTerminated();
     }
 

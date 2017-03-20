@@ -1,28 +1,26 @@
-function continueYieldableJob(resource, jobContext) {
-    if (!scheduler.shouldYieldOrAbort(jobContext)) {
-        nextQueryInYieldableJob(resource, jobContext);
+function continueYieldableJob(resource, jobContext, callbacks) {
+    if (!callbacks.shouldYieldOrAbort()) {
+        nextQueryInYieldableJob(resource, jobContext, callbacks);
         return;
     }
     
     // Simulate release time
     setTimeout(function() {
-        var isYielded = scheduler.tryYield(
+        var isYielded = callbacks.tryYield(
             /*continueJob=*/nextQueryInYieldableJob,
-            jobContext,
             jobAborted,
-            jobYielded,
-            resource);
+            jobYielded);
         
         if (!isYielded) {
-            nextQueryInYieldableJob(resource, jobContext);
+            nextQueryInYieldableJob(resource, jobContext, callbacks);
         }
     }, 30);
 }
 
-function nextQueryInYieldableJob(resource, jobContext) {
-    nextQueryInJob(resource, jobContext).then(function(isDone) {
+function nextQueryInYieldableJob(resource, jobContext, callbacks) {
+    nextQueryInJob(resource, jobContext, callbacks).then(function(isDone) {
         if (isDone !== 'done') {
-            continueYieldableJob(resource, jobContext);
+            continueYieldableJob(resource, jobContext, callbacks);
         }
     });
 }

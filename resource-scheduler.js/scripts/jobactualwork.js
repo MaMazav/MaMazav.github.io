@@ -1,4 +1,4 @@
-function nextQueryInJob(resource, jobContext) {
+function nextQueryInJob(resource, jobContext, callbacks) {
     var dbConnection = resource;
     
     ++jobContext.performedQueries;
@@ -12,7 +12,7 @@ function nextQueryInJob(resource, jobContext) {
             return 'not-done';
         }
         
-        scheduler.jobDone(resource, jobContext);
+        callbacks.jobDone();
         jobContext.finishedJobCallback(null, jobContext.results, jobContext.id);
         return 'done';
     });
