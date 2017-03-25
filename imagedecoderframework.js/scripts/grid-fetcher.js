@@ -2,9 +2,12 @@
 
 var GridFetcher = (function GridFetcherClosure() {
     function GridFetcher() {
+		imageDecoderFramework.GridFetcherBase.call(this);
         this._imageParams = null;
         this._levelsCache = [];
     }
+	
+	GridFetcher.prototype = Object.create(imageDecoderFramework.GridFetcherBase.prototype);
     
     GridFetcher.prototype.open = function(url) {
         var self = this;
@@ -22,36 +25,15 @@ var GridFetcher = (function GridFetcherClosure() {
         });
     };
     
-    GridFetcher.prototype.fetch = function fetch(imagePartParams) {
-        var tilesRange = GridImage.getTilesRange(this._imageParams, imagePartParams);
-        
-        var promises = [];
-        for (var tileX = tilesRange.minTileX; tileX < tilesRange.maxTileX; ++tileX) {
-            for (var tileY = tilesRange.minTileY; tileY < tilesRange.maxTileY; ++tileY) {
-                var promise = this._loadTile(imagePartParams.level, tileX, tileY);
-                promises.push(promise);
-            }
-        }
-        
-        return Promise.all(promises);
-    };
-    
-    GridFetcher.prototype._loadTile = function loadTile(level, tileX, tileY) {
+    GridFetcher.prototype.fetchTile = function fetchTile(level, tileX, tileY) {
         var promise = this._levelsCache[level];
-        if (!this._levelsCache[level]) {
+        if (!promise) {
             promise = graphicsLibrary.ajax(this._url + '/level' + level + '.json');
             this._levelsCache[level] = promise;
         }
+		
         return promise.then(function(levelData) {
-            return {
-                tileKey: {
-					fetchWaitTask: true,
-                    tileX: tileX,
-                    tileY: tileY,
-                    level: level
-                },
-                content: levelData.cols[tileX].rows[tileY]
-            };
+            return levelData.cols[tileX].rows[tileY];
         });
     };
     

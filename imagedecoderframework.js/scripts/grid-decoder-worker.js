@@ -4,41 +4,32 @@ var GridDecoderWorker = (function GridDecoderWorkerClosure() {
 	var BORDER_THICKNESS = 5;
 	
     function GridDecoderWorker() {
+		imageDecoderFramework.GridDecoderWorkerBase.call(this);
     }
+	
+	GridDecoderWorker.prototype = Object.create(imageDecoderFramework.GridDecoderWorkerBase.prototype);
     
-    GridDecoderWorker.prototype.start = function start(decoderInput, taskKey) {
-        return new Promise(function(resolve, reject) {
-            var targetImageOffsetX = decoderInput.imagePartParams.minX;
-            var targetImageOffsetY = decoderInput.imagePartParams.minY;
-            var width  = decoderInput.imagePartParams.maxXExclusive - targetImageOffsetX;
-            var height = decoderInput.imagePartParams.maxYExclusive - targetImageOffsetY;
-            var targetImageData = new ImageData(width, height);
-            for (var i = 0; i < decoderInput.tileIndices.length; ++i) {
-                var minY = Math.max(decoderInput.tileIndices[i].tileY * decoderInput.tileHeight - targetImageOffsetY, 0);
-                var minX = Math.max(decoderInput.tileIndices[i].tileX * decoderInput.tileWidth  - targetImageOffsetX, 0);
-                var maxY = Math.min(decoderInput.tileIndices[i].tileY * decoderInput.tileHeight - targetImageOffsetY + decoderInput.tileHeight, targetImageData.height);
-                var maxX = Math.min(decoderInput.tileIndices[i].tileX * decoderInput.tileWidth  - targetImageOffsetX + decoderInput.tileWidth , targetImageData.width );
-                
-                // Fill all area with red color
-                
-                var stride = width * 4;
-                for (var y = minY; y < maxY; ++y) {
-                    var yOriginalImage = targetImageOffsetY + y;
-                    var offset = minX * 4 + stride * y;
-                    for (var x = minX; x < maxX; ++x) {
-                        var xOriginalImage = targetImageOffsetX + x;
-                        
-                        var isTileBorder = yOriginalImage % decoderInput.tileHeight < BORDER_THICKNESS || xOriginalImage % decoderInput.tileWidth < BORDER_THICKNESS;
-                        targetImageData.data[offset++] = isTileBorder ? 255 : decoderInput.tileContents[i].red;
-                        targetImageData.data[offset++] = isTileBorder ? 0   : decoderInput.tileContents[i].green;
-                        targetImageData.data[offset++] = isTileBorder ? 255 : decoderInput.tileContents[i].blue;
-                        targetImageData.data[offset++] = 255; // Alpha
-                    }
-                }
-                
-                resolve(targetImageData);
-            }
-        });
+    GridDecoderWorker.prototype.decodeRegion = function decodeRegion(targetImageData, offset, regionInImage, tile) {
+		var stride = 4 * targetImageData.width;
+		var startLineOffset = 4 * offset.x + stride * offset.y;
+		for (var y = regionInImage.minY; y < regionInImage.maxYExclusive; ++y) {
+			var pixelOffset = startLineOffset;
+			for (var x = regionInImage.minX; x < regionInImage.maxXExclusive; ++x) {
+				var isTileBorder =
+					(y - tile.position.minY < BORDER_THICKNESS) ||
+					(x - tile.position.minX < BORDER_THICKNESS) ||
+					(tile.position.maxYExclusive - y < BORDER_THICKNESS) ||
+					(tile.position.maxXExclusive - x < BORDER_THICKNESS);
+					
+				targetImageData.data[pixelOffset++] = isTileBorder ? 255 : tile.content.red;
+				targetImageData.data[pixelOffset++] = isTileBorder ? 0   : tile.content.green;
+				targetImageData.data[pixelOffset++] = isTileBorder ? 255 : tile.content.blue;
+				targetImageData.data[pixelOffset++] = 255; // Alpha
+			}
+			startLineOffset += stride;
+		}
+		
+		return Promise.resolve(targetImageData);
     };
     
     return GridDecoderWorker;

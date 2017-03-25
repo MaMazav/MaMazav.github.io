@@ -1,0 +1,7 @@
+{
+    "tileWidth"  : 128,
+    "tileHeight" : 192,
+    "lowestLevelTilesX" : 8,
+    "lowestLevelTilesY" : 4,
+    "levels": 4
+}
