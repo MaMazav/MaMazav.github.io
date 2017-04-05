@@ -10,8 +10,8 @@ var PascalCellCalculator = (function PascalCellCalculatorClosure() {
             result += dependantTaskResults[i];
         }
         console.log(
-            'Performing very heavy calculation: Cell (' + taskKey +
-                '), result ' + result);
+            'Performing very heavy calculation: Cell (' + taskKey.row + ',' +
+                taskKey.col + '), result ' + result);
         
         return Promise.resolve(result);
     };

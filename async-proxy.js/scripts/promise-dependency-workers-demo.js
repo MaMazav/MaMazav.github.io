@@ -1,6 +1,6 @@
 var workerInputRetreiver = createPascalCellPromiseInputRetreiver();
 
-var pascalTrianglePromiseDependencyWorkers = new AsyncProxy.PromiseDependencyWorkers(workerInputRetreiver);
+var pascalTrianglePromiseDependencyWorkers = new AsyncProxy.DependencyWorkers(workerInputRetreiver);
 
 function demoPromiseDependencyWorkers() {
     for (var row = 0; row < 8; ++row) {
@@ -21,32 +21,31 @@ function calculatePascalTriangleCellUsingPromiseDependencyWorkers(targetElement,
     });
 }
 
+var WORKER_TYPE_NO_WORKER = 0;
+var WORKER_TYPE_SUM_ELEMENTS = 1;
+
 function createPascalCellPromiseInputRetreiver() {
     return {
-        getPromiseTaskProperties: function(taskKey) {
-            var dependsOnTasks = [];
-            if (taskKey.col > 0 && taskKey.col < taskKey.row) {
-                dependsOnTasks = [ {row: taskKey.row - 1, col: taskKey.col - 1},
-                                   {row: taskKey.row - 1, col: taskKey.col} ];
-            }
-            
-            return {
-                taskType: 0,
-                dependsOnTasks: dependsOnTasks,
-                isDisableWorker: false
-            };
-        },
-        
-        preWorkerProcess: function(dependsTaskResults, dependsTaskKeys, taskKey) {
-            // Do nothing; pass the depends task results array to the worker as-is
-            if (taskKey.col > 0 && taskKey.col < taskKey.row) {
-                return Promise.resolve(dependsTaskResults);
-            } else {
-                return Promise.resolve([1]);
-            }
-        },
-        
-        getTaskTypeOptions: function(taskType) {
+		taskStarted: function(taskKey, task) {
+            if (taskKey.col === 0 || taskKey.col === taskKey.row) {
+				task.dataReady(1, WORKER_TYPE_NO_WORKER);
+				task.terminate();
+				return;
+			}
+
+			task.registerTaskDependency({row: taskKey.row - 1, col: taskKey.col - 1});
+			task.registerTaskDependency({row: taskKey.row - 1, col: taskKey.col});
+			task.on('allDependTasksTerminated', function() {
+				task.dataReady(task.dependTaskResults, WORKER_TYPE_SUM_ELEMENTS);
+				task.terminate();
+			});
+		},
+		
+        getWorkerTypeOptions: function(taskType) {
+			if (taskType === WORKER_TYPE_NO_WORKER) {
+				return null;
+			}
+			
             return {
                 scriptsToImport: [AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/pascal-cell-calculator.js'],
                 ctorName: 'PascalCellCalculator',

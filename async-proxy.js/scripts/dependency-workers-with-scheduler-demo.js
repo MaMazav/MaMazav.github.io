@@ -5,8 +5,8 @@ var scheduler = new ResourceScheduler.PriorityScheduler(
         return {};
     },
     /*jobsLimit=*/2,
-    /*prioritizer=*/{ getPriority: function(taskContext) {
-        return taskContext.priority;
+    /*prioritizer=*/{ getPriority: function(task) {
+        return task.MY_PRIORITY;
     }});
 
 var schedulerDependencyWorkers = new AsyncProxy.SchedulerDependencyWorkers(

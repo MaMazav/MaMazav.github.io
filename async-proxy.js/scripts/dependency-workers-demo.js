@@ -1,5 +1,3 @@
-var TASK_TYPE = 17; // Arbitrary number ; It has no meaning in this demo, only single type is used
-
 var workerInputRetreiver = createPascalCellInputRetreiver();
 var pascalTriangleDependencyWorkers = new AsyncProxy.DependencyWorkers(workerInputRetreiver);
 
@@ -13,27 +11,6 @@ function startDemoDependencyWorkers(htmlElementPrefix, dependencyWorkers) {
             var targetElement = document.getElementById(htmlElementPrefix + 'pascal_' + row + '_' + col);
             targetElement.innerHTML = '?';
             calculatePascalTriangleCell(dependencyWorkers, targetElement, row, col);
-        }
-    }
-    
-    // Demonstrates how to use getTaskContext() to provide data from external
-    // source (only for already-spawned tasks)
-    for (var row = 0; row < 8; ++row) {
-        var contextFirstInLine = dependencyWorkers.getTaskContext(
-            {row: row, col: 0});
-        var contextLastInLine = dependencyWorkers.getTaskContext(
-            {row: row, col: row});
-
-        if (contextFirstInLine === null || contextLastInLine === null) {
-            throw 'Error: task has not been spawned yet';
-        }
-        
-        // No need for worker for edge cells; Result always 1
-        contextFirstInLine.callbacks.onDataReadyToProcess(1, /*isDisableWorker=*/true);
-        contextFirstInLine.callbacks.onTerminated();
-        if (row > 0) {
-            contextLastInLine.callbacks.onDataReadyToProcess(1, /*isDisableWorker=*/true);
-            contextLastInLine.callbacks.onTerminated();
         }
     }
 }
@@ -53,11 +30,69 @@ function calculatePascalTriangleCell(dependencyWorkers, targetElement, row, col)
 
 function createPascalCellInputRetreiver() {
     return {
-        createTaskContext: function(taskKey, callbacks) {
-            return new PascalCellTaskContext(taskKey, callbacks);
+        taskStarted: function(taskKey, task) {
+			if (taskKey.col === 0 || taskKey.col === taskKey.row) {
+				task.dataReady(1, WORKER_TYPE_NO_WORKER);
+				task.terminate();
+				return;
+			}
+			
+			var isProcessedAtLeastOnce = false;
+			var isWaitingForWorkerToStart = false;
+			var subTaskResults = [0, 0];
+			
+			task.MY_PRIORITY = 0;
+			
+			task.registerTaskDependency({row: taskKey.row - 1, col: taskKey.col - 1});
+			task.registerTaskDependency({row: taskKey.row - 1, col: taskKey.col});
+			
+			task.on('dependencyTaskData', function(data, dependencyKey) {
+				switch (dependencyKey.col) {
+					case taskKey.col - 1: subTaskResults[0] = data; break;
+					case taskKey.col    : subTaskResults[1] = data; break;
+					default: throw 'Unexpected col ' + dependencyKey.col + '. Expected ' +
+						(taskKey.col - 1) + ' or ' + taskKey.col;
+				}
+				if (isWaitingForWorkerToStart) {
+					return;
+				}
+					
+				isWaitingForWorkerToStart = true;
+				isProcessedAtLeastOnce = true;
+				
+				// Only add effect: Add a delay to see progressive calculation in demo
+				setTimeout(function() {
+					isWaitingForWorkerToStart = false;
+					task.dataReady(subTaskResults, WORKER_TYPE_SUM_ELEMENTS);
+				}, 500);
+			});
+			
+			task.on('statusUpdated', function(status) {
+				task.MY_PRIORITY = status.priority;
+				
+				var isTaskFinished =
+					!status.isWaitingForWorkerResult &&
+					!isWaitingForWorkerToStart &&
+					status.terminatedDependsTasks === status.dependsTasks && // Not waiting for dependency task
+					isProcessedAtLeastOnce; // Avoid immediate termination in tasks with no dependencies
+				
+				if (isTaskFinished) {
+					console.log('Calculation of (' + taskKey.row + ', ' + taskKey.col + ') ended');
+					task.terminate();
+				}
+
+				if (!status.hasListeners) {
+					// if no listeners the calculation can be stopped. It may happen if
+					// taskHandle.unregister() is called.
+					// In this demo taskHandle.unregister() is not called, so nothing to do there.
+				}
+			});
         },
-        getTaskTypeOptions: function(taskType) {
-            // In this demo: taskType always equals TASK_TYPE
+        getWorkerTypeOptions: function(taskType) {
+			if (taskType === WORKER_TYPE_NO_WORKER) {
+				return null;
+			}
+			
             return {
                 scriptsToImport: [AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/pascal-cell-calculator.js'],
                 ctorName: 'PascalCellCalculator',
@@ -69,69 +104,3 @@ function createPascalCellInputRetreiver() {
         }
     };
 }
-
-function PascalCellTaskContext(taskKey, callbacks) {
-    this.callbacks = callbacks;
-    this.priority = 0; // Default priority
-
-    this._isProcessedAtLeastOnce = false;
-    this._isWaitingForWorkerToStart = false;
-    this._subTaskResults = [0, 0];
-    
-    this._taskKey = taskKey;
-    
-    if (this._taskKey.col > 0 && this._taskKey.col < this._taskKey.row) {
-        callbacks.registerTaskDependency({row: this._taskKey.row - 1, col: this._taskKey.col - 1});
-        callbacks.registerTaskDependency({row: this._taskKey.row - 1, col: this._taskKey.col});
-    }
-}
-
-PascalCellTaskContext.prototype.onDependencyTaskResult = function(value, key) {
-    switch (key.col) {
-        case this._taskKey.col - 1: this._subTaskResults[0] = value; break;
-        case this._taskKey.col    : this._subTaskResults[1] = value; break;
-        default: throw 'Unexpected col ' + key.col + '. Expected ' +
-            (this._taskKey.col - 1) + ' or ' + this._taskKey.col;
-    }
-    
-    if (this._isWaitingForWorkerToStart) {
-        return;
-    }
-    
-    this._isWaitingForWorkerToStart = true;
-    this._isProcessedAtLeastOnce = true;
-    var that = this;
-    
-    // Only add effect: Add a delay to see progressive calculation in demo
-    setTimeout(function() {
-        that._isWaitingForWorkerToStart = false;
-        that.callbacks.onDataReadyToProcess(that._subTaskResults);
-    }, 500);
-};
-
-PascalCellTaskContext.prototype.statusUpdated = function(status) {
-    if (status.priority !== this.priority) {
-        this.priority = status.priority;
-    }
-    
-    var isTaskFinished =
-        !status.isWaitingForWorkerResult &&
-        !this._isWaitingForWorkerToStart &&
-        status.terminatedDependsTasks === status.dependsTasks && // Not waiting for dependency task
-        this._isProcessedAtLeastOnce; // Avoid immediate termination in tasks with no dependencies
-    
-    if (isTaskFinished) {
-        console.log('Calculation of (' + this._taskKey.row + ', ' + this._taskKey.col + ') ended');
-        this.callbacks.onTerminated();
-    }
-
-    if (!status.hasListeners) {
-        // if no listeners the calculation can be stopped. It may happen if
-        // taskHandle.unregister() is called.
-        // In this demo taskHandle.unregister() is not called, so nothing to do there.
-    }
-};
-
-PascalCellTaskContext.prototype.getTaskType = function() {
-    return TASK_TYPE;
-};
