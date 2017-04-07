@@ -26,15 +26,15 @@ var WORKER_TYPE_SUM_ELEMENTS = 1;
 
 function createPascalCellPromiseInputRetreiver() {
     return {
-		taskStarted: function(taskKey, task) {
-            if (taskKey.col === 0 || taskKey.col === taskKey.row) {
+		taskStarted: function(task) {
+            if (task.key.col === 0 || task.key.col === task.key.row) {
 				task.dataReady(1, WORKER_TYPE_NO_WORKER);
 				task.terminate();
 				return;
 			}
 
-			task.registerTaskDependency({row: taskKey.row - 1, col: taskKey.col - 1});
-			task.registerTaskDependency({row: taskKey.row - 1, col: taskKey.col});
+			task.registerTaskDependency({row: task.key.row - 1, col: task.key.col - 1});
+			task.registerTaskDependency({row: task.key.row - 1, col: task.key.col});
 			task.on('allDependTasksTerminated', function() {
 				task.dataReady(task.dependTaskResults, WORKER_TYPE_SUM_ELEMENTS);
 				task.terminate();

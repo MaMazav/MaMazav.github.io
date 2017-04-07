@@ -30,54 +30,50 @@ function calculatePascalTriangleCell(dependencyWorkers, targetElement, row, col)
 
 function createPascalCellInputRetreiver() {
     return {
-        taskStarted: function(taskKey, task) {
-			if (taskKey.col === 0 || taskKey.col === taskKey.row) {
+        taskStarted: function(task) {
+			var col = task.key.col;
+			var row = task.key.row;
+			if (col === 0 || col === row) {
 				task.dataReady(1, WORKER_TYPE_NO_WORKER);
 				task.terminate();
 				return;
 			}
 			
-			var isProcessedAtLeastOnce = false;
+			var alreadyTerminated = false;
 			var isWaitingForWorkerToStart = false;
-			var subTaskResults = [0, 0];
 			
 			task.MY_PRIORITY = 0;
 			
-			task.registerTaskDependency({row: taskKey.row - 1, col: taskKey.col - 1});
-			task.registerTaskDependency({row: taskKey.row - 1, col: taskKey.col});
+			task.registerTaskDependency({row: row - 1, col: col - 1});
+			task.registerTaskDependency({row: row - 1, col: col});
+			
+			task.dataReady(0); // Initial value
 			
 			task.on('dependencyTaskData', function(data, dependencyKey) {
-				switch (dependencyKey.col) {
-					case taskKey.col - 1: subTaskResults[0] = data; break;
-					case taskKey.col    : subTaskResults[1] = data; break;
-					default: throw 'Unexpected col ' + dependencyKey.col + '. Expected ' +
-						(taskKey.col - 1) + ' or ' + taskKey.col;
-				}
 				if (isWaitingForWorkerToStart) {
 					return;
 				}
 					
 				isWaitingForWorkerToStart = true;
-				isProcessedAtLeastOnce = true;
 				
 				// Only add effect: Add a delay to see progressive calculation in demo
 				setTimeout(function() {
 					isWaitingForWorkerToStart = false;
-					task.dataReady(subTaskResults, WORKER_TYPE_SUM_ELEMENTS);
+					task.dataReady(task.dependTaskResults, WORKER_TYPE_SUM_ELEMENTS);
 				}, 500);
 			});
 			
 			task.on('statusUpdated', function(status) {
 				task.MY_PRIORITY = status.priority;
 				
-				var isTaskFinished =
-					!status.isWaitingForWorkerResult &&
+				var shouldTerminate =
+					!alreadyTerminated &&
 					!isWaitingForWorkerToStart &&
-					status.terminatedDependsTasks === status.dependsTasks && // Not waiting for dependency task
-					isProcessedAtLeastOnce; // Avoid immediate termination in tasks with no dependencies
+					status.terminatedDependsTasks === status.dependsTasks; // Not waiting for dependency task
 				
-				if (isTaskFinished) {
-					console.log('Calculation of (' + taskKey.row + ', ' + taskKey.col + ') ended');
+				if (shouldTerminate) {
+					alreadyTerminated = true;
+					console.log('Calculation of (' + row + ', ' + col + ') ended');
 					task.terminate();
 				}
 
@@ -85,6 +81,10 @@ function createPascalCellInputRetreiver() {
 					// if no listeners the calculation can be stopped. It may happen if
 					// taskHandle.unregister() is called.
 					// In this demo taskHandle.unregister() is not called, so nothing to do there.
+				}
+				if (status.isWaitingForWorkerResult) {
+					// Can use isWaitingForWorkerResult indication to check if currently a worker
+					// processes last data
 				}
 			});
         },
