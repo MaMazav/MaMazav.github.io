@@ -25,17 +25,22 @@ var GridFetcher = (function GridFetcherClosure() {
         });
     };
     
-    GridFetcher.prototype.fetchTile = function fetchTile(level, tileX, tileY) {
+    GridFetcher.prototype.fetchTile = function fetchTile(level, tileX, tileY, fetchTask) {
         var promise = this._levelsCache[level];
         if (!promise) {
             promise = graphicsLibrary.ajax(this._url + '/level' + level + '.json');
             this._levelsCache[level] = promise;
         }
 		
-        return promise.then(function(levelData) {
-            return levelData.cols[tileX].rows[tileY];
+        promise.then(function(levelData) {
+            fetchTask.onData(levelData.cols[tileX].rows[tileY]);
+			fetchTask.onTerminated();
         });
     };
+	
+	GridFetcher.prototype.getImageParams = function getImageParams() {
+		return this._imageParams;
+	};
     
     return GridFetcher;
 })();

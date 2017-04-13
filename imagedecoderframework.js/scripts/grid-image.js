@@ -1,14 +1,13 @@
 var GridImage = (function GridImage() {
     function GridImage() {
 		var fetcher = new GridFetcher();
-		var promiseFetcher = new imageDecoderFramework.PromiseFetcherAdapter(fetcher);
-		var fetchManager = new imageDecoderFramework.FetchManager(promiseFetcher);
+		var fetchManager = new imageDecoderFramework.FetchManager(fetcher);
 		imageDecoderFramework.GridImageBase.call(this, fetchManager);
     }
 	
 	GridImage.prototype = Object.create(imageDecoderFramework.GridImageBase.prototype);
     
-    GridImage.prototype.getDecodeTaskTypeOptions = function(taskType) {
+    GridImage.prototype.getDecodeWorkerTypeOptions = function(taskType) {
         // Should provide absolute paths
 		var htmlUrl = location.href.substring(0, location.href.lastIndexOf('/'));
         var baseUrl = htmlUrl + '/scripts/';
