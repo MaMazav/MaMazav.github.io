@@ -1,6 +1,6 @@
 // Don't re-instantiate if already instantiated in other file.
 // That way you can import some files in slave
-var predefinedScriptsToImport = predefinedScriptsToImport || new AsyncProxy.ScriptsToImportPool();
+var predefinedScriptsToImport = predefinedScriptsToImport || new asyncProxy.ScriptsToImportPool();
 predefinedScriptsToImport.addScriptFromErrorWithStackTrace(new Error());
 
 var CalleeWithImportDirective = (function CalleeWithImportDirectiveClosure() {

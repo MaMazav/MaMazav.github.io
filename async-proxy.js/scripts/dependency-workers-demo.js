@@ -1,5 +1,5 @@
 var workerInputRetreiver = createPascalCellInputRetreiver();
-var pascalTriangleDependencyWorkers = new AsyncProxy.DependencyWorkers(workerInputRetreiver);
+var pascalTriangleDependencyWorkers = new asyncProxy.DependencyWorkers(workerInputRetreiver);
 
 function demoDependencyWorkers() {
     startDemoDependencyWorkers('', pascalTriangleDependencyWorkers);
@@ -47,7 +47,7 @@ function createPascalCellInputRetreiver() {
 			task.registerTaskDependency({row: row - 1, col: col - 1});
 			task.registerTaskDependency({row: row - 1, col: col});
 			
-			task.dataReady(0); // Initial value
+			task.dataReady(0, WORKER_TYPE_NO_WORKER); // Initial value
 			
 			task.on('dependencyTaskData', function(data, dependencyKey) {
 				if (isWaitingForWorkerToStart) {
@@ -69,6 +69,7 @@ function createPascalCellInputRetreiver() {
 				var shouldTerminate =
 					!alreadyTerminated &&
 					!isWaitingForWorkerToStart &&
+					!status.isWaitingForWorkerResult &&
 					status.terminatedDependsTasks === status.dependsTasks; // Not waiting for dependency task
 				
 				if (shouldTerminate) {
@@ -82,10 +83,6 @@ function createPascalCellInputRetreiver() {
 					// taskHandle.unregister() is called.
 					// In this demo taskHandle.unregister() is not called, so nothing to do there.
 				}
-				if (status.isWaitingForWorkerResult) {
-					// Can use isWaitingForWorkerResult indication to check if currently a worker
-					// processes last data
-				}
 			});
         },
         getWorkerTypeOptions: function(taskType) {
@@ -94,7 +91,7 @@ function createPascalCellInputRetreiver() {
 			}
 			
             return {
-                scriptsToImport: [AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/pascal-cell-calculator.js'],
+                scriptsToImport: [asyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/pascal-cell-calculator.js'],
                 ctorName: 'PascalCellCalculator',
                 ctorArgs: ['dummyCtorArg']
             }

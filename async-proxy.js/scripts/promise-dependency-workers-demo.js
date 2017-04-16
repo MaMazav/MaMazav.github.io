@@ -1,6 +1,6 @@
 var workerInputRetreiver = createPascalCellPromiseInputRetreiver();
 
-var pascalTrianglePromiseDependencyWorkers = new AsyncProxy.DependencyWorkers(workerInputRetreiver);
+var pascalTrianglePromiseDependencyWorkers = new asyncProxy.DependencyWorkers(workerInputRetreiver);
 
 function demoPromiseDependencyWorkers() {
     for (var row = 0; row < 8; ++row) {
@@ -47,7 +47,7 @@ function createPascalCellPromiseInputRetreiver() {
 			}
 			
             return {
-                scriptsToImport: [AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/pascal-cell-calculator.js'],
+                scriptsToImport: [asyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/pascal-cell-calculator.js'],
                 ctorName: 'PascalCellCalculator',
                 ctorArgs: ['dummyCtorArg']
             }

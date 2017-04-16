@@ -1,8 +1,8 @@
 'use strict';
 
-var TerminateProxy = AsyncProxy.AsyncProxyFactory.create(
-	[AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/callee.js',
-	 AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/sub-worker-proxy.js'],
+var TerminateProxy = asyncProxy.AsyncProxyFactory.create(
+	[asyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/callee.js',
+	 asyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/sub-worker-proxy.js'],
 	'Callee',
 	{
 		'callSubWorker': [],

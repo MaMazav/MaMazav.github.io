@@ -1,6 +1,6 @@
 'use strict';
 
-var ProxyWithImportDirective = AsyncProxy.AsyncProxyFactory.create(
+var ProxyWithImportDirective = asyncProxy.AsyncProxyFactory.create(
 	predefinedScriptsToImport.getScriptsForWorkerImport(),
 	'CalleeWithImportDirective',
 	{ 'helloWorld': [] }

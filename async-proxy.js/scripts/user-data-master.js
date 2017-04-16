@@ -1,20 +1,29 @@
 'use strict';
 
-var UserDataMaster = AsyncProxy.AsyncProxyFactory.create(
-	[AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/user-data-slave.js',
-     AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/callee.js'],
+var UserDataMasterBase = asyncProxy.AsyncProxyFactory.create(
+	[asyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/user-data-slave.js',
+     asyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/callee.js'],
 	'Callee',
 	{ 'helloWorld': [] }
 );
+
+function UserDataMaster() {
+	UserDataMasterBase.call(this);
+	this._getWorkerHelper().setUserDataHandler(function(data) {
+		alert('Data arrived: ' + data);
+	});
+}
+
+UserDataMaster.prototype = Object.create(UserDataMasterBase.prototype);
 
 /*
 var UserDataMaster = (function UserDataMasterClosure() {
     function UserDataMaster(ctorArgument) {
         var args = [ctorArgument];
         var scriptsToImport = [
-            AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/callee.js',
-            AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/user-data-slave.js'];
-        this._workerHelper = new AsyncProxy.AsyncProxyMaster(scriptsToImport, 'Callee', args);
+            asyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/callee.js',
+            asyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/user-data-slave.js'];
+        this._workerHelper = new asyncProxy.AsyncProxyMaster(scriptsToImport, 'Callee', args);
         
         this._workerHelper.setUserDataHandler(function(data) {
             alert('Data arrived: ' + data);

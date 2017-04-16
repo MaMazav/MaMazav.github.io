@@ -1,7 +1,7 @@
 'use strict';
 
-var CustomCallbackProxy = AsyncProxy.AsyncProxyFactory.create(
-	[AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/callee.js'],
+var CustomCallbackProxy = asyncProxy.AsyncProxyFactory.create(
+	[asyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/callee.js'],
 	'Callee',
 	{ 'returnArrayBufferByCallbackMultipleTimes': function returnArrayBufferByCallbackMultipleTimes(callback) {
 		var workerHelper = this._getWorkerHelper();

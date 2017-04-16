@@ -1,6 +1,6 @@
 'use strict';
 
-AsyncProxy.AsyncProxySlave.setSlaveSideCreator(function(ctorArgument) {
+asyncProxy.AsyncProxySlave.setSlaveSideCreator(function(ctorArgument) {
     var instance = {
         someFunction: function(functionArgument) {
             return someLogic(ctorArgument, functionArgument);

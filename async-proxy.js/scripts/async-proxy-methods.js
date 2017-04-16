@@ -1,7 +1,7 @@
 'use strict';
 
-var AsyncProxyMethods = AsyncProxy.AsyncProxyFactory.create(
-	[AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/callee.js'],
+var AsyncProxyMethods = asyncProxy.AsyncProxyFactory.create(
+	[asyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/callee.js'],
 	'Callee',
 	{
 		'asyncFunction': [{isReturnPromise: true}],

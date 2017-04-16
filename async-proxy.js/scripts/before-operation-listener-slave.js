@@ -1,6 +1,6 @@
 'use strict';
 
-AsyncProxy.AsyncProxySlave.setBeforeOperationListener(
+asyncProxy.AsyncProxySlave.setBeforeOperationListener(
     function(operationType, name, args) {
         if (operationType === 'callback') {
             console.log(

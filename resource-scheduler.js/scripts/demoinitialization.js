@@ -9,7 +9,7 @@ function initializeScheduling(
     
     prioritizer.abortAllJobs = false;
     
-    scheduler = new ResourceScheduler.PriorityScheduler(
+    scheduler = new resourceScheduler.PriorityScheduler(
         createDbConnectionResource, jobsLimit, prioritizer, {
             numNewJobs: numNewJobs,
             numJobsBeforeRerankOldPriorities: numJobsBeforeRerankOldPriorities,

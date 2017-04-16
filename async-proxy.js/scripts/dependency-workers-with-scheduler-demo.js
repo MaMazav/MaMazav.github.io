@@ -1,6 +1,6 @@
 var workerInputRetreiver = createPascalCellInputRetreiver();
 
-var scheduler = new ResourceScheduler.PriorityScheduler(
+var scheduler = new resourceScheduler.PriorityScheduler(
     function createDummyResource() {
         return {};
     },
@@ -9,7 +9,7 @@ var scheduler = new ResourceScheduler.PriorityScheduler(
         return task.MY_PRIORITY;
     }});
 
-var schedulerDependencyWorkers = new AsyncProxy.SchedulerDependencyWorkers(
+var schedulerDependencyWorkers = new asyncProxy.SchedulerDependencyWorkers(
     scheduler, workerInputRetreiver);
 
 function demoDependencyWorkersWithScheduler() {
