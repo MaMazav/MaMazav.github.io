@@ -12,16 +12,26 @@ var GridFetcher = (function GridFetcherClosure() {
     GridFetcher.prototype.open = function(url) {
         var self = this;
         this._url = url;
-        return graphicsLibrary.ajax(url + '/image-props.json').then(function(imageParams) {
-            imageParams.imageLevel = imageParams.levels - 1;
-            imageParams.imageWidth  = imageParams.tileWidth  * imageParams.lowestLevelTilesX * Math.pow(2, imageParams.imageLevel);
-            imageParams.imageHeight = imageParams.tileHeight * imageParams.lowestLevelTilesY * Math.pow(2, imageParams.imageLevel);
-            imageParams.numResolutionLevelsForLimittedViewer = imageParams.levels;
-            imageParams.lowestQuality = 'arbitrary value';
-            imageParams.highestQuality = 'Another arbitrary value';
+        return graphicsLibrary.ajax(url + '/image-props.json').then(function(imageProps) {
+			var imageLevel = imageProps.levels - 1;
+			self._imageParams = {
+				// Mandatory fields
+				imageLevel : imageLevel,
+				imageWidth  : imageProps.tileWidth  * imageProps.lowestLevelTilesX * Math.pow(2, imageLevel),
+				imageHeight : imageProps.tileHeight * imageProps.lowestLevelTilesY * Math.pow(2, imageLevel),
+				numResolutionLevelsForLimittedViewer : imageProps.levels,
+				lowestQuality  : 'arbitrary value',
+				highestQuality : 'Another arbitrary value',
+				
+				// Mandatory fields for GridImage
+				tileWidth : imageProps.tileWidth,
+				tileHeight: imageProps.tileHeight,
+				
+				// Custom data
+				internals: { levels: imageProps.levels }
+			};
 			
-			self._imageParams = imageParams;
-            return imageParams;
+            return self._imageParams;
         });
     };
     
