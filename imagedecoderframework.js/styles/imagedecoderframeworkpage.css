@@ -27,6 +27,10 @@ h1 {
 	height: 80%;
 }
 
+#leafletContainerProgressive {
+	height: 80%;
+}
+
 #viewerDiv {
 	width: 100%;
 	height: 80%;
