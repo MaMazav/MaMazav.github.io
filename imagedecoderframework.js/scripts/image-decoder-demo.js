@@ -1,12 +1,12 @@
-var imageDecoder = null;
-var url = location.href.substring(0, location.href.lastIndexOf('/')) + '/sierpinskiimageurl.json';
+var imageDecoderInst = null;
+var url = 'dummy-url';
 var targetCanvas = document.getElementById('imageDecoderDemoCanvas');
 var targetContext = targetCanvas.getContext('2d');
 
 function decodeRegionByImageDecoder() {
-    if (!imageDecoder) {
-        imageDecoder = new imageDecoderFramework.ImageDecoder('SierpinskiProgressiveImageImplementation', {workersLimit: 1});
-        imageDecoder.open(url).then(function() {
+    if (!imageDecoderInst) {
+		imageDecoderInst = new imageDecoderFramework.ImageDecoder(new SierpinskiProgressiveImage(), {workersLimit: 1});
+        imageDecoderInst.open(url).then(function() {
             decodeRegionByImageDecoder();
             setTimeout(closeImage, 60*1000);
         });
@@ -25,7 +25,7 @@ function decodeRegionByImageDecoder() {
     targetCanvas.width  = regionParams.screenWidth;
     targetCanvas.height = regionParams.screenHeight;
 
-    var alignedParams = imageDecoder.alignParamsToTilesAndLevel(regionParams);
+    var alignedParams = imageDecoderFramework.ImageDecoder.alignParamsToTilesAndLevel(regionParams, imageDecoderInst);
     var imagePartParams = alignedParams.imagePartParams;
     imagePartParams.quality = 1;
     
@@ -39,7 +39,7 @@ function decodeRegionByImageDecoder() {
     tempCanvas.height = imagePartParams.maxYExclusive - imagePartParams.minY;
     tempContext.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
     
-    imageDecoder.requestPixelsProgressive(
+    imageDecoderInst.requestPixelsProgressive(
         imagePartParams,
         regionDecodedCallback,
         requestTerminatedCallback);
@@ -67,8 +67,8 @@ function requestTerminatedCallback(isAborted) {
 }
 
 function closeImage() {
-    var localImageDecoder = imageDecoder;
-    imageDecoder = null;
+    var localImageDecoder = imageDecoderInst;
+    imageDecoderInst = null;
     localImageDecoder.close().then(function() {
         console.log('Image closed successfully');
     });

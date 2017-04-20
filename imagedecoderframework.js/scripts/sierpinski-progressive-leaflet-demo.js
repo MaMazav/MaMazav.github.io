@@ -8,6 +8,6 @@ var layer = new imageDecoderFramework.ImageDecoderRegionLayer({
 
 layer.setExceptionCallback(console.log);
 
-var map = L.map('leafletContainerProgressive');
+var map = L.map('leafletContainer');
 map.addLayer(layer);
 map.fitBounds(latLngBounds);

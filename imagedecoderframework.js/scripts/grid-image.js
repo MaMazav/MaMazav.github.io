@@ -1,3 +1,5 @@
+'use strict';
+
 var GridImage = (function GridImage() {
     function GridImage() {
 		var fetcher = new GridFetcher();
@@ -31,7 +33,7 @@ var GridImage = (function GridImage() {
 		return this._decoderWorkers;
 	};
 
-    GridImage.prototype.getDecodeWorkerTypeOptions = function(taskType) {
+    GridImage.prototype.getDecodeWorkerTypeOptions = function() {
         // Should provide absolute paths
 		var htmlUrl = location.href.substring(0, location.href.lastIndexOf('/'));
         var baseUrl = htmlUrl + '/scripts/';

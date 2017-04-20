@@ -1,13 +1,15 @@
 var rectangle = Cesium.Rectangle.fromDegrees(-2.0, -1.0, 2.0, 1.0);
 
-var imageDecoderLayerManager = new imageDecoderFramework.CesiumImageDecoderLayerManager('SierpinskiProgressiveImageImplementation', {
+var imageDecoder = new imageDecoderFramework.ImageDecoder(new SierpinskiImage());
+
+var imageryProvider = new imageDecoderFramework.ImageDecoderImageryProvider(imageDecoder, {
     url: location.href.substring(0, location.href.lastIndexOf('/')) + '/sierpinskiimageurl.json', // Must be absolute path
     rectangle: rectangle
 });
 
-imageDecoderLayerManager.setExceptionCallback(console.log);
+imageryProvider.setExceptionCallback(console.log);
 
-var cesiumLayerManagerViewer = new Cesium.Viewer('cesiumContainer', {
+var cesiumImageryProviderViewer = new Cesium.Viewer('cesiumContainer', {
     // Only for demo purpose: avoid loading online data
     imageryProvider : Cesium.createTileMapServiceImageryProvider({
         url : Cesium.buildModuleUrl('Assets/Textures/NaturalEarthII')
@@ -15,7 +17,9 @@ var cesiumLayerManagerViewer = new Cesium.Viewer('cesiumContainer', {
     baseLayerPicker : false,
     geocoder : false
 });
-imageDecoderLayerManager.open(cesiumLayerManagerViewer);
+imageryProvider.open(cesiumImageryProviderViewer);
+cesiumImageryProviderViewer.scene.imageryLayers.addImageryProvider(imageryProvider);
+
 setTimeout(function delayedViewRectangle() {
-    cesiumLayerManagerViewer.scene.camera.setView({destination: rectangle});
+    cesiumImageryProviderViewer.scene.camera.setView({destination: rectangle});
 }, 100);

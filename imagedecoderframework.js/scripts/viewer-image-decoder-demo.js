@@ -1,7 +1,8 @@
 var viewer;
 
-var url = location.href.substring(0, location.href.lastIndexOf('/')) + '/sierpinskiimageurl.json';
-viewerImageDecoder = new imageDecoderFramework.ViewerImageDecoder('SierpinskiProgressiveImageImplementation', canvasUpdatedCallback, {
+var url = 'dummy-url';
+var imageDecoder = new imageDecoderFramework.ImageDecoder(new SierpinskiProgressiveImage(), {workersLimit: 1});
+viewerImageDecoder = new imageDecoderFramework.ViewerImageDecoder(imageDecoder, canvasUpdatedCallback, {
     cartographicBounds: {
         west: 0,
         east: 1,

@@ -26,7 +26,7 @@ var SierpinskiProgressiveImage = (function SierpinskiProgressiveImageClosure() {
 			}
 			
 			var lowestQuality;
-			for (var i = 0; i < task.dependTaskResults.length; ++i) {
+			for (var i = 0; i < task.dependTaskKeys.length; ++i) {
 				if (!task.dependTaskResults[i] || task.dependTaskResults[i].sierpinskiQuality === decodedQuality) {
 					return;
 				}

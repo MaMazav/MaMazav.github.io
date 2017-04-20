@@ -121,7 +121,7 @@
    included in a new HTML page, and think about all dependent scripts that should be loaded in order this
    script to work there properly.
   </p>
-  <pre><code data-src="scripts/gridimageimplementation.js"></code></pre>
+  <pre><code data-src="scripts/grid-image.js"></code></pre>
   <p>
    Now let's define the ImageParamsRetreiver. It is only an API for the framework to query about the image
    parameters. It contains the following methods:
@@ -142,7 +142,6 @@
    <li>getLowestQuality, getHighestQuality - for progressiveness. In this stage you may return here any value
        you would like to</li>
   </ul>
-  <pre><code data-src="scripts/gridimageparamsretriever.js"></code></pre>
   <p>
    Now let's go to the implementation of the two core parts of the image: the Fetcher and the PixelsDecoder.
    Given that you decided using SimpleFetcher and SimplePixelsDecoder (the only option you know right now :)
@@ -153,7 +152,7 @@
     <li>getHashCode and isEqual - auxiliary methods for the framework to efficiently treat the image keys.
         </li>
   </p>
-  <pre><code data-src="scripts/gridfetcher.js"></code></pre>
+  <pre><code data-src="scripts/grid-fetcher.js"></code></pre>
   <p>
    The fetched data will be passed to a PixelsDecoder, which in turn will accept requests to decode a given
    region and key.
@@ -163,7 +162,7 @@
    PixelsDecoder should support decoding of partial region. You should calculate the intersection between the
    data related with the given key, and the region requested by the framework.
   </p>
-  <pre><code data-src="scripts/gridpixelsdecoder.js"></code></pre>
+  <pre><code data-src="scripts/grid-decoder-worker.js"></code></pre>
   <p>
    That's all! now you have an implemented image. Now let's see how can you easily convert this code into a
    graphic view using your favorite viewer, like Leaflet or Cesium.
@@ -175,7 +174,7 @@
   <p>
    Using the following several lines, your image will be shown in leaflet:
   </p>
-  <pre><code data-src="scripts/gridleafletdemo.js"></code></pre>
+  <pre><code data-src="scripts/grid-leaflet-demo.js"></code></pre>
   <p>
    Notice that you the workersLimit argument is optional and has a default value of 5. This argument limits the
    count of Web Workers used for decoding (excluding the fetch Web Worker). I limitted it in this demo because
@@ -187,7 +186,7 @@
   <h3>Another image: Sierpinski carpet</h3>
   <p>
    The following example is more complex example of a <a href="https://en.wikipedia.org/wiki/Sierpinski_carpet">
-   sierpinski carpet</a> image. It uses a <a href="scripts/graphicslibrary.js">graphics library</a> which luckily
+   sierpinski carpet</a> image. It uses a <a href="scripts/graphics-library.js">graphics library</a> which luckily
    supports by-region partial calculation of the sierpinski squares coordinates (well, actually this "library" was
    written especially for this demo page...).
   </p>
@@ -198,17 +197,15 @@
    without progressiveness support).
   </p>
   <p>
-   <a href="leafletimagedecoderdemo.html">Leaflet Sierpinski ImageDecoder Demo</a>
+   <a href="leaflet-image-decoder-demo.html">Leaflet Sierpinski ImageDecoder Demo</a>
   </p>
-  <pre><code data-src="scripts/sierpinskiimageimplementation.js"></code></pre>
-  <pre><code data-src="scripts/sierpinskifetcher.js"></code></pre>
-  <pre><code data-src="scripts/sierpinskipixelsdecoder.js"></code></pre>
-  <pre><code data-src="scripts/sierpinskiimageparamsretriever.js"></code></pre>
+  <pre><code data-src="scripts/sierpinski-image.js"></code></pre>
+  <pre><code data-src="scripts/sierpinski-fetcher.js"></code></pre>
+  <pre><code data-src="scripts/sierpinski-decoder-worker.js"></code></pre>
   
   <hr>
   <a name="progressive"></a>
   <h3>Progressive fetch</h3>
-  <div id="leafletContainerProgressive"></div>
   <p>
    Assume you have a heavy image, which is hard to be loaded or decoded. However this image may be splitted
    into lower qualities, which allows showing a quick lower quality image until the better image will be
@@ -224,9 +221,9 @@
    of the non progressive fetch method):
   </p>
   <p>
-   <a href="leafletprogressivedemo.html">Leaflet Progressive ImageDecoder Demo</a>
+   <a href="leaflet-progressive-demo.html">Leaflet Progressive ImageDecoder Demo</a>
   </p>
-  <pre><code data-src="scripts/sierpinskiprogressivefetcher.js"></code></pre>
+  <pre><code data-src="scripts/sierpinski-progressive-fetcher.js"></code></pre>
   <p>
    The quality is transparent to the PixelsDecoder which only takes a list of squares as an input (although
    there may be cases in which the PixelsDecoder implementation should be changed to support progressiveness).
@@ -238,7 +235,7 @@
    Now, just fix the script file and class name to those of the SierpinskiProgressiveFetcher, and we got the
    progressive version of the sierpinski carpet you can see at the top of the page:
   </p>
-  <pre><code data-src="scripts/sierpinskiprogressiveimageimplementation.js"></code></pre>
+  <pre><code data-src="scripts/sierpinski-progressive-image.js"></code></pre>
 
   <hr>
   <a name="cesium"></a>
@@ -253,12 +250,12 @@
   </p>
   <h4>CesiumImageDecoderLayerManager</h4>
   <p>
-   <a href="cesiumlayermanagerdemo.html">CesiumImageDecoderLayerManager Demo</a>
+   <a href="cesium-layer-manager-demo.html">CesiumImageDecoderLayerManager Demo</a>
   </p>
   <p>
    (In new Cesium versions we have a serious blinking issue, hope to solve it soon).
   </p>
-  <pre><code data-src="scripts/cesiumlayermanagerdemo.js"></code></pre>
+  <pre><code data-src="scripts/cesium-layer-manager-demo.js"></code></pre>
   <!----------->
   <h4>ImageDecoderImageryProvider</h4>
   <p>
@@ -269,9 +266,9 @@
    prioritization, thus it needs the viewer.
   </p>
   <p>
-   <a href="cesiumimageryproviderdemo.html">ImageDecoderImageryProvider Demo</a>
+   <a href="cesium-imagery-provider-demo.html">ImageDecoderImageryProvider Demo</a>
   </p>
-  <pre><code data-src="scripts/cesiumimageryproviderdemo.js"></code></pre>
+  <pre><code data-src="scripts/cesium-imagery-provider-demo.js"></code></pre>
 
   <hr>
   <a name="imagedecoder"></a>
@@ -282,7 +279,7 @@
    following example demonstrate how to decode a region of interest from the image and use it within a simple
    canvas (click on the button below the code to activate the demo):
   </p>
-  <pre><code data-src="scripts/imagedecoderdemo.js"></code></pre>
+  <pre><code data-src="scripts/image-decoder-demo.js"></code></pre>
   <input type="button" value="Show image!" onclick="decodeRegionByImageDecoder()">
   <br><br>
   <canvas id="imageDecoderDemoCanvas"></canvas>
@@ -303,7 +300,7 @@
   </p>
   <div id="viewerDiv">
   </div>
-  <pre><code data-src="scripts/viewerimagedecoderdemo.js"></code></pre>
+  <pre><code data-src="scripts/viewer-image-decoder-demo.js"></code></pre>
   
   <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
   <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
@@ -323,11 +320,8 @@
   <script src="scripts/sierpinski-leaflet-demo.js"></script>
   <script src="scripts/sierpinski-progressive-fetcher.js"></script>
   <script src="scripts/sierpinski-progressive-image.js"></script>
-  <script src="scripts/sierpinski-progressive-leaflet-demo.js"></script>
-<!--
-  <script src="scripts/imagedecoderdemo.js"></script>
-  <script src="scripts/viewerimagedecoderdemo.js"></script>
--->
+  <script src="scripts/image-decoder-demo.js"></script>
+  <script src="scripts/viewer-image-decoder-demo.js"></script>
  </div></div></div>
  </body>
 </html>
