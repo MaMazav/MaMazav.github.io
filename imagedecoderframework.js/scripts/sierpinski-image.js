@@ -24,7 +24,7 @@ var SierpinskiImage = (function SierpinskiImageClosure() {
         var baseUrl = htmlUrl + '/scripts/';
         var graphicslibraryPath = baseUrl + 'graphics-library.js';
         var sierpinskiDecoderPath = baseUrl + 'sierpinski-decoder-worker.js';
-		var imageDecoderFrameworkPath = htmlUrl + '/../cdn/image-decoder-framework.dev.js';
+		var imageDecoderFrameworkPath = htmlUrl + '/../cdn/image-decoder-framework.dev.debug.js';
         var absolutePaths = [
 			imageDecoderFrameworkPath,
             graphicslibraryPath,

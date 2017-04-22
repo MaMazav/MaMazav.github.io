@@ -2,10 +2,8 @@ var rectangle = Cesium.Rectangle.fromDegrees(-2.0, -1.0, 2.0, 1.0);
 
 var imageDecoder = new imageDecoderFramework.ImageDecoder(new SierpinskiImage());
 
-var imageryProvider = new imageDecoderFramework.ImageDecoderImageryProvider(imageDecoder, {
-    url: location.href.substring(0, location.href.lastIndexOf('/')) + '/sierpinskiimageurl.json', // Must be absolute path
-    rectangle: rectangle
-});
+var imageryProvider = new imageDecoderFramework.ImageDecoderImageryProvider(
+	imageDecoder, { url: 'dummyUrl', rectangle: rectangle });
 
 imageryProvider.setExceptionCallback(console.log);
 
