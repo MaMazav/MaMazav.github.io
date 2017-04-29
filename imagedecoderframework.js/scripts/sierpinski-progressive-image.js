@@ -1,6 +1,6 @@
 var SierpinskiProgressiveImage = (function SierpinskiProgressiveImageClosure() {
-	function SierpinskiProgressiveImage() {
-		SierpinskiImage.call(this);
+	function SierpinskiProgressiveImage(options) {
+		SierpinskiImage.call(this, options);
 	}
 	
 	SierpinskiProgressiveImage.prototype = Object.create(SierpinskiImage.prototype);

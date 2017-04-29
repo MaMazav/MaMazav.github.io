@@ -1,8 +1,8 @@
 var viewer;
 
 var url = 'dummy-url';
-var imageDecoder = new imageDecoderFramework.ImageDecoder(new SierpinskiProgressiveImage(), {workersLimit: 1});
-viewerImageDecoder = new imageDecoderFramework.ViewerImageDecoder(imageDecoder, canvasUpdatedCallback, {
+var image = new SierpinskiProgressiveImage({workersLimit: 1});
+imageViewer = new imageDecoderFramework.ImageViewer(image, canvasUpdatedCallback, {
     cartographicBounds: {
         west: 0,
         east: 1,
@@ -12,18 +12,18 @@ viewerImageDecoder = new imageDecoderFramework.ViewerImageDecoder(imageDecoder, 
     adaptProportions: true,
     workersLimit: 3
 });
-viewerImageDecoder.open(url).then(function() {
-    var imageBounds = viewerImageDecoder.getBounds();
+imageViewer.open(url).then(function() {
+    var imageBounds = imageViewer.getBounds();
     viewer = graphicsLibrary.createViewer('viewerDiv', viewChangedCallback, /*startPosition=*/{
         west: imageBounds.west,
         east: imageBounds.east,
         south: imageBounds.south,
         north: imageBounds.north
     });
-    viewerImageDecoder.setTargetCanvas(viewer.getCanvas());
+    imageViewer.setTargetCanvas(viewer.getCanvas());
 });
-viewerImageDecoder.setExceptionCallback(function exceptionCallback(e) {
-    console.log('Error in ViewerImageDecoder: ' + e);
+imageViewer.setExceptionCallback(function exceptionCallback(e) {
+    console.log('Error in ImageViewer: ' + e);
 });
 
 function canvasUpdatedCallback(newPosition) {
@@ -35,7 +35,7 @@ function canvasUpdatedCallback(newPosition) {
 }
 
 function viewChangedCallback(newPosition, screenPixelsWidth, screenPixelsHeight) {
-    viewerImageDecoder.updateViewArea({
+    imageViewer.updateViewArea({
         rectangle: {
             west:  newPosition.west,
             east:  newPosition.east,

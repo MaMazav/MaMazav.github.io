@@ -1,12 +1,12 @@
-var imageDecoderInst = null;
+var imageInst = null;
 var url = 'dummy-url';
 var targetCanvas = document.getElementById('imageDecoderDemoCanvas');
 var targetContext = targetCanvas.getContext('2d');
 
 function decodeRegionByImageDecoder() {
-    if (!imageDecoderInst) {
-		imageDecoderInst = new imageDecoderFramework.ImageDecoder(new SierpinskiProgressiveImage(), {workersLimit: 1});
-        imageDecoderInst.open(url).then(function() {
+    if (!imageInst) {
+		imageInst = new SierpinskiProgressiveImage({workersLimit: 1});
+        imageInst.open(url).then(function() {
             decodeRegionByImageDecoder();
             setTimeout(closeImage, 60*1000);
         });
@@ -25,7 +25,7 @@ function decodeRegionByImageDecoder() {
     targetCanvas.width  = regionParams.screenWidth;
     targetCanvas.height = regionParams.screenHeight;
 
-    var alignedParams = imageDecoderFramework.ImageDecoder.alignParamsToTilesAndLevel(regionParams, imageDecoderInst);
+    var alignedParams = imageDecoderFramework.ImageBase.alignParamsToTilesAndLevel(regionParams, imageInst);
     var imagePartParams = alignedParams.imagePartParams;
     imagePartParams.quality = 1;
     
@@ -39,7 +39,7 @@ function decodeRegionByImageDecoder() {
     tempCanvas.height = imagePartParams.maxYExclusive - imagePartParams.minY;
     tempContext.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
     
-    imageDecoderInst.requestPixelsProgressive(
+    imageInst.requestPixelsProgressive(
         imagePartParams,
         regionDecodedCallback,
         requestTerminatedCallback);
@@ -67,8 +67,8 @@ function requestTerminatedCallback(isAborted) {
 }
 
 function closeImage() {
-    var localImageDecoder = imageDecoderInst;
-    imageDecoderInst = null;
+    var localImageDecoder = imageInst;
+    imageInst = null;
     localImageDecoder.close().then(function() {
         console.log('Image closed successfully');
     });

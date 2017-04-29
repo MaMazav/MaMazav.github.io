@@ -1,10 +1,9 @@
 'use strict';
 
 var SierpinskiImage = (function SierpinskiImageClosure() {
-	function SierpinskiImage() {
+	function SierpinskiImage(options) {
 		var fetcher = this.createFetcher();
-		var fetchManager = new imageDecoderFramework.FetchManager(fetcher);
-		imageDecoderFramework.GridImageBase.call(this, fetchManager);
+		imageDecoderFramework.GridImageBase.call(this, fetcher, options);
 		this._decoderWorkers = null;
 		this._imageParams = null;
 	}

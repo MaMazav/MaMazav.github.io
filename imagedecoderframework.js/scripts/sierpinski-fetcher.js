@@ -40,7 +40,6 @@ var SierpinskiFetcher = (function SierpinskiFetcherClosure() {
 	};
 	
     SierpinskiFetcher.prototype.fetchTile = function fetchTile(level, tileX, tileY, fetchTask, maxQuality) {
-		console.log('Fetching ' + tileX + ',' + tileY + ':' + level);
 		var tileMinX = this._imageParams.tileWidth * tileX;
 		var tileMaxX = this._imageParams.tileWidth * (tileX + 1);
 		var tileMinY = this._imageParams.tileHeight * tileY;
@@ -54,7 +53,6 @@ var SierpinskiFetcher = (function SierpinskiFetcherClosure() {
 		var levelHeight = this._imageParams.imageHeight * levelFactor;
 		
 		this.fetchTileInternal(fetchTask, sierpinskiCollector, levelWidth, levelHeight, maxQuality);
-		console.log('Terminated fetch ' + tileX + ',' + tileY + ':' + level);
     };
 	
 	SierpinskiFetcher.prototype.fetchTileInternal = function(fetchTask, sierpinskiCollector, levelWidth, levelHeight, maxQuality) {

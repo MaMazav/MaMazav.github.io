@@ -1,10 +1,9 @@
 'use strict';
 
 var GridImage = (function GridImage() {
-    function GridImage() {
-		var fetcher = new GridFetcher();
-		var fetchManager = new imageDecoderFramework.FetchManager(fetcher);
-		imageDecoderFramework.GridImageBase.call(this, fetchManager);
+    function GridImage(options) {
+		this._fetcher = new GridFetcher();
+		imageDecoderFramework.GridImageBase.call(this, this._fetcher, options);
 		this._decoderWorkers = null;
 		this._imageParams = null;
 		this._levels = 0;
@@ -14,7 +13,7 @@ var GridImage = (function GridImage() {
 	
 	GridImage.prototype.getLevel = function getLevel(regionImageLevel) {
 		if (this._imageParams === null) {
-			this._imageParams = this._fetchManager.getImageParams();
+			this._imageParams = this._fetcher.getImageParams();
 			this._levels = this._imageParams.internals.levels;
 		}
 		// Perform calculation of level according to resolution, as implemented in base class
