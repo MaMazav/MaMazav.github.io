@@ -16,7 +16,7 @@ function startDemoDependencyWorkers(htmlElementPrefix, dependencyWorkers) {
 }
 
 function calculatePascalTriangleCell(dependencyWorkers, targetElement, row, col) {
-    var taskHandle = dependencyWorkers.startTask(
+    var taskContext = dependencyWorkers.startTask(
         {row: row, col: col},
         { onData: function(result) {
               targetElement.innerHTML = result;
@@ -25,7 +25,7 @@ function calculatePascalTriangleCell(dependencyWorkers, targetElement, row, col)
           }
         }
     );
-    taskHandle.setPriority(col / (row + 1));
+    taskContext.setPriorityCalculator(function() { return col / (row + 1); });
 }
 
 function createPascalCellInputRetreiver() {
@@ -41,8 +41,6 @@ function createPascalCellInputRetreiver() {
 			
 			var alreadyTerminated = false;
 			var isWaitingForWorkerToStart = false;
-			
-			task.MY_PRIORITY = 0;
 			
 			task.registerTaskDependency({row: row - 1, col: col - 1});
 			task.registerTaskDependency({row: row - 1, col: col});
@@ -64,8 +62,6 @@ function createPascalCellInputRetreiver() {
 			});
 			
 			task.on('statusUpdated', function(status) {
-				task.MY_PRIORITY = status.priority;
-				
 				var shouldTerminate =
 					!alreadyTerminated &&
 					!isWaitingForWorkerToStart &&
@@ -80,8 +76,8 @@ function createPascalCellInputRetreiver() {
 
 				if (!status.hasListeners) {
 					// if no listeners the calculation can be stopped. It may happen if
-					// taskHandle.unregister() is called.
-					// In this demo taskHandle.unregister() is not called, so nothing to do there.
+					// taskContext.unregister() is called.
+					// In this demo taskContext.unregister() is not called, so nothing to do there.
 				}
 			});
         },

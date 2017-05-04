@@ -5,7 +5,7 @@ var targetContext = targetCanvas.getContext('2d');
 
 function decodeRegionByImageDecoder() {
     if (!imageInst) {
-		imageInst = new SierpinskiProgressiveImage({workersLimit: 1});
+		imageInst = new SierpinskiProgressiveImage({decodeWorkersLimit: 1});
         imageInst.open(url).then(function() {
             decodeRegionByImageDecoder();
             setTimeout(closeImage, 60*1000);

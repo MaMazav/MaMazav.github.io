@@ -9,13 +9,13 @@ function demoDependencyWorkers(dependencyWorkers) {
 }
 
 function calculatePascalTriangleCell(dependencyWorkers, targetElement, row, col) {
-    var taskHandle = pascalTriangleDependencyWorkers.startTask(
+    var taskContext = pascalTriangleDependencyWorkers.startTask(
         { row: row, col: col },
         function onData(result) {
             targetElement.innerHTML = result;
         }
     );
-    taskHandle.setPriority(col);
+    taskContext.setPriorityCalculator(function() { return col; });
 }
 
 function createPascalCellInputRetreiver() {

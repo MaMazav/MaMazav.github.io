@@ -9,13 +9,6 @@ var SierpinskiImage = (function SierpinskiImageClosure() {
 	}
 	
 	SierpinskiImage.prototype = Object.create(imageDecoderFramework.GridImageBase.prototype);
-    
-	SierpinskiImage.prototype.getDecoderWorkers = function getDecoderWorkers() {
-		if (this._decoderWorkers === null) {
-			this._decoderWorkers = new asyncProxy.DependencyWorkers(this);
-		}
-		return this._decoderWorkers;
-	};
 
     SierpinskiImage.prototype.getDecodeWorkerTypeOptions = function() {
         // Should provide absolute paths

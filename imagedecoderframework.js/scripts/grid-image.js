@@ -24,13 +24,6 @@ var GridImage = (function GridImage() {
 		
 		return limittedLevel;
 	};
-    
-	GridImage.prototype.getDecoderWorkers = function getDecoderWorkers() {
-		if (this._decoderWorkers === null) {
-			this._decoderWorkers = new asyncProxy.DependencyWorkers(this);
-		}
-		return this._decoderWorkers;
-	};
 
     GridImage.prototype.getDecodeWorkerTypeOptions = function() {
         // Should provide absolute paths

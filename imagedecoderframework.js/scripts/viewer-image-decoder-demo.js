@@ -1,7 +1,7 @@
 var viewer;
 
 var url = 'dummy-url';
-var image = new SierpinskiProgressiveImage({workersLimit: 1});
+var image = new SierpinskiProgressiveImage({decodeWorkersLimit: 1});
 imageViewer = new imageDecoderFramework.ImageViewer(image, canvasUpdatedCallback, {
     cartographicBounds: {
         west: 0,
@@ -9,8 +9,7 @@ imageViewer = new imageDecoderFramework.ImageViewer(image, canvasUpdatedCallback
         south: 0,
         north: 1
     },
-    adaptProportions: true,
-    workersLimit: 3
+    adaptProportions: true
 });
 imageViewer.open(url).then(function() {
     var imageBounds = imageViewer.getBounds();
