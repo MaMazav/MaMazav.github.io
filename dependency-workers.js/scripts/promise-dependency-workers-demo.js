@@ -1,6 +1,6 @@
 var workerInputRetreiver = createPascalCellPromiseInputRetreiver();
 
-var pascalTrianglePromiseDependencyWorkers = new asyncProxy.DependencyWorkers(workerInputRetreiver);
+var pascalTrianglePromiseDependencyWorkers = new dependencyWorkers.DependencyWorkers(workerInputRetreiver);
 
 function demoPromiseDependencyWorkers() {
     for (var row = 0; row < 8; ++row) {

@@ -2,8 +2,8 @@
 
 var CallbackProxy = (function CallbackProxyClosure() {
     function CallbackProxy() {
-        var scriptsToImport = [AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/callee.js'];
-        this._workerHelper = new AsyncProxy.AsyncProxyMaster(scriptsToImport, 'Callee');
+        var scriptsToImport = [asyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/callee.js'];
+        this._workerHelper = new asyncProxy.AsyncProxyMaster(scriptsToImport, 'Callee');
     }
     
     CallbackProxy.prototype.asyncFunctionWithCallback = function asyncFunctionWithCallback(callback) {

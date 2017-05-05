@@ -1,8 +1,8 @@
 var workerInputRetreiver = createPascalCellInputRetreiver();
 
-var scheduler = new asyncProxy.DependencyWorkersTaskScheduler(/*jobsLimit=*/2);
+var scheduler = new dependencyWorkers.DependencyWorkersTaskScheduler(/*jobsLimit=*/2);
 
-var schedulerDependencyWorkers = new asyncProxy.SchedulerDependencyWorkers(
+var schedulerDependencyWorkers = new dependencyWorkers.SchedulerDependencyWorkers(
     scheduler, workerInputRetreiver);
 
 function demoDependencyWorkersWithScheduler() {

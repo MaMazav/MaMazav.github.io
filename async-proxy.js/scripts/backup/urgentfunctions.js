@@ -2,9 +2,9 @@
 
 var UrgentFunctionsProxy = (function UrgentFunctionsProxyClosure() {
     function UrgentFunctionsProxy() {
-        var scriptsToImport = [AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/callee.js'];
+        var scriptsToImport = [asyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/callee.js'];
         var ctorArgs = [];
-        this._workerHelper = new AsyncProxy.AsyncProxyMaster(scriptsToImport, 'Callee', ctorArgs, {
+        this._workerHelper = new asyncProxy.AsyncProxyMaster(scriptsToImport, 'Callee', ctorArgs, {
             functionsBufferSize: 3
         });
     }

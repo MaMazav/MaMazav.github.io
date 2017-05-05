@@ -1,22 +1,22 @@
 body {
-	background-color: #444444;
-	color: #222222;
+	background-color: #3083FF;
+	color: #0053CF;
 }
 
 .hljs {
-	background-color: #BBBBBB;
+	background-color: #C5DDFF;
 }
 
 h1 {
-	color: #222222;
+	color: #3083FF;
 }
 
 #content {
-	background-color: #EEEEEE;
+	background-color: #FAF5FF;
 }
 
 .navlink {
-	color: #BBBBAA;
+	color: #FAF5FF;
 }
 
 #leafletContainer {

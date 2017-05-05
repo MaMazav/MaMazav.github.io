@@ -2,8 +2,8 @@
 
 var TransferablesFromPromise = (function TransferablesFromPromiseClosure() {
     function TransferablesFromPromise() {
-        var scriptsToImport = [AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/callee.js'];
-        this._workerHelper = new AsyncProxy.AsyncProxyMaster(scriptsToImport, 'Callee');
+        var scriptsToImport = [asyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/callee.js'];
+        this._workerHelper = new asyncProxy.AsyncProxyMaster(scriptsToImport, 'Callee');
     }
     
     TransferablesFromPromise.prototype.passArrayBuffer = function passArrayBuffer(uint8Array) {

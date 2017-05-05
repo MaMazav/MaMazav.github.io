@@ -2,8 +2,8 @@
 
 var PromiseProxy = (function PromiseProxyClosure() {
     function PromiseProxy() {
-        var scriptsToImport = [AsyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/callee.js'];
-        this._workerHelper = new AsyncProxy.AsyncProxyMaster(scriptsToImport, 'Callee');
+        var scriptsToImport = [asyncProxy.AsyncProxyMaster.getEntryUrl() + '/scripts/callee.js'];
+        this._workerHelper = new asyncProxy.AsyncProxyMaster(scriptsToImport, 'Callee');
     }
     
     PromiseProxy.prototype.asyncFunction = function asyncFunction() {

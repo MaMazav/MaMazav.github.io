@@ -1,5 +1,5 @@
 var workerInputRetreiver = createPascalCellInputRetreiver();
-var pascalTriangleDependencyWorkers = new asyncProxy.DependencyWorkers(workerInputRetreiver);
+var pascalTriangleDependencyWorkers = new dependencyWorkers.DependencyWorkers(workerInputRetreiver);
 
 function demoDependencyWorkers() {
     startDemoDependencyWorkers('', pascalTriangleDependencyWorkers);

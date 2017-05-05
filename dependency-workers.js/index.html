@@ -1,0 +1,162 @@
+<html>
+ <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+  <title>DependencyWorkers Examples</title>
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+  <link rel="stylesheet" href="../styles/mamazav.github.io.css">
+  <link rel="stylesheet" href="styles/dependency-workers-page.css">
+ </head>
+ <body>
+  <a href="https://github.com/MaMazav/dependency-workers.js">
+   <img
+    style="position: absolute; top: 0; right: 0; border: 0;"
+	src="https://camo.githubusercontent.com/52760788cde945287fbb584134c4cbc2bc36f904/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f77686974655f6666666666662e706e67"
+	alt="Fork me on GitHub"
+	data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png">
+  </a>
+  
+<div id="verticalPadding">
+
+ <nav>
+  <ul>
+   <li><a class="navlink" href="#simple">Simple dependency-workers.js example: Pascall triangle</a></li>
+   <li><a class="navlink" href="#progressiveness">Progressiveness</a></li>
+   <li><a class="navlink" href="#scheduling">Priority and scheduling</a></li>
+  </ul>
+ </nav>
+
+ <div id="horizontalPadding"><div id="content">
+  <h1>DependencyWorkers Examples</h1>
+
+  <div style="color: red; font-size: 24px;">PAGE IS STILL IN CONSTRUCTION</div>
+
+  <p>
+   dependency-workers.js is a library for defining tree of tasks depend on each other and execute them efficiently.
+   The library includes builtin support in Web-Workers. The library supports some simple use cases which will be detailed in this page.
+  </p>
+  
+  <a name="simple"></a>
+  <hr>
+  <h2>Simple use case</h2>
+  <p>
+   If you have a lot of tasks that are common to some processings, you might want to reduce duplication of processing. The
+   <code>DependencyWorkers</code> is an auxiliary class which will spawn the tasks for you and will ensure that there are no
+   duplicated processings. You just need to attach a key to any calculation (which is defined by getHashCode() and isEqual()
+   method implementations used by the DependencyWorkers) and provide inputs to those tasks using Promises or callbacks.
+  </p>
+  <p>
+   The DependencyWorkers is especially good for siutations of some dependent tasks. The output of one task may be used for
+   the next task. For example, the following code shows the <a href="https://en.wikipedia.org/wiki/Pascal%27s_triangle">Pascal
+   Triangle</a>, in which every cell is a sum of its two ancestor. You can trace the log prints to ensure that there is
+   only single calculation for each task although many potential calls to it.
+  </p>
+  <p>
+   The most simplest way to use the DependencyWorkers, is to use the implementor PromiseDependencyWorkers. Its API is based
+   on Promises. It requires to define for each task on which other task results it depends on (using the getDependsOnTasks
+   method), define a pre-worker method to process the data returned by depends tasks and two methods for key searching -
+   getHashCode() and isEqual():
+  </p>
+  <pre><code data-src="scripts/promise-dependency-workers-demo.js"></code></pre>
+  
+  <p>
+   And the worker code is simple as:
+  </p>
+  <pre><code data-src="scripts/pascal-cell-calculator.js"></code></pre>
+
+  <input type="button" onclick="demoPromiseDependencyWorkers()" value="Start PromiseDependencyWorkers demo">
+  <table cellpadding="5">
+   <tr><td id="pascal_promise_0_0"></td></tr>
+   <tr><td id="pascal_promise_1_0"><td id="pascal_promise_1_1"></td></tr>
+   <tr><td id="pascal_promise_2_0"><td id="pascal_promise_2_1"><td id="pascal_promise_2_2"></td></tr>
+   <tr><td id="pascal_promise_3_0"><td id="pascal_promise_3_1"><td id="pascal_promise_3_2"><td id="pascal_promise_3_3"></td></tr>
+   <tr><td id="pascal_promise_4_0"><td id="pascal_promise_4_1"><td id="pascal_promise_4_2"><td id="pascal_promise_4_3"><td id="pascal_promise_4_4"></td></tr>
+   <tr><td id="pascal_promise_5_0"><td id="pascal_promise_5_1"><td id="pascal_promise_5_2"><td id="pascal_promise_5_3"><td id="pascal_promise_5_4"><td id="pascal_promise_5_5"></td></tr>
+   <tr><td id="pascal_promise_6_0"><td id="pascal_promise_6_1"><td id="pascal_promise_6_2"><td id="pascal_promise_6_3"><td id="pascal_promise_6_4"><td id="pascal_promise_6_5"><td id="pascal_promise_6_6"></td></tr>
+   <tr><td id="pascal_promise_7_0"><td id="pascal_promise_7_1"><td id="pascal_promise_7_2"><td id="pascal_promise_7_3"><td id="pascal_promise_7_4"><td id="pascal_promise_7_5"><td id="pascal_promise_7_6"><td id="pascal_promise_7_7"></td></tr>
+  </table>
+  
+  <a name="progressiveness"></a>
+  <hr>
+  <h2>Progressiveness</h2>
+  <p>
+   In some situations more advanced features are needed, in which the PromiseDependencyWorkers demonstrated above is not enough:
+  </p>
+  <ul>
+   <li>Progressive calculation (tasks emit more than a single result before termination).</li>
+   <li>Priorities between tasks due to limitted pre-worker calculation resources.</li>
+   <li>Limitation on count of concurrent workers.</li>
+   <li>Adding task dependency dynamically after task has already started.</li>
+   <li>Tasks which do not need Workers but only Main-thread calculation.</li>
+  </ul>
+  <p>
+   For this you would probable prefer to use the generic DependencyWorkers and/or SchedulerDependencyWorkers classes. The
+   DependencyWorkers class tries to be as much generic as possible. The DependencyWorkers doesn't maintain the mentioned features
+   for you but only provide you the API and all information needed to do it for you: It will aggregate the maximal priority of all
+   dependant tasks for each task, and it let you call to onData() callback whenever you want to limit concurrent active workers
+   and to apply priority. The SchedulerDependencyWorkers, however, is less generic and maintain priority and worker limitation
+   for you - you only need to provide an appropriate <a href="../resource-scheduler.js">Scheduler</a>.
+  </p>
+  <p>
+   .
+  </p>
+  
+  <p>
+   Following an example for using DependencyWorkers in order to maintain progressive calculation (each task emits more than a single
+   result). This example does not include priority or workers count limitation. The code for using DependencyWorkers is of course
+   much complex, so better to use the PromiseDependencyWorkers if the above mentioned features are not needed:
+  </p>
+  
+  <pre><code data-src="scripts/dependency-workers-demo.js"></code></pre>
+  
+  <input type="button" onclick="demoDependencyWorkers()" value="Start DependencyWorkers demo">
+
+  <table cellpadding="5">
+   <tr><td id="pascal_0_0"></td></tr>
+   <tr><td id="pascal_1_0"><td id="pascal_1_1"></td></tr>
+   <tr><td id="pascal_2_0"><td id="pascal_2_1"><td id="pascal_2_2"></td></tr>
+   <tr><td id="pascal_3_0"><td id="pascal_3_1"><td id="pascal_3_2"><td id="pascal_3_3"></td></tr>
+   <tr><td id="pascal_4_0"><td id="pascal_4_1"><td id="pascal_4_2"><td id="pascal_4_3"><td id="pascal_4_4"></td></tr>
+   <tr><td id="pascal_5_0"><td id="pascal_5_1"><td id="pascal_5_2"><td id="pascal_5_3"><td id="pascal_5_4"><td id="pascal_5_5"></td></tr>
+   <tr><td id="pascal_6_0"><td id="pascal_6_1"><td id="pascal_6_2"><td id="pascal_6_3"><td id="pascal_6_4"><td id="pascal_6_5"><td id="pascal_6_6"></td></tr>
+   <tr><td id="pascal_7_0"><td id="pascal_7_1"><td id="pascal_7_2"><td id="pascal_7_3"><td id="pascal_7_4"><td id="pascal_7_5"><td id="pascal_7_6"><td id="pascal_7_7"></td></tr>
+  </table>
+  
+  <a name="scheduling"></a>
+  <hr>
+  <h2>Priority and scheduling</h2>
+  <p>
+   If you would like to add the Worker count limitation and Prioritization featues, you may use the SchedulerWrapperInputRetreiver
+   with an appropriate <a href="../resource-scheduler.js">Scheduler</a>:
+  </p>
+  
+  <pre><code data-src="scripts/dependency-workers-with-scheduler-demo.js"></code></pre>
+
+  <input type="button" onclick="demoDependencyWorkersWithScheduler()" value="Start DependencyWorkers demo with Scheduler">
+  
+  <table cellpadding="5">
+   <tr><td id="scheduler_pascal_0_0"></td></tr>
+   <tr><td id="scheduler_pascal_1_0"><td id="scheduler_pascal_1_1"></td></tr>
+   <tr><td id="scheduler_pascal_2_0"><td id="scheduler_pascal_2_1"><td id="scheduler_pascal_2_2"></td></tr>
+   <tr><td id="scheduler_pascal_3_0"><td id="scheduler_pascal_3_1"><td id="scheduler_pascal_3_2"><td id="scheduler_pascal_3_3"></td></tr>
+   <tr><td id="scheduler_pascal_4_0"><td id="scheduler_pascal_4_1"><td id="scheduler_pascal_4_2"><td id="scheduler_pascal_4_3"><td id="scheduler_pascal_4_4"></td></tr>
+   <tr><td id="scheduler_pascal_5_0"><td id="scheduler_pascal_5_1"><td id="scheduler_pascal_5_2"><td id="scheduler_pascal_5_3"><td id="scheduler_pascal_5_4"><td id="scheduler_pascal_5_5"></td></tr>
+   <tr><td id="scheduler_pascal_6_0"><td id="scheduler_pascal_6_1"><td id="scheduler_pascal_6_2"><td id="scheduler_pascal_6_3"><td id="scheduler_pascal_6_4"><td id="scheduler_pascal_6_5"><td id="scheduler_pascal_6_6"></td></tr>
+   <tr><td id="scheduler_pascal_7_0"><td id="scheduler_pascal_7_1"><td id="scheduler_pascal_7_2"><td id="scheduler_pascal_7_3"><td id="scheduler_pascal_7_4"><td id="scheduler_pascal_7_5"><td id="scheduler_pascal_7_6"><td id="scheduler_pascal_7_7"></td></tr>
+  </table>
+  
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+  <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src="../scripts/mamazav.github.io.js"></script>
+  
+  <script src="../cdn/dependency-workers.dev.js"></script>
+
+  <script src="scripts/pascal-cell-calculator.js"></script>
+  <script src="scripts/promise-dependency-workers-demo.js"></script>
+  <script src="scripts/dependency-workers-demo.js"></script>
+  <script src="scripts/dependency-workers-with-scheduler-demo.js"></script>
+
+  </div></div></div>
+ </body>
+</html>
