@@ -9,7 +9,7 @@ var UserDataMasterBase = asyncProxy.AsyncProxyFactory.create(
 
 function UserDataMaster() {
 	UserDataMasterBase.call(this);
-	this._getWorkerHelper().setUserDataHandler(function(data) {
+	asyncProxy.AsyncProxyFactory.getWorkerHelper(this).setUserDataHandler(function(data) {
 		alert('Data arrived: ' + data);
 	});
 }

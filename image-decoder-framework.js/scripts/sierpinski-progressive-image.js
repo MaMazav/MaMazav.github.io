@@ -6,7 +6,19 @@ var SierpinskiProgressiveImage = (function SierpinskiProgressiveImageClosure() {
 	SierpinskiProgressiveImage.prototype = Object.create(SierpinskiImage.prototype);
 	
 	SierpinskiProgressiveImage.prototype.createFetcher = function() {
-		return new SierpinskiProgressiveFetcher();
+		var htmlUrl = location.href.substring(0, location.href.lastIndexOf('/'));
+        var baseUrl = htmlUrl + '/scripts/';
+        var graphicsLibraryPath = baseUrl + 'graphics-library.js';
+        var sierpinskiFetcherPath = baseUrl + 'sierpinski-fetcher.js';
+        var sierpinskiProgressiveFetcherPath = baseUrl + 'sierpinski-progressive-fetcher.js';
+		var imageDecoderFrameworkPath = htmlUrl + '/../cdn/image-decoder-framework.dev.debug.js';
+        var scriptsToImport = [
+			imageDecoderFrameworkPath,
+            graphicsLibraryPath,
+			sierpinskiFetcherPath,
+            sierpinskiProgressiveFetcherPath];
+			
+		return new imageDecoderFramework.WorkerProxyFetcher(scriptsToImport, 'SierpinskiProgressiveFetcher');
 	};
 	
 	SierpinskiProgressiveImage.prototype.decodeTaskStarted = function decodeTaskStarted(task) {
