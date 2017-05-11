@@ -1,9 +1,9 @@
 var rectangle = Cesium.Rectangle.fromDegrees(-2.0, -1.0, 2.0, 1.0);
 
-var image = new SierpinskiImage();
+var imageDecoder = imageDecoderFramework.ImageDecoder.fromImage(new SierpinskiImage());
 
 var imageDecoderLayerManager = new imageDecoderFramework.CesiumImageDecoderLayerManager(
-	image, { rectangle: rectangle });
+	imageDecoder, { rectangle: rectangle });
 
 imageDecoderLayerManager.setExceptionCallback(console.log);
 

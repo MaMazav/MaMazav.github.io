@@ -1,9 +1,9 @@
 var latLngBounds = L.latLngBounds(L.latLng(-1.0, -2.0), L.latLng(1.0, 2.0));
 
-var image = new SierpinskiProgressiveImage();
+var imageDecoder = imageDecoderFramework.ImageDecoder.fromImage(new SierpinskiProgressiveImage());
 
 var layer = new imageDecoderFramework.ImageDecoderRegionLayer({
-    image: image,
+    imageDecoder: imageDecoder,
     latLngBounds: latLngBounds});
 
 layer.setExceptionCallback(console.log);

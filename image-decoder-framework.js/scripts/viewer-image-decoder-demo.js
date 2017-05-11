@@ -1,8 +1,8 @@
 var viewer;
 
 var url = 'dummy-url';
-var image = new SierpinskiProgressiveImage({decodeWorkersLimit: 1});
-imageViewer = new imageDecoderFramework.ImageViewer(image, canvasUpdatedCallback, {
+var imageDecoder = imageDecoderFramework.ImageDecoder.fromImage(new SierpinskiProgressiveImage(), {decodeWorkersLimit: 1});
+imageViewer = new imageDecoderFramework.ImageDecoderViewer(imageDecoder, canvasUpdatedCallback, {
     cartographicBounds: {
         west: 0,
         east: 1,

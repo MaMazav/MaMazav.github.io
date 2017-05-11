@@ -18,7 +18,10 @@ var SierpinskiProgressiveImage = (function SierpinskiProgressiveImageClosure() {
 			sierpinskiFetcherPath,
             sierpinskiProgressiveFetcherPath];
 			
-		return new imageDecoderFramework.WorkerProxyFetcher(scriptsToImport, 'SierpinskiProgressiveFetcher');
+		return {
+            scriptsToImport: scriptsToImport,
+            ctorName: 'SierpinskiProgressiveFetcher'
+        };
 	};
 	
 	SierpinskiProgressiveImage.prototype.decodeTaskStarted = function decodeTaskStarted(task) {
