@@ -20,6 +20,7 @@ html, body {
         color: white;
         padding: 10px;
         white-space: normal;
+		width: 20%
     }
 
     body {
@@ -51,6 +52,8 @@ html, body {
         color: white;
         padding: 10px;
         white-space: normal;
+		word-break: normal;
+		padding-right: 100px;
     }
     
     pre {

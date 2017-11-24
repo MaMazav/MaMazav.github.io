@@ -5,7 +5,7 @@ asyncProxy.AsyncProxySlave.setBeforeOperationListener(
         if (operationType === 'callback') {
             console.log(
                 'before operation: type = ' + operationType +
-                ', callback name = ' + name +
+                ', callback name = ' + name + // Defined only if passed by custom callback style
                 ', args.length = ' + args.length);
         }
     }

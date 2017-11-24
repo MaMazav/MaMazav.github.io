@@ -27,6 +27,7 @@ AsyncProxyMethodsCustom.prototype.passArrayBuffer = function passArrayBuffer(uin
 	var firstElement = uint8Array[0];
 	console.log('First element of array - on UI: ' + firstElement);
 	
+	var args = [uint8Array];
 	workerHelper.callFunction('passArrayBuffer', args, {
 		isReturnPromise: true,
 		pathsToTransferablesInPromiseResult: [['someProperty', 'buffer']],

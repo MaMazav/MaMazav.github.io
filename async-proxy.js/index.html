@@ -23,11 +23,9 @@
   <ul>
    <li><a class="navlink" href="#helloworld">AsyncProxy.js Hello World!</a></li>
    <li><a class="navlink" href="#subworkeremulation">Sub Worker Emulation for Chrome</a></li>
-   <li><a class="navlink" href="#promise">Promise</a></li>
-   <li><a class="navlink" href="#callback">Callback</a></li>
+   <li><a class="navlink" href="#arguments">Passing special arguments and results</a></li>
    <li><a class="navlink" href="#termination">Terminate Worker</a></li>
-   <li><a class="navlink" href="#transferables">Transferables</a></li>
-   <li><a class="navlink" href="#buffersize">Urgent Functions</a></li>
+   <li><a class="navlink" href="#customcallback">Custom callback options</a></li>
    <li><a class="navlink" href="#slavesidefeatures">Slave Side Features</a></li>
    <li><a class="navlink" href="#scriptstoimportpool">ScriptsToImportPool class</a></li>
   </ul>
@@ -47,53 +45,57 @@
   <a name="helloworld"></a>
   <h3>AsyncProxy Hello world!</h3>
   <p>
-   The most simple use of AsyncProxy is to instantiate a class in a web worker and call its functions. You'll need only the
-   following script import for that:
+   The most simple use of AsyncProxy is to instantiate a class in a web worker and call its functions.  For that the
+   AsyncProxy should be provided the following data:
   </p>
-  <pre><code>&lt;script src="http://MaMazav.github.io/cdn/async-proxy.dev.js">&lt;/script></code></pre>
+  <ul>
+   <li>The script(s) including the required code in the Web Worker (absolute path only).</li>
+   <li>Class name to instantiate.</li>
+   <li>Class's relevant method description.</li>
+  </ul>
   <p>
-   The following class will be used for the demonstrations. For our first use of AsyncProxy, Look at the helloWorld()
-   function which may take a lot of time:
-  </p>
-  <pre><code data-src="scripts/callee.js"></code></pre>
-  <p>
-   We would like to call the helloWorld() function in a web worker. We can create a proxy class that wraps Callee class
-   using the AsyncProxy library. The following code shows how it should be done:
+   Assume we have a class named Callee in a script '/scripts/callee.js', that has a simple method helloWorld. In order
+   to create a Proxy class for the Callee class you only need to provide the above information by using the following lines:
   </p>
   <pre><code data-src="scripts/async-proxy-hello-world.js"></code></pre>
   <p>
-   Notice the call to getEntryUrl(): When using the AsyncProxy library, you cannot use relative paths to import scripts
-   (indirectly by the AsyncProxy library or directly by importScripts() function). You can use getEntryUrl() to get an
-   absolute path of the source page. A secondary benefit of using it that you get the same results in the worker and
-   the main script context (while in a simple web-worker the relative URLs are resolved from the worker script path).
+   (One way to get an absolute path is using the getEntryUrl() function, which returns the absolute path of the source page.)
   </p>
   <p>
-   An alternative to manage the imported scripts will be described in the section about
-   <a href="#scriptstoimportpool">ScriptsToImportPool</a> class.
+   The AsyncProxy library may be added to your page by:
   </p>
+  <pre><code>&lt;script src="http://MaMazav.github.io/cdn/async-proxy.dev.js">&lt;/script></code></pre>
   <p>
-   The use of the proxy we've just created is as easy as calling a function:
+   Let's demonstrate this basic usage by the following Callee class. The below Callee class will be used also in
+   the rest of this page. For now, notice only the helloWorld() function which may take a lot of time:
+  </p>
+  <pre><code data-src="scripts/callee.js"></code></pre>
+  <p>
+   Instantiating the Proxy and calling the helloWorld() from remote is easy as:
   </p>
   <pre><code>
 var proxy = new AsyncProxyHelloWorld({ helloWorldCtorArgument: 10000 });
 proxy.helloWorld(50000);
   </code></pre>
+  <p>
+   Instantiating the AsyncProxyHelloWorld class will spawn an underlying Web Worker and call the Callee constructor there.
+   Then, the call to proxy.helloWorld will activate the Callee.helloWorld method on the Web Worker.
+  </p>
+  <p>
+   An alternative way to manage the imported scripts will be described in the section about
+   <a href="#scriptstoimportpool">ScriptsToImportPool</a> class.
+  </p>
   
   <input type="button" onclick="demoHelloWorld()" value="Hello world demo!">
   
-  <p>
-   And that's it!
-  </p>
   <p>
    Another equivalent way is to define the method by custom way:
   </p>
   <pre><code data-src="scripts/async-proxy-hello-world-custom.js"></code></pre>
   <p>
-   This code is equivalent to the one defined in async-proxy-hello-world, unless it uses the getWorkerHelper() internal
-   method ad allow you to define any custom code you would like to when calling a method. It may be even more useful for
-   more complex features that will be shown below.
+   This code is equivalent to the one defined in async-proxy-hello-world, unless it is more customable. It may be useful
+   for complex features that will be shown later.
   </p>
-  <br><br>
 
   <hr>
   <a name="subworkeremulation"></a>
@@ -109,24 +111,56 @@ proxy.helloWorld(50000);
   </p>
   <p>
    Particularly, the proxied class can spawn sub-workers indirectly by using AsyncProxy library by itself, as
-   in the callSubWorker() function of the Callee class above. In addition only a minimal functionality of the
-   Worker class is implemented. Extending it should be an easy task - you are encouraged to contribute!
+   in the callSubWorker() function of the Callee class above. The SubWorkerProxy class below defines the proxy
+   method - by the same way we defined the simple hello world function: The sub-worker is supported transparently.
   </p>
+  <pre><code data-src="scripts/sub-worker-proxy.js"></code></pre>
   <input type="button" onclick="demoSubWorker()" value="Start Sub worker demo">
   
   <hr>
-  <a name="methods"></a>
+  <a name="arguments"></a>
   <h3>Passing special arguments and results</h3>
   <p>
-   TBD
+   If the arguments and method result passed to and from the Web Worker are trivial, then defining method as above
+   by "helloWorld: [ ]" is OK. However, in several cases a special treatment is needed for the arguments to be passed
+   to or from the Web Worker:
   </p>
-  <pre code data-src="scripts/async-proxy-methods.js"></code></pre>
-  <input type="button" onclick="demoMethods()" value="Start passing arguments demo">
+  <ul>
+   <li>
+    One-time callback argument - a function is not serializable. Special bookkeeping is required in order to pass
+    callback calls from the Web Worker. Fortunately the async-proxy.js library can do that for you behind the scene.
+	(see <a href="#customcallback">Custom Callback</a> section for details about customizing callbacks for multiple
+	calls).
+   </li>
+   <li>
+    Promise return value - Similarly to function arguments, the async-proxy.js library can simulate returning Promise
+	by special bookkeeping.
+   </li>
+   <li>
+    Transferables - To avoid copying of heavy objects when passing arguments to Web Worker proxied function,
+	<a href="https://developer.mozilla.org/en-US/docs/Web/API/Transferable">transferables</a> (also known as ports)
+	can be used. Transferables are supported both in arguments and in a Promise result.
+   </li>
+   <li>
+    Change call order - Sometimes massive function calls on Web Worker may take too long and block later function calls.
+	If the later function calls are more important, they can be marked to be called immediately to bypass the earlier calls.
+   </li>
+  </ul>
+  <p>
+   AsyncProxyHelloWorldCustom class below demonstrates the above features API:
+  </p>
+  <pre><code data-src="scripts/async-proxy-methods.js"></code></pre>
+  <p>
+   The following code demonstrate calling these functions:
+  </p>
+  <pre><code data-src="scripts/demo-arguments.js"></code></pre>
+  <input type="button" onclick="demoArguments()" value="Start passing arguments demo">
 
   <p>
-   And the custom way to define those methods:
+   The custom equivalent way to define the above methods is below:
   </p>
-  <pre code data-src="scripts/async-proxy-methods-custom.js"></code></pre>
+  <a name="customarguments"></a>
+  <pre><code data-src="scripts/async-proxy-methods-custom.js"></code></pre>
   <!--
   <hr>
   <a name="promise"></a>
@@ -160,12 +194,14 @@ proxy.helloWorld(50000);
   <a name="termination"></a>
   <h3>Manual termination</h3>
   <p>
-   Releasing a class is as easy as calling to terminate() function. Notice that if you need to do some operations on the worker side
-   when terminating the class (e.g. release resources, send information to server, etc.), you should wait for these operations to finish
-   before calling to terminate(). In some use-cases Promise may be useful here.
+   Terminating the underlying Web Worker is as easy as calling to terminate() function. Notice that if you need to do some 
+   release operations on the worker side when terminating the class (e.g. release resources, send information to server,
+   etc.), you should wait for these operations to finish before calling to terminate(). In some use-cases Promise may be
+   useful here.
   </p>
   <p>
-   Function terminate() also closes all sub-workers (including those were spawned using Chrome sub-workers emulation).
+   Function terminate() also closes all sub-workers (including those were spawned using Chrome sub-workers emulation as
+   explained above).
   </p>
   <pre><code data-src="scripts/terminate.js"></code></pre>
   <input type="button" onclick="demoTerminate()" value="Start terminate demo">
@@ -174,7 +210,10 @@ proxy.helloWorld(50000);
   <a name="customcallback"></a>
   <h3>Custom callback options</h3>
   <p>
-   TBD
+   We previously demonstrated a simple callback. The callbacks require  the AsyncProxy library to save bookkeeping
+   information in the Web Worker side in order to identify the original callback. By default this bookkeeping information
+   is released after the first call to it, as stated above. If you would like to call the callback more than once you may
+   change this behavior by customizing it as shown below:
   </p>
   <pre><code data-src="scripts/custom-callback-proxy.js"></code></pre>
   <input type="button" onclick="demoCustomCallback()" value="Start custom callback demo">
@@ -239,24 +278,22 @@ proxy.helloWorld(50000);
   
   <input type="button" onclick="demoUrgentFunctions()" value="Start urgent functions demo">
   -->
+  <hr>
   
   <a name="slavesidefeatures"></a>
   <h3>Slave-side features</h3>
   <p>
-   On all the cases mentioned above we didn't write any slave-side code. The code of the slave class (<code>Callee</code> in the demos)
-   was given and we wanted only to create a proxy for it.
-  </p>
-  <p>
-   A simple solution to write a slave-side code is to simply write it within the proxied class. However, if you would like to inject a
-   slave-side code without changing the slave class implementation the features in this section allows you to do so.
+   On all the cases mentioned above we didn't write any slave-side code (a code that is executed on the Web Worker), except of the proxied
+   class itself. One may want to inject a slave-side code without changing the slave class implementation. The features in this section
+   allows you to do so.
   </p>
   
   <hr>
   <h4>Custom creation of slave side instance</h4>
   <p>
    Until now we've seen a simple way to control the instance created on the slave side. The creation was done by passing a string indicates
-   the class constructor name, and arguments array. If you would like to set the environment or execute some logic in the slave side before
-   creating the instance you cannot do that using the standard API.
+   the class constructor name, and arguments array. If you would like to execute some logic in the slave side before
+   creating the instance you need an additional 
   </p>
   <p>
    The setSlaveSideCreator allows you to do that - instead of defining a class which its instance will be created, you can provide a factory
@@ -289,7 +326,7 @@ proxy.helloWorld(50000);
   <pre><code data-src="scripts/user-data-slave.js"></code></pre>
   
   <p>
-   The master can receive the sent data by setting a handler for this:
+   The master can listen and receive the sent data by setting a handler for this:
   </p>
   <pre><code data-src="scripts/user-data-master.js"></code></pre>
   
@@ -303,12 +340,13 @@ proxy.helloWorld(50000);
   </p>
   <p>
    The <code>this</code> argument of the function is the slave side instance (either created automatically or by setSlaveSideCreator function).
-   The first argument that the listener function is the event type. Currently the only possible event type is 'callback', and it will be called
-   before any time a callback is called by the slave instance. In case of callback the second argument of the listener function is the callback
-   name as was defined by the <a href="#callback">wrapCallback</a>, and the third argument is the arguments passed to the callback.
+   The first argument that the listener function accepts is the event type. Currently the only possible event type is 'callback', and it will
+   be called before any time a callback is called by the slave instance. In case of callback the second argument of the listener function is
+   the callback name as was defined by the call to <a href="#customarguments">wrapCallback</a>, and the third argument is the arguments passed
+   to the callback.
   </p>
   <p>
-   It is easy to extends the AsyncProxy.js implementation to support more types of events.
+   Contribution is welcome - it is easy to extends the AsyncProxy.js implementation to support more types of events.
   </p>
   <pre><code data-src="scripts/before-operation-listener-slave.js"></code></pre>
   
@@ -354,6 +392,7 @@ proxy.helloWorld(50000);
   <script src="scripts/async-proxy-hello-world.js"></script>
   <script src="scripts/async-proxy-hello-world-custom.js"></script>
   <script src="scripts/async-proxy-methods.js"></script>
+  <script src="scripts/demo-arguments.js"></script>
   <script src="scripts/async-proxy-methods-custom.js"></script>
   <script src="scripts/sub-worker-proxy.js"></script>
   <script src="scripts/custom-callback-proxy.js"></script>
