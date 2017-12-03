@@ -37,31 +37,54 @@
    The library includes builtin support in Web-Workers. The library supports some simple use cases which will be detailed in this page.
   </p>
   
+  <!--
+  <ul>
+   <li>Progressive calculation (tasks emit more than a single result before termination).</li>
+   <li>Priorities between tasks due to limitted pre-worker calculation resources.</li>
+   <li>Limitation on count of concurrent workers.</li>
+   <li>Adding task dependency dynamically after task has already started.</li>
+   <li>Tasks which do not need Workers but only Main-thread calculation (already demonstrated).</li>
+  </ul>-->
+
   <a name="simple"></a>
   <hr>
   <h2>Simple use case</h2>
   <p>
    If you have a lot of tasks that are common to some processings, you might want to reduce duplication of processing. The
    <code>DependencyWorkers</code> is an auxiliary class which will spawn the tasks for you and will ensure that there are no
-   duplicated processings. You just need to attach a key to any calculation (which is defined by getHashCode() and isEqual()
-   method implementations used by the DependencyWorkers) and provide inputs to those tasks using Promises or callbacks.
+   duplicated processings. The DependencyWorkers is especially good for siutations of some dependent tasks. The output of one
+    task may be used for the next task.
   </p>
   <p>
-   The DependencyWorkers is especially good for siutations of some dependent tasks. The output of one task may be used for
-   the next task. For example, the following code shows the <a href="https://en.wikipedia.org/wiki/Pascal%27s_triangle">Pascal
-   Triangle</a>, in which every cell is a sum of its two ancestor. You can trace the log prints to ensure that there is
-   only single calculation for each task although many potential calls to it.
+   Let's implement a <a href="https://en.wikipedia.org/wiki/Pascal%27s_triangle">Pascal Triangle</a>, in which every cell is
+   a sum of two ancestors. A typical use of the dependency-workers.js library includes implementation of three parts:
   </p>
+  <ul>
+   <li>
+    InputRetreiver - a class which manages the tasks. Each task is identified by a key. Several types of tasks may exist,
+    Each has another worker script defined by getWorkerTypeOptions method (or even no worker - a UI task). The InputRetreiver
+	should implement a method taskStarted which provide the inputs for the task including the dependant tasks. Also a
+	getKeyAsString method should be implemented to map each key to a unique string.
+   </li>
+   <li>
+    Web Worker(s) code in separate file(s) - which performs the actual work of a Web Worker task. See
+	<a href="../async-proxy.js">async-proxy.js library API</a> for more information.
+   </li>
+   <li>
+    Application code - which uses the above classes: Instantiation of DependencyWorkers class with the above InputRetreiver,
+	and use of its startTask or startTaskPromise methods.
+   </li>
+  </ul>
   <p>
-   The most simplest way to use the DependencyWorkers, is to use the implementor PromiseDependencyWorkers. Its API is based
-   on Promises. It requires to define for each task on which other task results it depends on (using the getDependsOnTasks
-   method), define a pre-worker method to process the data returned by depends tasks and two methods for key searching -
-   getHashCode() and isEqual():
+   Following is demonstrated an InputRetreiver class of a Pascal triangle implementation:
   </p>
-  <pre><code data-src="scripts/promise-dependency-workers-demo.js"></code></pre>
-  
+  <pre><code data-src="scripts/simple-input-retreiver.js"></code></pre>
   <p>
-   And the worker code is simple as:
+   The application can use it as follows:
+  </p>
+  <pre><code data-src="scripts/simple-app.js"></code></pre>
+  <p>
+   And the actual work is done on a worker which is implemented as follows:
   </p>
   <pre><code data-src="scripts/pascal-cell-calculator.js"></code></pre>
 
@@ -81,34 +104,17 @@
   <hr>
   <h2>Progressiveness</h2>
   <p>
-   In some situations more advanced features are needed, in which the PromiseDependencyWorkers demonstrated above is not enough:
+   The dependency-workers.js API enables the freedom to control complicated behavior of tasks according to your needs. In this section
+   we will demonstrate how to perform a progressive calculation. In this progressive calculation, any task returns multiple results 
+   which are gradually refined over time. Such progressiveness and wide range of behaviors can be achieved by controlling the timing of
+   the calls to task.dataReady and task.terminate methods of the task object (task is the taskStarted's argument as demonstrated above)
+   and by using the task object's statusUpdated event which provides additional useful information:
   </p>
-  <ul>
-   <li>Progressive calculation (tasks emit more than a single result before termination).</li>
-   <li>Priorities between tasks due to limitted pre-worker calculation resources.</li>
-   <li>Limitation on count of concurrent workers.</li>
-   <li>Adding task dependency dynamically after task has already started.</li>
-   <li>Tasks which do not need Workers but only Main-thread calculation.</li>
-  </ul>
+  <pre><code data-src="scripts/progressive-demo.js"></code></pre>
   <p>
-   For this you would probable prefer to use the generic DependencyWorkers and/or SchedulerDependencyWorkers classes. The
-   DependencyWorkers class tries to be as much generic as possible. The DependencyWorkers doesn't maintain the mentioned features
-   for you but only provide you the API and all information needed to do it for you: It will aggregate the maximal priority of all
-   dependant tasks for each task, and it let you call to onData() callback whenever you want to limit concurrent active workers
-   and to apply priority. The SchedulerDependencyWorkers, however, is less generic and maintain priority and worker limitation
-   for you - you only need to provide an appropriate <a href="../resource-scheduler.js">Scheduler</a>.
+   Both application code and InputRetreiver implementation are more complex to support such custom behavior. It's recommended to use the
+   simple form as shown in the simple example if no need for a custom behavior.
   </p>
-  <p>
-   .
-  </p>
-  
-  <p>
-   Following an example for using DependencyWorkers in order to maintain progressive calculation (each task emits more than a single
-   result). This example does not include priority or workers count limitation. The code for using DependencyWorkers is of course
-   much complex, so better to use the PromiseDependencyWorkers if the above mentioned features are not needed:
-  </p>
-  
-  <pre><code data-src="scripts/dependency-workers-demo.js"></code></pre>
   
   <input type="button" onclick="demoDependencyWorkers()" value="Start DependencyWorkers demo">
 
@@ -127,11 +133,23 @@
   <hr>
   <h2>Priority and scheduling</h2>
   <p>
-   If you would like to add the Worker count limitation and Prioritization featues, you may use the SchedulerWrapperInputRetreiver
-   with an appropriate <a href="../resource-scheduler.js">Scheduler</a>:
+   One way to achieve control over the task scheduling is by deferring the call to taskStarted method. However it might be a complex task
+   to maintiain the scheduling. The SchedulerDependencyWorkers will do that job for you. You may provide a scheduler object which is
+   implemented according to the <a href="../resource-scheduler.js">resource-scheduler.js library API</a>, or using the
+   SchedulerWrapperInputRetreiver class for basic scheduling of Worker count limitation and Prioritization features.
+  </p>
+  <p>
+   The priority of each task is determined by task's function called setPriorityCalculator. The resource-scheduler.js scheduler calls it
+   according to its internal algorithm (see <a href="../resource-scheduler.js#priorityscheduleralg">PriorityScheduler's Scheduling
+   algorithm</a> for more details). For dependant tasks, dependency-workers.js accumulates the maximum priority of all the task it depends
+   on.
+  </p>
+  <p>
+   To use it, only need to wrap a simple DependencyWorkers with the SchedulerDependencyWorkers (see below), and call the setPriorityCalculator
+   method (already appeared on previous example).
   </p>
   
-  <pre><code data-src="scripts/dependency-workers-with-scheduler-demo.js"></code></pre>
+  <pre><code data-src="scripts/scheduler-demo.js"></code></pre>
 
   <input type="button" onclick="demoDependencyWorkersWithScheduler()" value="Start DependencyWorkers demo with Scheduler">
   
@@ -153,9 +171,10 @@
   <script src="../cdn/dependency-workers.dev.js"></script>
 
   <script src="scripts/pascal-cell-calculator.js"></script>
-  <script src="scripts/promise-dependency-workers-demo.js"></script>
-  <script src="scripts/dependency-workers-demo.js"></script>
-  <script src="scripts/dependency-workers-with-scheduler-demo.js"></script>
+  <script src="scripts/simple-input-retreiver.js"></script>
+  <script src="scripts/simple-app.js"></script>
+  <script src="scripts/progressive-demo.js"></script>
+  <script src="scripts/scheduler-demo.js"></script>
 
   </div></div></div>
  </body>

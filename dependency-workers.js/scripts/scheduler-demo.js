@@ -1,9 +1,8 @@
-var workerInputRetreiver = createPascalCellInputRetreiver();
-
+var progressiveInputRetreiver = createPascalCellProgressiveInputRetreiver();
 var scheduler = new dependencyWorkers.DependencyWorkersTaskScheduler(/*jobsLimit=*/2);
 
 var schedulerDependencyWorkers = new dependencyWorkers.SchedulerDependencyWorkers(
-    scheduler, workerInputRetreiver);
+    scheduler, progressiveInputRetreiver);
 
 function demoDependencyWorkersWithScheduler() {
     startDemoDependencyWorkers('scheduler_', schedulerDependencyWorkers);
