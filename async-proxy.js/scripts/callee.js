@@ -79,30 +79,30 @@ var Callee = (function CalleeClosure() {
         var intervalHandle = setInterval(function() {
             var isFinished = (++remainingCalls) >= 3;
             var message = isFinished ? 'Last status message: Finished! Can clear the callback'
-									 : 'Status message ' + remainingCalls + ' of 3: not finished yet';
+                                     : 'Status message ' + remainingCalls + ' of 3: not finished yet';
             if (isFinished) {
                 clearInterval(intervalHandle);
-			}
+            }
             
-			var uint8Array = new Uint8Array(2);
-			uint8Array[0] = 22;
-			uint8Array[1] = 93;
+            var uint8Array = new Uint8Array(2);
+            uint8Array[0] = 22;
+            uint8Array[1] = 93;
 
             callback({
                 message: message,
                 isFinished: isFinished,
-				arrayProperty: uint8Array
+                arrayProperty: uint8Array
             });
-			
-			try {
-				var element = uint8Array[1];
-				if (element !== secondElement) {
-					throw 'Wrong element';
-				}
-				console.log('Array is still accessible on worker. BUG!');
-			} catch(e) {
-				console.log('Array is not accessible anymore on worker, as expected.');
-			}
+            
+            try {
+                var element = uint8Array[1];
+                if (element !== secondElement) {
+                    throw 'Wrong element';
+                }
+                console.log('Array is still accessible on worker. BUG!');
+            } catch(e) {
+                console.log('Array is not accessible anymore on worker, as expected.');
+            }
         }, 1000);
     };
     

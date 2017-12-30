@@ -12,9 +12,9 @@
   <a href="https://github.com/MaMazav/dependency-workers.js">
    <img
     style="position: absolute; top: 0; right: 0; border: 0;"
-	src="https://camo.githubusercontent.com/52760788cde945287fbb584134c4cbc2bc36f904/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f77686974655f6666666666662e706e67"
-	alt="Fork me on GitHub"
-	data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png">
+    src="https://camo.githubusercontent.com/52760788cde945287fbb584134c4cbc2bc36f904/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f77686974655f6666666666662e706e67"
+    alt="Fork me on GitHub"
+    data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png">
   </a>
   
 <div id="verticalPadding">
@@ -63,16 +63,16 @@
    <li>
     InputRetreiver - a class which manages the tasks. Each task is identified by a key. Several types of tasks may exist,
     Each has another worker script defined by getWorkerTypeOptions method (or even no worker - a UI task). The InputRetreiver
-	should implement a method taskStarted which provide the inputs for the task including the dependant tasks. Also a
-	getKeyAsString method should be implemented to map each key to a unique string.
+    should implement a method taskStarted which provide the inputs for the task including the dependant tasks. Also a
+    getKeyAsString method should be implemented to map each key to a unique string.
    </li>
    <li>
     Web Worker(s) code in separate file(s) - which performs the actual work of a Web Worker task. See
-	<a href="../async-proxy.js">async-proxy.js library API</a> for more information.
+    <a href="../async-proxy.js">async-proxy.js library API</a> for more information.
    </li>
    <li>
     Application code - which uses the above classes: Instantiation of DependencyWorkers class with the above InputRetreiver,
-	and use of its startTask or startTaskPromise methods.
+    and use of its startTask or startTaskPromise methods.
    </li>
   </ul>
   <p>

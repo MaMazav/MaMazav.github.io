@@ -1,6 +1,6 @@
 function createPascalCellSimpleInputRetreiver() {
-	var WORKER_TYPE_NO_WORKER = 0;
-	var WORKER_TYPE_SUM_ELEMENTS = 1;
+    var WORKER_TYPE_NO_WORKER = 0;
+    var WORKER_TYPE_SUM_ELEMENTS = 1;
 
     return {
         taskStarted: function(task) {

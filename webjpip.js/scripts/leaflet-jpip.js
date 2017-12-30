@@ -6,7 +6,7 @@ function showImage() {
     var latLngBounds = L.latLngBounds(L.latLng(-1.0, -2.0), L.latLng(1.0, 2.0));
 
     var imageDecoder = imageDecoderFramework.ImageDecoder.fromImage(new webjpip.JpipImage());
-	var layer = new imageDecoderFramework.ImageDecoderRegionLayer({
+    var layer = new imageDecoderFramework.ImageDecoderRegionLayer({
         imageDecoder: imageDecoder,
         url: url,
         latLngBounds: latLngBounds});
