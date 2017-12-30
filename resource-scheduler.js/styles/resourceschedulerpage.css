@@ -1,24 +1,24 @@
 body {
-	background-color: blue;
-	color: #000044;
+    background-color: blue;
+    color: #000044;
 }
 
 .hljs {
-	background-color: #AADDDD;
+    background-color: #AADDDD;
 }
 
 h1 {
-	color: blue;
+    color: blue;
 }
 
 #content {
-	background-color: #BBEEEE;
+    background-color: #BBEEEE;
 }
 
 .navlink {
-	color: #BBEEEE;
+    color: #BBEEEE;
 }
 
 .columnsForm {
-	display: inline-block;
+    display: inline-block;
 }

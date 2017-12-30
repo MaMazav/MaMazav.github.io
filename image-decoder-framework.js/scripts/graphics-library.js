@@ -1,26 +1,26 @@
 var graphicsLibrary = {
     createSierpinskiSquaresCollector: function createSierpinskiSquaresCollector(
-		regionMinX, regionMinY, regionMaxX, regionMaxY, carpetSize) {
-		
-		var collectedSquares = [];
-		var nextStageStartRegions = [0, 0, carpetSize, carpetSize];
-		
-		var result = {
-			getCollectedSquaresCoordinates: function getCollectedSquares() {
-				return collectedSquares;
-			},
-			
-			collect: function collect(minSquareSize) {
-				var startRegion = nextStageStartRegions;
-				nextStageStartRegions = [];
-				for (var i = 0; i < startRegion.length; i += 4) {
-					collectSierpinskiSquaresRecursively(
-						regionMinX, regionMinY, regionMaxX, regionMaxY,
-						startRegion[i], startRegion[i + 1], startRegion[i + 2], startRegion[i + 3],
-						minSquareSize || 2, minSquareSize || 2);
-				}
-			}
-		};
+        regionMinX, regionMinY, regionMaxX, regionMaxY, carpetSize) {
+        
+        var collectedSquares = [];
+        var nextStageStartRegions = [0, 0, carpetSize, carpetSize];
+        
+        var result = {
+            getCollectedSquaresCoordinates: function getCollectedSquares() {
+                return collectedSquares;
+            },
+            
+            collect: function collect(minSquareSize) {
+                var startRegion = nextStageStartRegions;
+                nextStageStartRegions = [];
+                for (var i = 0; i < startRegion.length; i += 4) {
+                    collectSierpinskiSquaresRecursively(
+                        regionMinX, regionMinY, regionMaxX, regionMaxY,
+                        startRegion[i], startRegion[i + 1], startRegion[i + 2], startRegion[i + 3],
+                        minSquareSize || 2, minSquareSize || 2);
+                }
+            }
+        };
 
         function collectSierpinskiSquaresRecursively(
             regionMinX, regionMinY, regionMaxX, regionMaxY,
@@ -33,10 +33,10 @@ var graphicsLibrary = {
             var smallSquareHeight = (carpetMaxY - carpetMinY) / 3;
             var smallSquareWidth  = (carpetMaxX - carpetMinX) / 3;
             if (smallSquareHeight < minSquareHeight || smallSquareWidth < minSquareWidth) {
-				nextStageStartRegions.push(carpetMinX);
-				nextStageStartRegions.push(carpetMinY);
-				nextStageStartRegions.push(carpetMaxX);
-				nextStageStartRegions.push(carpetMaxY);
+                nextStageStartRegions.push(carpetMinX);
+                nextStageStartRegions.push(carpetMinY);
+                nextStageStartRegions.push(carpetMaxX);
+                nextStageStartRegions.push(carpetMaxY);
                 return;
             }
             
@@ -138,26 +138,26 @@ var graphicsLibrary = {
             }
         }
     },
-	
-	paintIntersectedSmiley: function(targetImageData, radius, centerX, centerY, intersectMinX, intersectMinY, intersectMaxX, intersectMaxY, thickness) {
-		graphicsLibrary.paintIntersectedCircle(
-			targetImageData, radius, centerX, centerY, intersectMinX, intersectMinY, intersectMaxX, intersectMaxY, thickness);
-		
-		var eyeRadius = radius / 10;
-		var eyeY = centerY - radius * 0.5;
-		var  leftEyeX = centerX - radius * 0.5;
-		var rightEyeX = centerX + radius * 0.5;
-		graphicsLibrary.paintIntersectedCircle(
-			targetImageData, eyeRadius,  leftEyeX, eyeY, intersectMinX, intersectMinY, intersectMaxX, intersectMaxY, thickness);
-		graphicsLibrary.paintIntersectedCircle(
-			targetImageData, eyeRadius, rightEyeX, eyeY, intersectMinX, intersectMinY, intersectMaxX, intersectMaxY, thickness);
-		
-		var mouthY = centerY + radius * 0.5;
-		var mouthRadius = radius / 5;
-		graphicsLibrary.paintIntersectedCircle(
-			targetImageData, mouthRadius, centerX, mouthY, intersectMinX, intersectMinY, intersectMaxX, intersectMaxY, thickness);
+    
+    paintIntersectedSmiley: function(targetImageData, radius, centerX, centerY, intersectMinX, intersectMinY, intersectMaxX, intersectMaxY, thickness) {
+        graphicsLibrary.paintIntersectedCircle(
+            targetImageData, radius, centerX, centerY, intersectMinX, intersectMinY, intersectMaxX, intersectMaxY, thickness);
+        
+        var eyeRadius = radius / 10;
+        var eyeY = centerY - radius * 0.5;
+        var  leftEyeX = centerX - radius * 0.5;
+        var rightEyeX = centerX + radius * 0.5;
+        graphicsLibrary.paintIntersectedCircle(
+            targetImageData, eyeRadius,  leftEyeX, eyeY, intersectMinX, intersectMinY, intersectMaxX, intersectMaxY, thickness);
+        graphicsLibrary.paintIntersectedCircle(
+            targetImageData, eyeRadius, rightEyeX, eyeY, intersectMinX, intersectMinY, intersectMaxX, intersectMaxY, thickness);
+        
+        var mouthY = centerY + radius * 0.5;
+        var mouthRadius = radius / 5;
+        graphicsLibrary.paintIntersectedCircle(
+            targetImageData, mouthRadius, centerX, mouthY, intersectMinX, intersectMinY, intersectMaxX, intersectMaxY, thickness);
 
-	},
+    },
     
     createViewer: function(divContainerId, viewChangedCallback, startPosition) {
         var viewerElement;

@@ -12,9 +12,9 @@
   <a href="https://github.com/MaMazav/ResourceScheduler.js">
    <img
     style="position: absolute; top: 0; right: 0; border: 0;"
-	src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67"
-	alt="Fork me on GitHub"
-	data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png">
+    src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67"
+    alt="Fork me on GitHub"
+    data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png">
   </a>
   
 <div id="verticalPadding">
@@ -113,17 +113,17 @@
   <ul>
    <li>
     jobFunc - a function which actually performs the job. The function should accept two arguments - a resource
-	(created by the <a href="#createresource">createResource</a> function) and the jobContext passed as the second
-	argument.
+    (created by the <a href="#createresource">createResource</a> function) and the jobContext passed as the second
+    argument.
    </li>
    <li>
     jobContext - an object declaring the specific job. The job context is used only by the jobFunc - the scheduler
-	doesn't care about its content. If the jobFunc has enough information information to execute the job and it doesn't
-	need the job context, this argument may be even ignored.
+    doesn't care about its content. If the jobFunc has enough information information to execute the job and it doesn't
+    need the job context, this argument may be even ignored.
    </li>
    <li>
     jobAbortedFunc - a function that will be called if the job has been <a href="#abort">aborted</a> before scheduling.
-	This argument is also not mandatory, if the job may not be aborted.
+    This argument is also not mandatory, if the job may not be aborted.
    </li>
   </ul>
   <p>
@@ -140,7 +140,7 @@
      },
      /*jobContext=*/{
        sql: 'Select Name from Employees where salary > 5000',
-	   table: 'Employees',
+       table: 'Employees',
        callback: function(employees) {
          console.log('Got ' + employees.length + ' employees');
        }
@@ -172,7 +172,7 @@
      },
      /*jobContext=*/{
        sql: 'Select Name from Owners where stocks >= 51',
-	   table: 'Owners',
+       table: 'Owners',
        callback: function(owners) {
          console.log('Got ' + owners.length + ' owners');
        }
@@ -193,13 +193,13 @@
    </li>
    <li>
     The scheduler may decide to yield the job. Then the jobYieldedFunc callback will be executed, and the job is re-enqueued
-	with the jobContinueFunc and jobAbortedFunc for later scheduling. After the jobYieldedFunc called, the resource should
-	not be used anymore. Notice that the later jobContinueFunc function may be passed a different resource. The new resource
-	is the only one that should be used.
+    with the jobContinueFunc and jobAbortedFunc for later scheduling. After the jobYieldedFunc called, the resource should
+    not be used anymore. Notice that the later jobContinueFunc function may be passed a different resource. The new resource
+    is the only one that should be used.
    </li>
    <li>
     The scheduler may decide to abort the job (see <a href="#abort">Using prioritizer to abort waiting jobs</a>). Then the
-	jobAbortedFunc callback will be executed. After the jobAbortedFunc called, the resource should not be used anymore. 
+    jobAbortedFunc callback will be executed. After the jobAbortedFunc called, the resource should not be used anymore. 
    </li>
   </ul>
   <p>
@@ -214,7 +214,7 @@
   <ul>
    <li>
     jobContinueFunc - a callback to execute when the function is rescheduled (after yielded). Its argument are identical to
-	the jobFunc function passed to the <a href="#enqueuejob">enqueueJob</a> function.
+    the jobFunc function passed to the <a href="#enqueuejob">enqueueJob</a> function.
    </li>
    <li>jobContext - the context of the job.</li>
    <li>
@@ -318,19 +318,19 @@
    <li>
     <a name="numnewjobs"></a>
     numNewJobs - Number. Determines the number of the new jobs which are to be scheduled first (see
-	<a href="#priorityscheduleralg">PriorityScheduler's Scheduling algorithm</a> section). Defaults to 20.
+    <a href="#priorityscheduleralg">PriorityScheduler's Scheduling algorithm</a> section). Defaults to 20.
    </li>
    <li>
     <a name="numjobsbeforererankoldpriorities"></a>
     numJobsBeforeRerankOldPriorities - Number. Determines how many jobs will be scheduled before a "rerank"
-	will be performed (see <a href="#priorityscheduleralg">PriorityScheduler's Scheduling algorithm</a>
-	section). Defaults to 20.
+    will be performed (see <a href="#priorityscheduleralg">PriorityScheduler's Scheduling algorithm</a>
+    section). Defaults to 20.
    </li>
    <li>
     <a name="resourcesguaranteedforhighpriority"></a>
     resourcesGuaranteedForHighPriority - Number. Determines the amount of resources to guarantee for potential
-	high priority jobs (see <a href="#priorityscheduleralg">PriorityScheduler's Scheduling algorithm</a>
-	section). Defaults to 0.
+    high priority jobs (see <a href="#priorityscheduleralg">PriorityScheduler's Scheduling algorithm</a>
+    section). Defaults to 0.
    </li>
    <li>
     <a name="highprioritytoguaranteeresource"></a>
@@ -403,10 +403,10 @@
    <tr><td>highPriorityToGuaranteeResource</td><td><input id="highPriorityToGuaranteeResource" type="text" value="4"></td></tr>
    <tr>
     <td>useYield</td>
-	<td>
-	 <input id="useYield" type="checkbox" checked="true">
-	 <label for="useYield">Use yield</label>
-	</td>
+    <td>
+     <input id="useYield" type="checkbox" checked="true">
+     <label for="useYield">Use yield</label>
+    </td>
    </tr>
   </table></div>
   

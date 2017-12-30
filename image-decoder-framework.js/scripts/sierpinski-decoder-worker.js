@@ -21,9 +21,9 @@ var SierpinskiDecoderWorker = (function SierpinskiDecoderWorkerClosure() {
             var maxCb = regionInImage.maxXExclusive * 256 / tile.content.levelWidth ;
             var maxCr = regionInImage.maxYExclusive * 256 / tile.content.levelHeight;
             graphicsLibrary.fillGradient(
-				targetImageData,
-				offset.x, offset.y, offset.x + regionInImage.width, offset.y + regionInImage.height,
-				minCb, minCr, maxCb, maxCr);
+                targetImageData,
+                offset.x, offset.y, offset.x + regionInImage.width, offset.y + regionInImage.height,
+                minCb, minCr, maxCb, maxCr);
             
             // Sierpinski carpet
             
@@ -44,10 +44,10 @@ var SierpinskiDecoderWorker = (function SierpinskiDecoderWorkerClosure() {
                 
                 var smileyRadius = Math.min(squareMaxX - squareMinX, squareMaxY - squareMinY) / 2 - 8;
                 if (smileyRadius > 20) {
-					var centerX = Math.floor((squareMinX + squareMaxX) / 2 + offset.x - regionInImage.minX);
-					var centerY = Math.floor((squareMinY + squareMaxY) / 2 + offset.y - regionInImage.minY);
-					graphicsLibrary.paintIntersectedSmiley(targetImageData, smileyRadius, centerX, centerY, intersectMinX, intersectMinY, intersectMaxX, intersectMaxY, /*thickness=*/5)
-					
+                    var centerX = Math.floor((squareMinX + squareMaxX) / 2 + offset.x - regionInImage.minX);
+                    var centerY = Math.floor((squareMinY + squareMaxY) / 2 + offset.y - regionInImage.minY);
+                    graphicsLibrary.paintIntersectedSmiley(targetImageData, smileyRadius, centerX, centerY, intersectMinX, intersectMinY, intersectMaxX, intersectMaxY, /*thickness=*/5)
+                    
                 }
             }
             

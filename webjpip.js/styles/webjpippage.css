@@ -1,28 +1,28 @@
 body {
-	background-color: red;
-	color: #550000;
+    background-color: red;
+    color: #550000;
 }
 
 .hljs {
-	background-color: #ffee88;
+    background-color: #ffee88;
 }
 
 h1 {
-	color: #550000;
+    color: #550000;
 }
 
 #content {
-	background-color: #ffcc66;
+    background-color: #ffcc66;
 }
 
 .navlink {
-	color: #ffcc66;
+    color: #ffcc66;
 }
 
 #leafletContainer {
-	height: 80%;
+    height: 80%;
 }
 
 #txtUrl {
-	width: 80%;
+    width: 80%;
 }
