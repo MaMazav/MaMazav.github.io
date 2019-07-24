@@ -4,7 +4,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
   <title>ImageDecoderFramework.js Examples</title>
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+  <link rel="stylesheet" href="../styles/prism.css">
   <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css">
   <link rel="stylesheet" href="../styles/mamazav.github.io.css">
   <link rel="stylesheet" href="styles/imagedecoderframeworkpage.css">
@@ -68,10 +68,9 @@
   <p>
    Using the library requires the following script imports:
   </p>
-  <pre><code>   &lt;script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js">&lt;/script>
+  <pre><code class="language-markup">   &lt;script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js">&lt;/script>
    &lt;script src="Cesium-1.20/Cesium.js">&lt;/script>&lt;!-- downloaded locally -->
-   &lt;script src="http://MaMazav.github.io/cdn/image-decoder-framework.dev.js">&lt;/script>
-  </code></pre>
+   &lt;script src="http://MaMazav.github.io/cdn/image-decoder-framework.dev.js">&lt;/script></code></pre>
    
   <hr>
   <a name="implementationoverview"></a>
@@ -85,7 +84,7 @@
    <li>InputRetriever implementation for Dependency Workers - manages the Web Workers that perform the
        actual decoding. It should be implemented by the
        <a href="../dependency-workers.js">depdendency-workers.js</a> library API. If using
-       <a href="#">gridimagebase</a> some of the dependency-workers.js requirements are already fulfilled.</li>
+       <a href="#gridimagebase">gridimagebase</a> some of the dependency-workers.js requirements are already fulfilled.</li>
    <li>LevelCalculator - provides conversion between screen resolution and level index, for multiple
        resolution images.</li>
   </ol>
@@ -141,7 +140,7 @@
    parameters, it also provides a way to pass this argument across Web Workers if the Fetcher and Image are not on
    same Web Worker.
   </p>
-  <pre><code data-src="scripts/grid-image.js"></code></pre>
+  <pre><code data-src="scripts/grid-fetcher.js"></code></pre>
   
   <hr>
   <a name="gridimagebase"></a>
@@ -330,8 +329,7 @@
   </div>
   <pre><code data-src="scripts/viewer-image-decoder-demo.js"></code></pre>
   
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
-  <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src="../scripts/prism.js"></script>
   <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
   <script src="../scripts/mamazav.github.io.js"></script>
   

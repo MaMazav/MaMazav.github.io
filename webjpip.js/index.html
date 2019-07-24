@@ -4,7 +4,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
   <title>Jpip Examples</title>
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+  <link rel="stylesheet" href="../styles/prism.css">
   <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css">
   <link rel="stylesheet" href="../styles/mamazav.github.io.css">
   <link rel="stylesheet" href="styles/webjpippage.css">
@@ -23,6 +23,7 @@
  <nav>
   <ul>
    <li><a class="navlink" href="#showimage">Show an image</a></li>
+   <li><a class="navlink" href="#region">Get region pixels programmatically</a></li>
   </ul>
  </nav>
 
@@ -45,7 +46,7 @@
   
   <hr>
   <a name="showimage"></a>
-  <h3>Show an image</h3>
+  <h2>Show an image</h2>
   
   <p>
    Enter JPIP http URL:
@@ -58,7 +59,7 @@
   <p>
    The below demo requires leaflet and image-decoder-framework libraries besides webjpip:
   </p>
-  <pre><code>   &lt;script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js">&lt;/script>
+  <pre><code class="language-markup">   &lt;script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js">&lt;/script>
    &lt;script src="http://MaMazav.github.io/cdn/image-decoder-framework.dev.js">&lt;/script>
    &lt;script src="http://MaMazav.github.io/cdn/webjpip.dev.js">&lt;/script></code></pre>
   
@@ -74,8 +75,31 @@
   
   <pre><code data-src="scripts/leaflet-jpip.js"></code></pre>
   
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
-  <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+  <hr>
+  <a name="region"></a>
+  <h2>Get region pixels programmatically</h2>
+  <p>
+   Just like any other image that implements <a href="../imagedecoderframework.js">image-decoder-framework.js API</a>,
+   The JPIP image can be used in various services provided by image-decoder-framwork library. Here is an example of
+   how to programmatically get the pixels of a region and show it in your custom canvas:
+  </p>
+
+  <pre><code data-src="scripts/jpip-region.js"></code></pre>
+  
+  <table>
+   <tr><td>minX:</td><td><input type="text" id="txtMinX" value="0"></td>
+       <td>maxX:</td><td><input type="text" id="txtMaxX" value="512"></td></tr>
+   <tr><td>minY:</td><td><input type="text" id="txtMinY" value="0"></td>
+       <td>maxY:</td><td><input type="text" id="txtMaxY" value="512"></td></tr>
+   <tr><td>screen width: </td><td><input type="text" id="txtScreenWidth" value="512"></td>
+       <td>screen height:</td><td><input type="text" id="txtScreenHeight" value="512"></td></tr>
+   <tr><td>quality:</td><td><input type="text" id="txtQuality" value="1"></td></tr>
+   <tr><td>URL:</td><td colspan="3"><input type="text" style="width:100%" id="txtUrlRegion" value="http://192.168.1.103:8080/cabs.j2k"></td></tr>
+  </table>
+  <input type="button" value="Show region!" onclick="showRegion()"><br><br>
+  <canvas id="jpipRegionCanvas"></canvas>
+
+  <script src="../scripts/prism.js"></script>
   <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
   <script src="../scripts/mamazav.github.io.js"></script>
   
@@ -84,6 +108,7 @@
   <!--<script src="scripts/webjpippage.js"></script>-->
   
   <script src="scripts/leaflet-jpip.js"></script>
+  <script src="scripts/jpip-region.js"></script>
  </div></div></div>
  </body>
 </html>

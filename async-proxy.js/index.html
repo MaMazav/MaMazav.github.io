@@ -4,7 +4,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
   <title>AsyncProxy Examples</title>
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+  <link rel="stylesheet" href="../styles/prism.css">
   <link rel="stylesheet" href="../styles/mamazav.github.io.css">
   <link rel="stylesheet" href="styles/async-proxy-page.css">
  </head>
@@ -64,7 +64,7 @@
   <p>
    The AsyncProxy library may be added to your page by:
   </p>
-  <pre><code>&lt;script src="http://MaMazav.github.io/cdn/async-proxy.dev.js">&lt;/script></code></pre>
+  <pre><code class="language-markup">&lt;script src="http://MaMazav.github.io/cdn/async-proxy.dev.js">&lt;/script></code></pre>
   <p>
    Let's demonstrate this basic usage by the following Callee class. The below Callee class will be used also in
    the rest of this page. For now, notice only the helloWorld() function which may take a lot of time:
@@ -73,10 +73,8 @@
   <p>
    Instantiating the Proxy and calling the helloWorld() from remote is easy as:
   </p>
-  <pre><code>
-var proxy = new AsyncProxyHelloWorld({ helloWorldCtorArgument: 10000 });
-proxy.helloWorld(50000);
-  </code></pre>
+  <pre><code class="language-javascript">var proxy = new AsyncProxyHelloWorld({ helloWorldCtorArgument: 10000 });
+proxy.helloWorld(50000);</code></pre>
   <p>
    Instantiating the AsyncProxyHelloWorld class will spawn an underlying Web Worker and call the Callee constructor there.
    Then, the call to proxy.helloWorld will activate the Callee.helloWorld method on the Web Worker.
@@ -380,8 +378,7 @@ proxy.helloWorld(50000);
   
   <input type="button" onclick="demoScriptsToImportPool()" value="Start ScriptsToImportPool demo">
   
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
-  <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src="../scripts/prism.js"></script>
   <script src="../scripts/mamazav.github.io.js"></script>
   
   <script src="../cdn/async-proxy.dev.js"></script>

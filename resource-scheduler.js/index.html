@@ -4,7 +4,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
   <title>ResourceScheduler Examples</title>
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+  <link rel="stylesheet" href="../styles/prism.css">
   <link rel="stylesheet" href="../styles/mamazav.github.io.css">
   <link rel="stylesheet" href="styles/resourceschedulerpage.css">
  </head>
@@ -52,7 +52,7 @@
   <p>
    To begin the work with the ResourceScheduler.js library, include the following script in your page:
   </p>
-  <pre><code>&lt;script src="http://MaMazav.github.io/cdn/resource-scheduler.dev.js">&lt;/script></code></pre>
+  <pre><code class="language-markup">&lt;script src="http://MaMazav.github.io/cdn/resource-scheduler.dev.js">&lt;/script></code></pre>
   
   <p>
    The library contains two types of scheduler available: LifoScheduler and PriorityScheduler. The
@@ -74,14 +74,11 @@
    The LifoScheduler is useful if jobs do not have special priority over each other, and you just want to limit
    the amount of parallel jobs.
   </p>
-  <pre><code>
-   var scheduler = new LifoScheduler(
+  <pre><code class="language-javascript">var scheduler = new LifoScheduler(
      function createResource() {
        return new DbConnection();
      },
-     /*jobsLimit=*/4);
-  </code></pre>
-
+     /*jobsLimit=*/4);</code></pre>
   <p>
    The PriorityScheduler is a more complicated scheduler. It schedules the job accoding to some priority defined
    by the user. Its constructor accepts three mandatory arguments:
@@ -132,8 +129,7 @@
    <a href="#yield">tryYield</a> functions are called.
   </p>
   
-  <pre><code>
-   scheduler.enqueueJob(
+  <pre><code class="language-javascript">scheduler.enqueueJob(
      function jobFunc(dbConnection, jobContext) {
        var result = dbConnection.executeQuery(jobContext.sql);
        jobContext.callback(result);
@@ -144,8 +140,7 @@
        callback: function(employees) {
          console.log('Got ' + employees.length + ' employees');
        }
-   );
-  </code></pre>
+   );</code></pre>
 
   <hr>
   <a name="jobDone"></a>
@@ -163,8 +158,7 @@
    After calling the jobDone function, the resource should not be used anymore as it may be passed to another job for its use.
   </p>
   
-  <pre><code>
-   scheduler.enqueueJob(
+  <pre><code class="language-javascript">scheduler.enqueueJob(
      function jobFunc(dbConnection, jobContext) {
        var result = dbConnection.executeQuery(jobContext.sql);
        scheduler.jobDone(dbConnection, jobContext);
@@ -176,8 +170,7 @@
        callback: function(owners) {
          console.log('Got ' + owners.length + ' owners');
        }
-   );
-  </code></pre>
+   );</code></pre>
   
   <hr>
   <a name="yield"></a>
@@ -251,8 +244,7 @@
    For example, the following prioritizer may match to the jobs demonstrated in the above snippets. The PriorityScheduler which
    accepts the following prioritizer will schedule queries from table 'Owners' before queries from table 'Employees':
   </p>
-  <pre><code>
-   var scheduler = new PriorityScheduler(
+  <pre><code class="language-javascript">var scheduler = new PriorityScheduler(
      function createResource() {
        return new DbConnection();
      },
@@ -266,8 +258,7 @@
           default:
             return 0;
         }
-     });
-  </code></pre>
+     });</code></pre>
   
   <hr>
   <a name="priorityscheduleralg"></a>
@@ -412,8 +403,7 @@
   
   <br><input type="button" value="Start demo!" id="demoButton" onclick="onDemoButton()">
   
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
-  <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src="../scripts/prism.js"></script>
   <script src="../scripts/mamazav.github.io.js"></script>
   
   <script src="../cdn/resource-scheduler.dev.js"></script>
