@@ -13,7 +13,9 @@ function createPascalCellSimpleInputRetreiver() {
             task.registerTaskDependency({row: task.key.row - 1, col: task.key.col - 1});
             task.registerTaskDependency({row: task.key.row - 1, col: task.key.col});
             task.on('allDependTasksTerminated', function() {
-                task.dataReady(task.dependTaskResults, WORKER_TYPE_SUM_ELEMENTS);
+                // Setting canSkip argument to true will optimize for performance by skipping data if newer
+                //  one arrives. It's recommended to use it if middle results not needed for correctness.
+                task.dataReady(task.dependTaskResults, WORKER_TYPE_SUM_ELEMENTS, /*canSkip=*/true);
                 task.terminate();
             });
         },
