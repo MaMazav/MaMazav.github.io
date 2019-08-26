@@ -31,12 +31,17 @@ function showRegion() {
             });
     }).catch(jpipDemoExceptionCallback);
     
+    var tempCanvas, tempContext;
     function regionDecodedCallback(partialDecodeResult) {
-        var tempCanvas = document.createElement('canvas');
-        var tempContext = tempCanvas.getContext('2d');
-        tempCanvas.width  = imagePartParams.maxXExclusive - imagePartParams.minX;
-        tempCanvas.height = imagePartParams.maxYExclusive - imagePartParams.minY;
-        tempContext.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
+        if (!tempCanvas) {
+            tempCanvas = document.createElement('canvas');
+            tempCanvas.width  = imagePartParams.maxXExclusive - imagePartParams.minX;
+            tempCanvas.height = imagePartParams.maxYExclusive - imagePartParams.minY;
+
+            tempContext = tempCanvas.getContext('2d');
+            tempContext.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
+        }
+        
         tempContext.putImageData(
             partialDecodeResult.imageData,
             partialDecodeResult.xInOriginalRequest,
