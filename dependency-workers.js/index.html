@@ -143,14 +143,14 @@
    SchedulerWrapperInputRetreiver class for basic scheduling of Worker count limitation and Prioritization features.
   </p>
   <p>
-   The priority of each task is determined by task's function called setPriorityCalculator. The resource-scheduler.js scheduler calls it
+   The priority of each task is determined by priorityCalculator property passed to startTask. The resource-scheduler.js scheduler calls it
    according to its internal algorithm (see <a href="../resource-scheduler.js#priorityscheduleralg">PriorityScheduler's Scheduling
    algorithm</a> for more details). For dependant tasks, dependency-workers.js accumulates the maximum priority of all the task it depends
    on.
   </p>
   <p>
-   To use it, only need to wrap a simple DependencyWorkers with the SchedulerDependencyWorkers (see below), and call the setPriorityCalculator
-   method (already appeared on previous example).
+   To use it, only need to wrap a simple DependencyWorkers with the SchedulerDependencyWorkers (see below), and provide priorityCalculator
+   function (already appeared on previous example).
   </p>
   
   <pre><code data-src="scripts/scheduler-demo.js"></code></pre>

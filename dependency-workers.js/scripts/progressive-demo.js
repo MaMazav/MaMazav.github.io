@@ -23,10 +23,11 @@ function calculatePascalTriangleCell(dependencyWorkers, targetElement, row, col)
               targetElement.innerHTML = result;
             }, onTerminated: function() {
               targetElement.innerHTML = targetElement.innerHTML + '!';
+            }, priorityCalculator: function() {
+                return col / (row + 1);
             }
         }
     );
-    taskContext.setPriorityCalculator(function() { return col / (row + 1); });
 }
 
 function createPascalCellProgressiveInputRetreiver() {
