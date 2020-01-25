@@ -1,12 +1,11 @@
 var imageDecoderInst = null;
-var url = 'dummy-url';
 var targetCanvas = document.getElementById('imageDecoderDemoCanvas');
 var targetContext = targetCanvas.getContext('2d');
 
 function decodeRegionByImageDecoder() {
     if (!imageDecoderInst) {
         imageDecoderInst = imageDecoderFramework.ImageDecoder.fromImage(new SierpinskiProgressiveImage(), {decodeWorkersLimit: 1});
-        imageDecoderInst.open(url).then(function() {
+        imageDecoderInst.open().then(function() {
             decodeRegionByImageDecoder();
             setTimeout(closeImage, 60*1000);
         });

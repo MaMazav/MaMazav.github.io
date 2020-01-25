@@ -1,10 +1,10 @@
 var latLngBounds = L.latLngBounds(L.latLng(-1.0, -2.0), L.latLng(1.0, 2.0));
 
-var imageDecoder = imageDecoderFramework.ImageDecoder.fromImage(new GridImage(), {decodeWorkersLimit: 2});
+var url = location.href.substring(0, location.href.lastIndexOf('/')) + '/grid-demo-url'; // Must be absolute path
+var imageDecoder = imageDecoderFramework.ImageDecoder.fromImage(new GridImage(url), {decodeWorkersLimit: 2});
 
 var layer = new imageDecoderFramework.ImageDecoderRegionLayer({
     imageDecoder: imageDecoder,
-    url: location.href.substring(0, location.href.lastIndexOf('/')) + '/grid-demo-url', // Must be absolute path
     latLngBounds: latLngBounds
 });
 

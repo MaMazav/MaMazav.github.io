@@ -1,6 +1,5 @@
 var viewer;
 
-var url = 'dummy-url';
 var imageDecoder = imageDecoderFramework.ImageDecoder.fromImage(new SierpinskiProgressiveImage(), {decodeWorkersLimit: 1});
 imageViewer = new imageDecoderFramework.ImageDecoderViewer(imageDecoder, canvasUpdatedCallback, {
     cartographicBounds: {
@@ -11,7 +10,7 @@ imageViewer = new imageDecoderFramework.ImageDecoderViewer(imageDecoder, canvasU
     },
     adaptProportions: true
 });
-imageViewer.open(url).then(function() {
+imageViewer.open().then(function() {
     var imageBounds = imageViewer.getBounds();
     viewer = graphicsLibrary.createViewer('viewerDiv', viewChangedCallback, /*startPosition=*/{
         west: imageBounds.west,

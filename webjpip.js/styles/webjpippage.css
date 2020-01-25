@@ -19,10 +19,10 @@ h1 {
     color: #ffcc66;
 }
 
-#leafletContainer {
+.leafletViewerCanvas {
     height: 80%;
 }
 
-#txtUrl {
-    width: 80%;
+.urlTextBox {
+    width: 70%;
 }

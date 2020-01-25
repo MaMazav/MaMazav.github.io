@@ -24,6 +24,7 @@
   <ul>
    <li><a class="navlink" href="#showimage">Show an image</a></li>
    <li><a class="navlink" href="#region">Get region pixels programmatically</a></li>
+   <li><a class="navlink" href="#progressiveness">Progressiveness / Quality layers</a></li>
   </ul>
  </nav>
 
@@ -51,10 +52,10 @@
   <p>
    Enter JPIP http URL:
   </p>
-  <input type="text" id="txtUrl" value="http://192.168.56.1:8080/cabs_1tile_rpcl.jp2">
+  <input type="text" id="txtUrl" class="urlTextBox" value="http://127.0.0.1:8081/cabs.j2k">
   <input type="button" value="Show image!" onclick="showImage()">
   <br>
-  <div id="leafletContainer"></div>
+  <div id="leafletContainer" class="leafletViewerCanvas"></div>
 
   <p>
    The below demo requires leaflet and image-decoder-framework libraries besides webjpip:
@@ -64,12 +65,12 @@
    &lt;script src="http://MaMazav.github.io/cdn/webjpip.dev.js">&lt;/script></code></pre>
   
   <p>
-   Then the <a href="../imagedecoderframework.js">image-decoder-framework.js API</a> should be used.
+   Then the <a href="../image-decoder-framework.js">image-decoder-framework.js API</a> should be used.
    This API allows you using webjpip.js with
-   <a href="../imagedecoderframework.js#leaflet">Leaflet</a>,
-   <a href="../imagedecoderframework.js#cesium">Cesium</a>,
-   <a href="../imagedecoderframework.js#viewerimagedecoder">Arbirary viewer</a> or simply
-   <a href="../imagedecoderframework.js#imagedecoder">decode regions programmatically</a>.
+   <a href="../image-decoder-framework.js#leaflet">Leaflet</a>,
+   <a href="../image-decoder-framework.js#cesium">Cesium</a>,
+   <a href="../image-decoder-framework.js#viewerimagedecoder">Arbirary viewer</a> or simply
+   <a href="../image-decoder-framework.js#imagedecoder">decode regions programmatically</a>.
    For example, here is the code-behind of the above demo:
   </p>
   
@@ -77,11 +78,13 @@
   
   <hr>
   <a name="region"></a>
-  <h2>Get region pixels programmatically</h2>
+  <h2>Render pixels to canvas</h2>
   <p>
-   Just like any other image that implements <a href="../imagedecoderframework.js">image-decoder-framework.js API</a>,
-   The JPIP image can be used in various services provided by image-decoder-framwork library. Here is an example of
-   how to programmatically get the pixels of a region and show it in your custom canvas:
+   Just like any other image that implements <a href="../image-decoder-framework.js">image-decoder-framework.js API</a>,
+   The JPIP image can be used in various services provided by image-decoder-framwork library, like
+   <a href="../image-decoder-framework.js#cesium">showing the image in Cesium</a> or <a href="../image-decoder-framework.js#imagedecoder">
+   Programmatically get the pixels of the image</a>. Here is an example of how to render the image
+   into canvas:
   </p>
 
   <pre><code data-src="scripts/jpip-region.js"></code></pre>
@@ -93,12 +96,72 @@
        <td>maxY:</td><td><input type="text" id="txtMaxY" value="512"></td></tr>
    <tr><td>screen width: </td><td><input type="text" id="txtScreenWidth" value="512"></td>
        <td>screen height:</td><td><input type="text" id="txtScreenHeight" value="512"></td></tr>
-   <tr><td>quality:</td><td><input type="text" id="txtQuality" value="1"></td></tr>
-   <tr><td>URL:</td><td colspan="3"><input type="text" style="width:100%" id="txtUrlRegion" value="http://192.168.1.103:8080/cabs.j2k"></td></tr>
+   <tr><td>URL:</td><td colspan="3"><input type="text" style="width:100%" id="txtUrlRegion" value="http://127.0.0.1:8081/cabs.j2k"></td></tr>
   </table>
   <input type="button" value="Show region!" onclick="showRegion()"><br><br>
   <canvas id="jpipRegionCanvas"></canvas>
+  
+  <hr>
+  <a name="progressiveness"></a>
+  <h2>Progressiveness / Quality layers</h2>
+  <p>
+   In webjpip.js API, progressiveness means the stages that are taken until showing the image. Those
+   stages are based mainly on j2k features like quality layers and resolution levels. For example,
+   for viewing purpose it may be good to fetch all data from the server but showing minimal quality
+   data as quick as possible (when low quality layer recieved). In scenarios of image processing
+   we may want to cancel those middle stages of lower quality, and in limitted bandwidth scenario we
+   may want to limit fetching only single quality layer. webjpip.js provides interface to control this
+   behavior.
+  </p>
+  <p>
+   JpipImage has some methods to control progressiveness: nonProgressive, autoProgressive
+   and customProgressive. Calling to such method returns a new instance of JpipImage (and not
+   changing the progressiveness state of the original image!) that behaves as requested.
+  </p>
+  <p>
+   A performance note: Using some instances created from same image (by the progressiveness methods)
+   in parallel is not fully optimized. Decoding resources (memory + processing) is not shared between
+   those instances. However using some instances of same image is better than using some separate images
+   that created by same URL because the raw data recieved from the server (before decoding) is shared
+   between image instances that were created from same root image.
+  <p>
+   Following is a simple example for showing an image with no progressiveness, with quality fixed on
+   the minimal quality layer:
+  </p>
+  
+  <pre><code data-src="scripts/jpip-no-progressiveness.js"></code></pre>
+  
+  <input type="text" id="txtNoProgressivenessUrl" class="urlTextBox" value="http://127.0.0.1:8081/cabs.j2k">
+  <input type="button" value="Show image (no progressiveness)" onclick="showImageNoProgressiveness()">
+  <br>
+  <div id="leafletContainerNoProgressiveness" class="leafletViewerCanvas"></div>
+  
+  <p>
+   And here's an example for custom controlling on progressiveness when showing on canvas:
+  </p>
 
+  <pre><code data-src="scripts/jpip-region-custom-progressiveness.js"></code></pre>
+  
+  <input type="text" id="txtCustomProgressivenessUrl" class="urlTextBox" value="http://127.0.0.1:8081/cabs.j2k">
+  <input type="button" value="Show region (custom progressiveness)" onclick="showRegionCustomProgressiveness()">
+  <canvas id="jpipRegionCustomProgressivenessCanvas"></canvas>
+
+  <p>
+   As demonstrated, progressiveness can provide control to create reacher application with JPIP.
+   Followed is an example that show the use of nonProgressive to control the shown quality by
+   applicative slider:
+  </p>
+
+  <pre><code data-src="scripts/jpip-quality-animation.js"></code></pre><br>
+  <input type="text" id="txtUrlQualityAnimation" class="urlTextBox" value="http://127.0.0.1:8081/cabs.j2k">
+  <input type="button" value="Show Quality Animation!" onclick="showQualityAnimation()"><br><br>
+  <span id="spanQualityAnimationStatus"></span>
+  <div id="divQualitySelector" style="visibility: hidden">
+   Select quality:
+   <input type="range" id="sliderQuality" oninput="sliderQualityChanged()" min="1" step="1">
+  </div>
+  <canvas id="qualityAnimationCanvas"></canvas><br>
+  
   <script src="../scripts/prism.js"></script>
   <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
   <script src="../scripts/mamazav.github.io.js"></script>
@@ -109,6 +172,9 @@
   
   <script src="scripts/leaflet-jpip.js"></script>
   <script src="scripts/jpip-region.js"></script>
+  <script src="scripts/jpip-quality-animation.js"></script>
+  <script src="scripts/jpip-no-progressiveness.js"></script>
+  <script src="scripts/jpip-region-custom-progressiveness.js"></script>
  </div></div></div>
  </body>
 </html>

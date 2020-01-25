@@ -1,9 +1,7 @@
 var targetCanvas = document.getElementById('jpipRegionCanvas');
-var targetContext = targetCanvas.getContext('2d');
 
 function showRegion() {
     var url = document.getElementById('txtUrlRegion').value;
-    var quality = document.getElementById('txtQuality').value
     var regionParams = {
         minX: document.getElementById('txtMinX').value,
         minY: document.getElementById('txtMinY').value,
@@ -12,45 +10,20 @@ function showRegion() {
         screenWidth : document.getElementById('txtScreenWidth' ).value,
         screenHeight: document.getElementById('txtScreenHeight').value
     };
-
-    targetCanvas.width  = regionParams.screenWidth;
-    targetCanvas.height = regionParams.screenHeight;
     
-    var alignedParams, imagePartParams;
-    var layer = imageDecoderFramework.ImageDecoder.fromImage(new webjpip.JpipImage(), {decodeWorkersLimit: 1});
-    layer.open(url).then(function() {
-        alignedParams = imageDecoderFramework.ImageDecoder.alignParamsToTilesAndLevel(regionParams, layer);
-        imagePartParams = alignedParams.imagePartParams;
-        imagePartParams.quality = quality;
+    var image = new webjpip.JpipImage({url: url});
+    showRegionInCanvas(image, targetCanvas, regionParams);
+}
 
-        layer.requestPixelsProgressive(
-            imagePartParams,
-            regionDecodedCallback,
-            function terminatedCallback() {
+function showRegionInCanvas(image, canvas, regionParams) {
+    canvas.width  = +regionParams.screenWidth;
+    canvas.height = +regionParams.screenHeight;
+    
+    var layer = imageDecoderFramework.ImageDecoder.fromImage(image, {decodeWorkersLimit: 1});
+    layer.open().then(function() {
+        imageDecoderFramework.ImageDecoder.renderToCanvas(canvas, regionParams, layer, /*x=*/0, /*y=*/0)
+            .then(function then() {
                 layer.close();
             });
     }).catch(jpipDemoExceptionCallback);
-    
-    var tempCanvas, tempContext;
-    function regionDecodedCallback(partialDecodeResult) {
-        if (!tempCanvas) {
-            tempCanvas = document.createElement('canvas');
-            tempCanvas.width  = imagePartParams.maxXExclusive - imagePartParams.minX;
-            tempCanvas.height = imagePartParams.maxYExclusive - imagePartParams.minY;
-
-            tempContext = tempCanvas.getContext('2d');
-            tempContext.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
-        }
-        
-        tempContext.putImageData(
-            partialDecodeResult.imageData,
-            partialDecodeResult.xInOriginalRequest,
-            partialDecodeResult.yInOriginalRequest);
-        
-        // Crop and scale original request region (before align) into canvas
-        var crop = alignedParams.croppedScreen;
-        targetContext.drawImage(tempCanvas,
-            crop.minX, crop.minY, crop.maxXExclusive - crop.minX, crop.maxYExclusive - crop.minY,
-            0, 0, regionParams.screenWidth, regionParams.screenHeight);
-    }
 }

@@ -1,8 +1,8 @@
 'use strict';
 
 var GridImage = (function GridImageClosure() {
-    function GridImage() {
-        var fetcher = new GridFetcher();
+    function GridImage(url) {
+        var fetcher = new GridFetcher(url);
         imageDecoderFramework.GridImageBase.call(this, fetcher);
         
         this._imageParams = null;

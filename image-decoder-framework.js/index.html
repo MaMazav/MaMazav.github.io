@@ -30,6 +30,7 @@
    <li><a class="navlink" href="#sierpinski">Another image: Sierpinski carpet</a></li>
    <li><a class="navlink" href="#progressive">Progressive fetch</a></li>
    <li><a class="navlink" href="#cesium">Showing image in Cesium</a></li>
+   <li><a class="navlink" href="#rendertocanvas">Render to canvas</a></li>
    <li><a class="navlink" href="#imagedecoder">Programmatically get pixels of region in image</a></li>
    <li><a class="navlink" href="#viewerimagedecoder">Showing image in arbitrary viewer</a></li>
   </ul>
@@ -160,7 +161,7 @@
    resolution levels, where each level is four times bigger than the previous level (two times for each axis). In that
    example we override the default behavior of the GridImage to show how we create a finite-resolution image. You also may
    choose to implement an absolutely different LevelsCalculator (see the default
-   <a href="https://github.com/MaMazav/ImageDecoderFramework.js/blob/src/simple-fetcher/grid-level-calculator.js">GridLevelCalculator</a>
+   <a href="https://github.com/MaMazav/image-decoder-framework.js/blob/master/src/simple-fetcher/grid-level-calculator.js">GridLevelCalculator</a>
    implementation as an example).
   </p>
   <pre><code data-src="scripts/limitted-grid-level-calculator.js"></code></pre>
@@ -298,13 +299,27 @@
   <pre><code data-src="scripts/cesium-imagery-provider-demo.js"></code></pre>
 
   <hr>
+  <a name="rendertocanvas"></a>
+  <h2>Render image to canvas</h3>
+  <p>
+   To render an image to canvas, ImageDecoder.renderToCanvas may be used. The region from the image and region in
+   the canvas can be set by the passed arguments. Once started, the renderToCanvas function takes control over the
+   canvas and render the pixels to it. Click on the button below the code to activate the demo:
+  </p>
+  <pre><code data-src="scripts/render-to-canvas-demo.js"></code></pre>
+  <input type="button" value="Show image!" onclick="renderToCanvasByImageDecoder()">
+  <br><br>
+  <canvas id="renderToCanvasDemoCanvas"></canvas>
+
+  <hr>
   <a name="imagedecoder"></a>
   <h2>Programmatically get pixels of region in image</h3>
   <p>
    Until now we saw only high level interfaces for using the image with Leaflet and Cesium viewers. One can
    also use the ImageDecoder class to get the pixels programmatically and do it whatever he would like. The
    following example demonstrate how to decode a region of interest from the image and use it within a simple
-   canvas (click on the button below the code to activate the demo):
+   canvas - i.e. achieve almost same behavior as in previous demo, but manually (click on the button below
+   the code to activate the demo):
   </p>
   <pre><code data-src="scripts/image-decoder-demo.js"></code></pre>
   <input type="button" value="Show image!" onclick="decodeRegionByImageDecoder()">
@@ -346,6 +361,7 @@
   <script src="scripts/sierpinski-leaflet-demo.js"></script>
   <script src="scripts/sierpinski-progressive-fetcher.js"></script>
   <script src="scripts/sierpinski-progressive-image.js"></script>
+  <script src="scripts/render-to-canvas-demo.js"></script>
   <script src="scripts/image-decoder-demo.js"></script>
   <script src="scripts/viewer-image-decoder-demo.js"></script>
  </div></div></div>

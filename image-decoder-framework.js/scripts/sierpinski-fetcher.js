@@ -31,7 +31,7 @@ var SierpinskiFetcher = (function SierpinskiFetcherClosure() {
     
     SierpinskiFetcher.prototype = Object.create(imageDecoderFramework.GridFetcherBase.prototype);
 
-    SierpinskiFetcher.prototype.open = function open(url) {
+    SierpinskiFetcher.prototype.open = function open() {
         return Promise.resolve(this._imageParams);
     }
     

@@ -1,18 +1,18 @@
 'use strict';
 
 var GridFetcher = (function GridFetcherClosure() {
-    function GridFetcher() {
+    function GridFetcher(url) {
         imageDecoderFramework.GridFetcherBase.call(this);
         this._imageParams = null;
         this._levelsCache = [];
+        this._url = url;
     }
     
     GridFetcher.prototype = Object.create(imageDecoderFramework.GridFetcherBase.prototype);
     
-    GridFetcher.prototype.open = function(url) {
+    GridFetcher.prototype.open = function() {
         var self = this;
-        this._url = url;
-        return graphicsLibrary.ajax(url + '/image-props.json').then(function(imageProps) {
+        return graphicsLibrary.ajax(this._url + '/image-props.json').then(function(imageProps) {
             var imageLevel = imageProps.levels - 1;
             self._imageParams = {
                 // Mandatory fields
